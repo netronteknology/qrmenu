@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Platform Yönetimi · Giriş</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#6339ff;--pu2:#a896ff;--pu3:#c4b5fd;--bg:#040404;--card:rgba(14,14,14,.92);--line:rgba(255,255,255,.07);--red:#e74c3c;--green:#2ecc71}
+body{min-height:100vh;font-family:"Segoe UI",sans-serif;color:#fff;display:flex;align-items:center;justify-content:center;background:var(--bg);overflow:hidden}
+
+/* Arka plan */
+.bg{position:fixed;inset:0;background:
+  radial-gradient(ellipse 90% 70% at 15% 5%,rgba(99,57,255,.16),transparent 50%),
+  radial-gradient(ellipse 70% 60% at 88% 85%,rgba(99,57,255,.10),transparent 50%),
+  radial-gradient(ellipse 50% 40% at 50% 50%,rgba(99,57,255,.04),transparent 60%),
+  linear-gradient(160deg,#0d0d0d,#050505 50%,#020202)}
+.noise{position:fixed;inset:0;opacity:.028;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
+.grid{position:fixed;inset:0;background-image:linear-gradient(rgba(99,57,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(99,57,255,.035) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 25%,transparent 100%)}
+
+/* Parçacıklar */
+.particles{position:fixed;inset:0;overflow:hidden;pointer-events:none}
+.p{position:absolute;border-radius:50%;background:rgba(99,57,255,.25);animation:fl linear infinite}
+@keyframes fl{0%{transform:translateY(110vh) scale(0);opacity:0}8%{opacity:1}92%{opacity:.5}100%{transform:translateY(-10vh) scale(1.2);opacity:0}}
+
+/* Kart */
+.card{position:relative;z-index:10;width:min(440px,93vw);background:var(--card);border:1px solid var(--line);border-radius:28px;padding:0;backdrop-filter:blur(24px);box-shadow:0 0 0 1px rgba(99,57,255,.1),0 40px 100px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.055);animation:ci .75s cubic-bezier(.22,1,.36,1) both;transition:box-shadow .4s ease}
+.card:hover{box-shadow:0 0 0 1px rgba(99,57,255,.18),0 50px 110px rgba(0,0,0,.65),0 0 60px rgba(99,57,255,.07),inset 0 1px 0 rgba(255,255,255,.055)}
+@keyframes ci{from{opacity:0;transform:translateY(32px) scale(.96)}to{opacity:1;transform:none}}
+.card::before{content:"";position:absolute;top:0;left:12%;right:12%;height:1px;border-radius:99px;background:linear-gradient(90deg,transparent,rgba(99,57,255,.9),rgba(200,180,255,1),rgba(99,57,255,.9),transparent)}
+
+/* Üst bant */
+.card-top{padding:32px 32px 24px;border-bottom:1px solid var(--line)}
+.brand-row{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.brand-icon{width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,rgba(99,57,255,.25),rgba(99,57,255,.08));border:1px solid rgba(99,57,255,.3);display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--pu2);flex-shrink:0}
+.brand-text .name{font-size:1rem;font-weight:900;color:var(--pu3);letter-spacing:.8px}
+.brand-text .ver{font-size:.72rem;color:rgba(255,255,255,.28);margin-top:2px;letter-spacing:1.5px;text-transform:uppercase}
+
+/* Bilgilendirme kutusu */
+.info-box{background:rgba(99,57,255,.07);border:1px solid rgba(99,57,255,.18);border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+.info-box i{color:var(--pu2);margin-top:1px;flex-shrink:0;font-size:.9rem}
+.info-box-text{font-size:.8rem;color:rgba(255,255,255,.55);line-height:1.6}
+.info-box-text strong{color:var(--pu2);font-weight:700}
+
+/* Form alanı */
+.card-body{padding:24px 32px 30px}
+.field-label{font-size:.75rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;display:block}
+.ig{position:relative;margin-bottom:16px}
+.ig .ico{position:absolute;left:17px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.22);font-size:.88rem;pointer-events:none;transition:color .25s}
+.ig:focus-within .ico{color:var(--pu2)}
+.ig input{width:100%;padding:14px 17px 14px 46px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);color:#fff;font-size:.94rem;font-family:inherit;outline:none;transition:.25s}
+.ig input:focus{border-color:rgba(99,57,255,.45);background:rgba(99,57,255,.05);box-shadow:0 0 0 3px rgba(99,57,255,.09)}
+.ig input::placeholder{color:rgba(255,255,255,.2)}
+
+/* Mesaj */
+.msg{padding:11px 14px;border-radius:12px;margin-bottom:16px;font-size:.85rem;display:flex;align-items:center;gap:9px;animation:ci .3s ease}
+.msg.error{background:rgba(231,76,60,.09);color:#ffb0b0;border:1px solid rgba(231,76,60,.25)}
+.msg.success{background:rgba(46,204,113,.09);color:#b7ffd5;border:1px solid rgba(46,204,113,.25)}
+
+/* Giriş butonu */
+.btn-login{width:100%;padding:15px;border:none;border-radius:16px;background:linear-gradient(135deg,#5a2fff,#8b65ff);color:#fff;font-weight:900;font-size:.96rem;cursor:pointer;margin-top:4px;transition:.22s;box-shadow:0 8px 28px rgba(99,57,255,.32);letter-spacing:.3px;display:flex;align-items:center;justify-content:center;gap:9px;position:relative;overflow:hidden}
+.btn-login::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.2) 50%,transparent 75%);transform:translateX(-100%);transition:transform .55s ease}
+.btn-login:hover::after{transform:translateX(100%)}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(99,57,255,.48)}
+.btn-login:active{transform:translateY(0);box-shadow:0 6px 20px rgba(99,57,255,.28)}
+/* Scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(99,57,255,.3);border-radius:99px}
+
+/* Alt */
+.card-foot{padding:16px 32px 22px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line)}
+.foot-l{font-size:.75rem;color:rgba(255,255,255,.2);display:flex;align-items:center;gap:6px}
+.foot-r{font-size:.73rem;color:rgba(255,255,255,.18)}
+
+/* Erişim uyarısı */
+.access-warn{background:rgba(231,76,60,.06);border:1px solid rgba(231,76,60,.15);border-radius:12px;padding:10px 14px;display:flex;gap:9px;align-items:center;margin-bottom:16px}
+.access-warn i{color:rgba(231,76,60,.7);font-size:.85rem;flex-shrink:0}
+.access-warn span{font-size:.78rem;color:rgba(255,255,255,.38);line-height:1.5}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="noise"></div>
+<div class="grid"></div>
+<div class="particles" id="pc"></div>
+
+<div class="card">
+  <div class="card-top">
+    <div class="brand-row">
+      <div class="brand-icon"><i class="fas fa-crown"></i></div>
+      <div class="brand-text">
+        <div class="name">QR MENÜ PLATFORM</div>
+        <div class="ver">Süper Yönetici Paneli · v1.0</div>
+      </div>
+    </div>
+    <div class="info-box">
+      <i class="fas fa-circle-info"></i>
+      <div class="info-box-text">
+        Bu alan yalnızca <strong>platform yöneticilerine</strong> özeldir. Restoran yöneticisi iseniz, size iletilen özel restoran giriş adresini kullanın. Yetkisiz erişim girişimleri kayıt altına alınır.
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body">
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in msgs %}
+      <div class="msg {{ cat }}">
+        <i class="fas {{ 'fa-circle-check' if cat=='success' else 'fa-circle-exclamation' }}"></i>{{ msg }}
+      </div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST">
+      <label class="field-label">Kullanıcı Adı</label>
+      <div class="ig">
+        <i class="ico fas fa-user"></i>
+        <input type="text" name="username" placeholder="Yönetici kullanıcı adı" required autocomplete="username">
+      </div>
+
+      <label class="field-label">Şifre</label>
+      <div class="ig">
+        <i class="ico fas fa-lock"></i>
+        <input type="password" name="password" placeholder="••••••••••" required autocomplete="current-password">
+      </div>
+
+      <div class="access-warn">
+        <i class="fas fa-triangle-exclamation"></i>
+        <span>Şifrenizi kimseyle paylaşmayın. Oturumunuzu her zaman kapatmayı unutmayın.</span>
+      </div>
+
+      <button class="btn-login" type="submit">
+        <i class="fas fa-right-to-bracket"></i> Panele Giriş Yap
+      </button>
+    </form>
+  </div>
+
+  <div class="card-foot">
+    <div class="foot-l"><i class="fas fa-shield-halved"></i> SSL ile korumalı</div>
+    <div class="foot-r">QR Menü Platform © 2025</div>
+  </div>
+</div>
+
+<script>
+const pc=document.getElementById('pc');
+for(let i=0;i<22;i++){const p=document.createElement('div');p.className='p';const sz=Math.random()*6+2;p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;bottom:-10px;animation-duration:${Math.random()*20+14}s;animation-delay:-${Math.random()*22}s;opacity:${Math.random()*.35+.08}`;pc.appendChild(p)}
+</script>
+</body>
+</html>

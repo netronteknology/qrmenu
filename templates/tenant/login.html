@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ tenant.restoran_adi }} · Yönetim Girişi</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#f39c12;--gold2:#ffb84d;--gold3:#ffd080;--bg:#040404;--line:rgba(255,255,255,.07);--red:#e74c3c;--green:#2ecc71}
+body{min-height:100vh;font-family:"Segoe UI",sans-serif;color:#fff;display:flex;align-items:center;justify-content:center;background:var(--bg);overflow:hidden}
+
+.bg{position:fixed;inset:0;background:
+  radial-gradient(ellipse 90% 70% at 15% 5%,rgba(243,156,18,.13),transparent 50%),
+  radial-gradient(ellipse 70% 60% at 88% 85%,rgba(243,156,18,.08),transparent 50%),
+  linear-gradient(160deg,#0d0d0d,#050505 50%,#020202)}
+.noise{position:fixed;inset:0;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
+.grid{position:fixed;inset:0;background-image:linear-gradient(rgba(243,156,18,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(243,156,18,.03) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,black 25%,transparent 100%)}
+.particles{position:fixed;inset:0;overflow:hidden;pointer-events:none}
+.p{position:absolute;border-radius:50%;background:rgba(243,156,18,.2);animation:fl linear infinite}
+@keyframes fl{0%{transform:translateY(110vh) scale(0);opacity:0}8%{opacity:1}92%{opacity:.5}100%{transform:translateY(-10vh) scale(1.2);opacity:0}}
+
+.card{position:relative;z-index:10;width:min(440px,93vw);background:rgba(14,14,14,.92);border:1px solid var(--line);border-radius:28px;padding:0;backdrop-filter:blur(24px);box-shadow:0 0 0 1px rgba(243,156,18,.08),0 40px 100px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.05);animation:ci .75s cubic-bezier(.22,1,.36,1) both}
+@keyframes ci{from{opacity:0;transform:translateY(32px) scale(.96)}to{opacity:1;transform:none}}
+.card::before{content:"";position:absolute;top:0;left:12%;right:12%;height:1px;border-radius:99px;background:linear-gradient(90deg,transparent,rgba(243,156,18,.85),rgba(255,220,110,1),rgba(243,156,18,.85),transparent)}
+
+.card-top{padding:28px 28px 22px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;align-items:center;text-align:center}
+.logo-ring{width:80px;height:80px;border-radius:50%;padding:3px;background:linear-gradient(135deg,var(--gold),var(--gold3),var(--gold));margin-bottom:14px;box-shadow:0 0 0 6px rgba(243,156,18,.08),0 16px 40px rgba(0,0,0,.35)}
+.logo-ring img{width:100%;height:100%;border-radius:50%;object-fit:contain;background:#fff}
+.logo-ring-icon{width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,rgba(243,156,18,.18),rgba(243,156,18,.06));display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--gold)}
+.rest-name{font-size:1.25rem;font-weight:900;color:var(--gold);letter-spacing:.8px}
+.rest-sub{font-size:.73rem;color:rgba(255,255,255,.28);letter-spacing:2px;text-transform:uppercase;margin-top:5px}
+
+.card-body{padding:22px 28px 24px}
+.field-label{font-size:.73rem;font-weight:700;color:rgba(255,255,255,.38);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;display:block}
+.ig{position:relative;margin-bottom:14px}
+.ig .ico{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.22);font-size:.88rem;pointer-events:none;transition:color .25s}
+.ig:focus-within .ico{color:var(--gold)}
+.ig input{width:100%;padding:13px 16px 13px 44px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);color:#fff;font-size:.93rem;font-family:inherit;outline:none;transition:.25s}
+.ig input:focus{border-color:rgba(243,156,18,.4);background:rgba(243,156,18,.05);box-shadow:0 0 0 3px rgba(243,156,18,.08)}
+.ig input::placeholder{color:rgba(255,255,255,.2)}
+
+.msg{padding:10px 13px;border-radius:12px;margin-bottom:14px;font-size:.84rem;display:flex;align-items:center;gap:8px}
+.msg.error{background:rgba(231,76,60,.09);color:#ffb0b0;border:1px solid rgba(231,76,60,.22)}
+.msg.success{background:rgba(46,204,113,.09);color:#b7ffd5;border:1px solid rgba(46,204,113,.22)}
+
+.help-text{font-size:.77rem;color:rgba(255,255,255,.28);margin-bottom:16px;line-height:1.55;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 12px;display:flex;gap:8px;align-items:flex-start}
+.help-text i{color:rgba(243,156,18,.5);flex-shrink:0;margin-top:1px}
+
+.btn-login{width:100%;padding:14px;border:none;border-radius:15px;background:linear-gradient(135deg,#e8900a,#ffb030);color:#000;font-weight:900;font-size:.95rem;cursor:pointer;margin-top:4px;transition:.22s;box-shadow:0 8px 26px rgba(243,156,18,.3);letter-spacing:.3px;display:flex;align-items:center;justify-content:center;gap:9px}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(243,156,18,.42)}
+.btn-login:active{transform:translateY(0)}
+
+.card-foot{padding:14px 28px 20px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px;align-items:center}
+.menu-link{color:rgba(243,156,18,.55);font-size:.82rem;text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s}
+.menu-link:hover{color:var(--gold)}
+.foot-note{font-size:.72rem;color:rgba(255,255,255,.16);display:flex;align-items:center;gap:5px}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="noise"></div>
+<div class="grid"></div>
+<div class="particles" id="pc"></div>
+
+<div class="card">
+  <div class="card-top">
+    {% if tenant.logo %}
+    <div class="logo-ring"><img src="/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo }}" alt="{{ tenant.restoran_adi }}"></div>
+    {% else %}
+    <div class="logo-ring"><div class="logo-ring-icon"><i class="fas fa-utensils"></i></div></div>
+    {% endif %}
+    <div class="rest-name">{{ tenant.restoran_adi }}</div>
+    <div class="rest-sub">Yönetim Paneli</div>
+  </div>
+
+  <div class="card-body">
+    {% with msgs=get_flashed_messages(with_categories=true) %}
+      {% for cat,msg in msgs %}
+      <div class="msg {{cat}}"><i class="fas {{ 'fa-circle-check' if cat=='success' else 'fa-circle-exclamation' }}"></i>{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <div class="help-text">
+      <i class="fas fa-circle-info"></i>
+      <span>Bu sayfa yalnızca <strong style="color:rgba(243,156,18,.7)">{{ tenant.restoran_adi }}</strong> yöneticilerine özeldir. Kullanıcı adı ve şifrenizi sistem yöneticinizden alabilirsiniz.</span>
+    </div>
+
+    <form method="POST">
+      <label class="field-label">Kullanıcı Adı</label>
+      <div class="ig">
+        <i class="ico fas fa-user"></i>
+        <input type="text" name="username" placeholder="Yönetici adı (örn: admin)" required autocomplete="username">
+      </div>
+
+      <label class="field-label">Şifre</label>
+      <div class="ig">
+        <i class="ico fas fa-lock"></i>
+        <input type="password" name="password" placeholder="••••••••••" required autocomplete="current-password">
+      </div>
+
+      <button class="btn-login" type="submit">
+        <i class="fas fa-right-to-bracket"></i> Giriş Yap
+      </button>
+    </form>
+  </div>
+
+  <div class="card-foot">
+    <a class="menu-link" href="/r/{{ tenant.slug }}/"><i class="fas fa-arrow-left"></i> Müşteri menüsüne dön</a>
+    <div class="foot-note"><i class="fas fa-shield-halved"></i> Şifrenizi kimseyle paylaşmayın</div>
+  </div>
+</div>
+
+<script>
+const pc=document.getElementById('pc');
+for(let i=0;i<22;i++){const p=document.createElement('div');p.className='p';const sz=Math.random()*6+2;p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;bottom:-10px;animation-duration:${Math.random()*20+14}s;animation-delay:-${Math.random()*22}s;opacity:${Math.random()*.32+.08}`;pc.appendChild(p)}
+</script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+/* ════════════════════════════════════
+   CSS VARIABLES - Renkler, Fontlar ve Tema Değişkenleri
+   ════════════════════════════════════ */
+
+:root {
+    --gold: #f39c12;
+    --gold-2: #ffb84d;
+    --bg: #060606;
+    --card: rgba(18,18,18,0.96);
+    --line: rgba(255,255,255,0.08);
+    --text: #ffffff;
+    --muted: #9b9b9b;
+    --shadow: 0 18px 50px rgba(0,0,0,0.35);
+    --green: #2ecc71;
+    --red: #ff5a36;
+
+    /* Tema renkleri */
+    --accent: #f39c12;
+    --accent-2: #ffb84d;
+    --accent-glow: rgba(243,156,18,0.28);
+    --accent-soft: rgba(243,156,18,0.08);
+}
+
+/* ════════════════════════════════════
+   ZEYTİN TEMA — Akdeniz / Yunan Stili
+   Beyaz zemin, lacivert + zeytin yeşili, tatil havası
+   ════════════════════════════════════ */
+body.tema-zeytin {
+    --gold: #1e5f7a;
+    --gold-2: #2d7d9a;
+    --gold-3: #4a9bb8;
+    --gold-1: #1e5f7a;
+    --gold-deep: #144556;
+    --accent: #1e5f7a;
+    --accent-2: #2d7d9a;
+    --accent-glow: rgba(30,95,122,.25);
+    --accent-soft: rgba(30,95,122,.06);
+    --gold-glow: rgba(30,95,122,.28);
+    --gold-soft: rgba(30,95,122,.06);
+    --gold-mid: rgba(30,95,122,.16);
+    --bg: #fafbfa;
+    --bg-deep: #f4f6f4;
+    --bg-rise: #fafbfa;
+    --bg-warm: #ffffff;
+    --card: rgba(255,255,255,0.92);
+    --surface: rgba(255,255,255,0.92);
+    --surface-2: rgba(248,250,249,0.96);
+    --line: rgba(30,95,122,.10);
+    --line-strong: rgba(30,95,122,.22);
+    --text: #1a2a35;
+    --text-mute: rgba(26,42,53,.62);
+    --text-faint: rgba(26,42,53,.38);
+    --muted: rgba(26,42,53,.55);
+    --shadow: 0 12px 36px rgba(30,95,122,.10);
+    --glow-warm: 0 14px 40px rgba(30,95,122,.10), 0 0 0 1px rgba(30,95,122,.06);
+    --glow-deep: 0 28px 70px rgba(30,95,122,.18);
+    background:
+        radial-gradient(ellipse 90% 40% at 50% 0%, rgba(74,155,184,.12), transparent 70%),
+        radial-gradient(ellipse 60% 50% at 100% 100%, rgba(107,142,60,.08), transparent 60%),
+        linear-gradient(180deg, #fafbfa 0%, #f4f6f4 100%) !important;
+    background-attachment: fixed;
+    font-family: 'Cormorant Garamond', 'Inter', serif;
+}
+
+/* Toskana Bistro override */
+body.tema-zeytin {
+    --gold: #b55a34;
+    --gold-2: #d88a58;
+    --gold-1: #9f4a28;
+    --gold-3: #f0b489;
+    --gold-deep: #6f341d;
+    --accent: #b55a34;
+    --accent-2: #d88a58;
+    --accent-glow: rgba(181,90,52,.22);
+    --accent-soft: rgba(181,90,52,.06);
+    --gold-glow: rgba(181,90,52,.26);
+    --gold-soft: rgba(181,90,52,.06);
+    --gold-mid: rgba(181,90,52,.16);
+    --bg: #f6efe6;
+    --bg-deep: #efe4d5;
+    --bg-rise: #fbf6ef;
+    --bg-warm: #fffdf8;
+    --card: rgba(255,251,245,0.94);
+    --surface: rgba(255,251,245,0.94);
+    --surface-2: rgba(250,244,235,0.98);
+    --line: rgba(110,63,33,.10);
+    --line-strong: rgba(110,63,33,.20);
+    --text: #2f1e14;
+    --text-mute: rgba(47,30,20,.66);
+    --text-faint: rgba(47,30,20,.4);
+    --muted: rgba(47,30,20,.58);
+    --shadow: 0 16px 38px rgba(111,52,29,.10);
+    background:
+        radial-gradient(ellipse 90% 40% at 50% 0%, rgba(216,138,88,.12), transparent 70%),
+        radial-gradient(ellipse 60% 50% at 100% 100%, rgba(120,134,82,.08), transparent 60%),
+        linear-gradient(180deg, #fbf6ef 0%, #f3e9dc 100%) !important;
+    background-attachment: fixed;
+    font-family: 'DM Sans', 'Segoe UI', sans-serif;
+}
+
+/* ════════════════════════════════════
+   GECE TEMA — Modern Lounge / Minimal
+   Çok koyu mor zemin, lavender/neon, Manrope
+   ════════════════════════════════════ */
+body.tema-gece {
+    --gold: #b8a3ff;
+    --gold-2: #d4c5ff;
+    --gold-3: #ebe1ff;
+    --accent: #b8a3ff;
+    --accent-2: #d4c5ff;
+    --accent-glow: rgba(184,163,255,.4);
+    --accent-soft: rgba(184,163,255,.06);
+    --gold-1: #b8a3ff;
+    --gold-glow: rgba(184,163,255,.4);
+    --gold-soft: rgba(184,163,255,.06);
+    --gold-mid: rgba(184,163,255,.18);
+    --gold-deep: #6e5ba0;
+    --bg: #050310;
+    --bg-deep: #050310;
+    --bg-rise: #0a0618;
+    --bg-warm: #0d081f;
+    --card: rgba(15,10,30,0.85);
+    --surface: rgba(15,10,30,0.85);
+    --surface-2: rgba(20,14,38,0.92);
+    --line: rgba(184,163,255,.10);
+    --line-strong: rgba(184,163,255,.25);
+    --text: #ebe7f5;
+    --text-mute: rgba(235,231,245,.6);
+    --text-faint: rgba(235,231,245,.32);
+    --muted: rgba(235,231,245,.55);
+    background:
+        radial-gradient(ellipse 70% 50% at 50% 0%, rgba(184,163,255,.18), transparent 60%),
+        radial-gradient(ellipse 50% 40% at 100% 50%, rgba(255,90,210,.08), transparent 60%),
+        radial-gradient(ellipse 60% 50% at 0% 100%, rgba(94,55,180,.15), transparent 70%),
+        linear-gradient(180deg, #050310 0%, #0a0618 50%, #050310 100%) !important;
+    background-attachment: fixed;
+    font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+}
+
+/* Light Mode Variables */
+body.light-mode {
+    --bg: #f6f2ea;
+    --card: rgba(255,255,255,0.94);
+    --line: rgba(40,28,12,0.1);
+    --text: #24190f;
+    --muted: #6d5b49;
+    --shadow: 0 16px 36px rgba(64,42,18,0.12);
+    background: #f7f2ea;
+    background-image:
+        radial-gradient(circle at top center, rgba(243,156,18,0.16), transparent 24%),
+        linear-gradient(180deg, #fffaf3 0%, #f7f1e6 44%, #efe6d7 100%);
+}
+
+/* Light Mode Headings */
+body.light-mode h1,
+body.light-mode h2,
+body.light-mode h3,
+body.light-mode .cat-title,
+body.light-mode .product-name,
+body.light-mode .fc-title {
+    color: #1a1a1a !important;
+    font-weight: 700 !important;
+}
+
+/* Light Mode Text Content */
+body.light-mode .product-desc,
+body.light-mode .hero-sub,
+body.light-mode .hoursText,
+body.light-mode .statusText,
+body.light-mode .priceUpdateText {
+    color: #1a1a1a !important;
+    opacity: 1 !important;
+}
+
+/* Light Mode Category Names and Hours */
+body.light-mode .cat-title,
+body.light-mode #hoursText,
+body.light-mode #statusText,
+body.light-mode #priceUpdateText {
+    color: #1a1a1a !important;
+    font-weight: 600 !important;
+}
+
+/* Light Mode Hero Meta Backgrounds */
+body.light-mode .hero-pill {
+    background: rgba(26,26,26,0.08) !important;
+    border-color: rgba(26,26,26,0.15) !important;
+}
+
+body.light-mode .hero-pill i {
+    color: #1a1a1a !important;
+}
+
+/* Light Mode Search and Buttons */
+body.light-mode .search {
+    color: #24190f !important;
+    background: rgba(255,255,255,0.85) !important;
+    border-color: rgba(58,37,16,0.15) !important;
+}
+
+body.light-mode .search::placeholder {
+    color: #6d5b49 !important;
+    opacity: 0.7 !important;
+}
+
+body.light-mode .chips button,
+body.light-mode .lang button {
+    color: #24190f !important;
+    background: rgba(255,255,255,0.85) !important;
+    border-color: rgba(58,37,16,0.15) !important;
+}
+
+body.light-mode .chips button.active,
+body.light-mode .lang button.active {
+    color: #1a1a1a !important;
+    background: var(--gold) !important;
+    border-color: var(--gold) !important;
+}
+
+body.light-mode .chips button:hover,
+body.light-mode .lang button:hover {
+    background: rgba(243,156,18,0.1) !important;
+    border-color: rgba(243,156,18,0.25) !important;
+}

@@ -1,0 +1,61 @@
+{# Yasal ürün alanları — tüm ürünlerde mevcut, hepsi isteğe bağlı #}
+<div class="legal-section-box">
+    <div class="legal-section-head">
+        <span><i class="fas fa-scale-balanced"></i> Ürün Bilgileri (İsteğe Bağlı)</span>
+        <small>Doldurmak istediğiniz alanları girin — boş bıraktıklarınız menüde görünmez</small>
+    </div>
+
+    <div class="legal-fields-grid">
+        <div class="field-block">
+            <label class="field-label">Kalori</label>
+            <div class="input-suffix-wrap">
+                <input type="number" name="calorie" min="1"
+                       value="{{ urun.calorie if urun and urun.calorie else '' }}"
+                       placeholder="örn: 350">
+                <span class="input-suffix">kcal</span>
+            </div>
+            <small class="field-hint"><i class="fas fa-fire"></i> Porsiyon başına kalori değeri. Menü kartında küçük ikon ile gösterilir.</small>
+        </div>
+        <div class="field-block">
+            <label class="field-label">Gramaj / Porsiyon</label>
+            <input type="text" name="portion_weight"
+                   value="{{ urun.portion_weight if urun and urun.portion_weight else '' }}"
+                   placeholder="örn: 250g veya 2 kişilik">
+            <small class="field-hint"><i class="fas fa-weight-hanging"></i> Ağırlık veya porsiyon bilgisi. Serbest yazım — istediğiniz biçimde girin.</small>
+        </div>
+        <div class="field-block">
+            <label class="field-label">Et Kökeni / Karışım</label>
+            <input type="text" name="meat_origin"
+                   value="{{ urun.meat_origin if urun and urun.meat_origin else '' }}"
+                   placeholder="örn: %100 Dana Eti">
+            <small class="field-hint"><i class="fas fa-cow"></i> Dana, tavuk, kuzu gibi et içeriği. Yalnızca et ürünlerinde doldurun.</small>
+        </div>
+    </div>
+
+    <div class="alcohol-switch-wrap">
+        <label>
+            <input type="checkbox" name="contains_alcohol"
+                   {% if urun and urun.contains_alcohol %}checked{% endif %}>
+            Alkol İçerir
+        </label>
+        <small class="field-hint" style="margin-top:6px;display:block"><i class="fas fa-wine-glass"></i> İşaretlenirse menüde yasal uyarı ikonu çıkar. Yalnızca alkollü içeceklerde kullanın.</small>
+    </div>
+
+    <div class="allergen-section">
+        <div class="allergen-section-label">
+            <i class="fas fa-triangle-exclamation"></i> Alerjenler
+            <span style="font-size:.72rem;font-weight:400;color:var(--muted);margin-left:8px">Üründe bulunanları işaretleyin — menüde uyarı olarak görünür</span>
+        </div>
+        <div class="allergen-grid">
+            {% for value, label in standard_allergens %}
+            <label class="allergen-cb-label{% if urun and urun.allergens and value in urun.allergens %} checked{% endif %}"
+                   onclick="toggleAllergenChip(this)">
+                <input type="checkbox" name="allergens" value="{{ value }}"
+                       {% if urun and urun.allergens and value in urun.allergens %}checked{% endif %}>
+                <span>{{ label }}</span>
+            </label>
+            {% endfor %}
+        </div>
+        <small class="field-hint" style="margin-top:8px;display:block"><i class="fas fa-info-circle"></i> Seçilen alerjenler menü kartında sarı uyarı etiketi olarak gösterilir. Hiçbiri yoksa boş bırakın.</small>
+    </div>
+</div>

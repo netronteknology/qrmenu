@@ -1,0 +1,53 @@
+{
+  "name": "{{ tenant.restoran_adi }} QR Menu",
+  "short_name": "{{ tenant.restoran_adi }}",
+  "description": "Premium QR Menü Sistemi - Modern ve Hızlı Menü Deneyimi",
+  "start_url": "/r/{{ tenant.slug }}",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#f39c12",
+  "orientation": "portrait",
+  "scope": "/r/{{ tenant.slug }}",
+  "lang": "tr",
+  "dir": "ltr",
+  "categories": ["food", "restaurant", "menu"],
+  "icons": [
+    {
+      "src": "/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo or 'default-icon.png' }}",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo or 'default-icon.png' }}",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Menüyü Aç",
+      "short_name": "Menü",
+      "description": "QR Menüyü hızlıca aç",
+      "url": "/r/{{ tenant.slug }}",
+      "icons": [{ "src": "/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo or 'default-icon.png' }}", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo or 'default-screenshot.png' }}",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Ana Menü Görünümü"
+    },
+    {
+      "src": "/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo or 'default-screenshot.png' }}",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobil Menü Görünümü"
+    }
+  ]
+}

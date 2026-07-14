@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Menü Platform · Yönetim</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{box-sizing:border-box}
+:root{--pu:#6339ff;--pu2:#a896ff;--pu3:#c4b5fd;--gold:#f39c12;--gold2:#ffb84d;--green:#2ecc71;--red:#e74c3c;--blue:#4da3ff;--orange:#e67e22;--bg:#040404;--card:#0e0e0e;--line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.04);--text:#f0f0f0;--muted:rgba(255,255,255,.38);--r:18px}
+body{margin:0;font-family:"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── PREMIUM ARKAPLAN ─────────────────────────── */
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 10%,rgba(99,57,255,.13),transparent 55%),
+    radial-gradient(ellipse 60% 50% at 90% 80%,rgba(99,57,255,.09),transparent 55%),
+    radial-gradient(ellipse 40% 35% at 55% 45%,rgba(99,57,255,.04),transparent 60%);
+  animation:bgDrift 18s ease-in-out infinite alternate}
+@keyframes bgDrift{0%{opacity:.8;transform:scale(1)}100%{opacity:1;transform:scale(1.04)}}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  opacity:.022;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:62px;border-bottom:1px solid var(--line);background:rgba(6,6,6,.97);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100;box-shadow:0 1px 0 rgba(99,57,255,.1)}
+.topbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(99,57,255,.6) 30%,rgba(168,150,255,1) 50%,rgba(99,57,255,.6) 70%,transparent 100%)}
+.brand{display:flex;align-items:center;gap:13px}
+.brand-icon{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#5a2fff,#8b65ff);display:flex;align-items:center;justify-content:center;font-size:.95rem;color:#fff;box-shadow:0 4px 14px rgba(99,57,255,.35)}
+.brand-name{font-size:1rem;font-weight:900;color:var(--pu3);letter-spacing:.8px}
+.brand-sub{font-size:.68rem;color:rgba(255,255,255,.28);margin-top:1px;letter-spacing:1px;text-transform:uppercase}
+.tab-nav{display:flex;gap:2px;padding:0 28px;border-bottom:1px solid var(--line);background:rgba(6,6,6,.95);position:sticky;top:62px;z-index:99;overflow-x:auto}
+.tab-nav::-webkit-scrollbar{display:none}
+.tab-indicator{position:absolute;bottom:0;height:2px;border-radius:99px;background:linear-gradient(90deg,var(--pu),var(--pu2),var(--pu3));box-shadow:0 0 12px rgba(99,57,255,.45);transition:left .42s cubic-bezier(.22,1,.36,1),width .42s cubic-bezier(.22,1,.36,1);pointer-events:none;z-index:2}
+.tab-btn{padding:13px 18px;border:none;background:none;color:rgba(255,255,255,.4);font-weight:700;font-size:.83rem;cursor:pointer;border-bottom:2px solid transparent;transition:color .25s ease,transform .25s ease;display:flex;align-items:center;gap:7px;white-space:nowrap;position:relative;z-index:1}
+.tab-btn:hover{color:rgba(255,255,255,.7)}
+.tab-btn.active{color:var(--pu3);border-bottom-color:transparent;transform:translateY(-1px)}
+.tab-content{display:none;opacity:0;transform:translateX(0)}
+.tab-content.active{display:block;animation:tabSlideIn .46s cubic-bezier(.22,1,.36,1) both}
+.tab-content.tab-switching{display:block;animation:tabSlideOut .32s cubic-bezier(.4,0,.2,1) both;pointer-events:none}
+@keyframes tabSlideIn{from{opacity:0;transform:translateX(var(--tab-from,28px))}to{opacity:1;transform:translateX(0)}}
+@keyframes tabSlideOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(var(--tab-to,-28px))}}
+.btn{border:none;border-radius:12px;padding:9px 15px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:7px;transition:.2s;font-size:.83rem;box-shadow:0 10px 24px rgba(0,0,0,.16)}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.04)}
+.btn-soft{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));color:rgba(255,255,255,.72);border:1px solid var(--line)}
+.btn-soft:hover{background:rgba(255,255,255,.09);color:#fff}
+.btn-pu{background:linear-gradient(135deg,#5a2fff,#8b65ff);color:#fff;box-shadow:0 4px 14px rgba(99,57,255,.28);position:relative;overflow:hidden}.btn-pu::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.18) 50%,transparent 70%);transform:translateX(-100%);transition:transform .5s ease}.btn-pu:hover::after{transform:translateX(100%)}.btn-pu:hover{transform:translateY(-2px)!important;box-shadow:0 8px 24px rgba(99,57,255,.42)!important}
+.btn-green{background:rgba(46,204,113,.1);color:var(--green);border:1px solid rgba(46,204,113,.22)}
+.btn-red{background:rgba(231,76,60,.1);color:var(--red);border:1px solid rgba(231,76,60,.22)}
+.btn-gold{background:rgba(243,156,18,.1);color:var(--gold);border:1px solid rgba(243,156,18,.22)}
+.btn-blue{background:rgba(77,163,255,.1);color:var(--blue);border:1px solid rgba(77,163,255,.22)}
+.btn-sm{padding:6px 11px;font-size:.77rem;border-radius:9px}
+.wrap{max-width:1280px;margin:0 auto;padding:26px 24px 80px;position:relative;z-index:1}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:20px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden;transition:.25s}.stat:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.3)}
+.stat:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.12)}
+.stat::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;border-radius:99px}
+.stat.s-pu::before{background:linear-gradient(90deg,transparent,var(--pu2),transparent)}
+.stat.s-green::before{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.stat.s-gold::before{background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.stat.s-blue::before{background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+.stat.s-red::before{background:linear-gradient(90deg,transparent,var(--red),transparent)}
+.stat.s-orange::before{background:linear-gradient(90deg,transparent,var(--orange),transparent)}
+.stat-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.88rem;margin-bottom:12px}
+.stat.s-pu .stat-icon{background:rgba(99,57,255,.12);color:var(--pu2)}
+.stat.s-green .stat-icon{background:rgba(46,204,113,.1);color:var(--green)}
+.stat.s-gold .stat-icon{background:rgba(243,156,18,.1);color:var(--gold)}
+.stat.s-blue .stat-icon{background:rgba(77,163,255,.1);color:var(--blue)}
+.stat.s-red .stat-icon{background:rgba(231,76,60,.1);color:var(--red)}
+.stat.s-orange .stat-icon{background:rgba(230,126,34,.1);color:var(--orange)}
+.stat-n{font-size:2rem;font-weight:900;margin-bottom:2px;line-height:1}
+.stat.s-pu .stat-n{color:var(--pu3)}.stat.s-green .stat-n{color:var(--green)}.stat.s-gold .stat-n{color:var(--gold)}.stat.s-blue .stat-n{color:var(--blue)}.stat.s-red .stat-n{color:var(--red)}.stat.s-orange .stat-n{color:var(--orange)}
+.stat-l{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+.alert-bar{border-radius:14px;padding:13px 18px;display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:.84rem}
+.alert-bar.warn{background:rgba(243,156,18,.08);border:1px solid rgba(243,156,18,.2);color:rgba(243,156,18,.9)}
+.alert-bar.danger{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);color:rgba(231,76,60,.9)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;margin-bottom:18px;position:relative;transition:border-color .25s,box-shadow .25s}.card:hover{border-color:rgba(99,57,255,.18);box-shadow:0 0 0 1px rgba(99,57,255,.06),0 24px 48px rgba(0,0,0,.28)}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;gap:12px}
+.card-title{font-size:.95rem;font-weight:900;display:flex;align-items:center;gap:9px}
+.card-desc{font-size:.77rem;color:var(--muted);margin-top:4px;line-height:1.5}
+.form-grid{display:grid;gap:10px;align-items:end}
+.fg-3{grid-template-columns:1fr 1fr 1fr}
+.fg-2{grid-template-columns:1fr 1fr}
+.fg-5{grid-template-columns:1fr 1fr 1fr 120px 120px}
+.field-wrap label{font-size:.71rem;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.tip{font-size:.67rem;color:rgba(255,255,255,.2);font-weight:400;text-transform:none;letter-spacing:0}
+input,select,textarea{width:100%;border-radius:11px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;padding:10px 13px;outline:none;font:inherit;font-size:.86rem;transition:.2s}
+input:focus,select:focus,textarea:focus{border-color:rgba(99,57,255,.4);background:rgba(99,57,255,.04);box-shadow:0 0 0 3px rgba(99,57,255,.08)}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,.18)}
+select option{background:#111;color:#fff}
+.form-note{margin-top:10px;padding:9px 13px;background:rgba(99,57,255,.05);border:1px solid rgba(99,57,255,.11);border-radius:10px;font-size:.77rem;color:rgba(255,255,255,.35);display:flex;align-items:center;gap:8px}
+.form-note i{color:var(--pu2);flex-shrink:0}
+.form-note code{color:var(--pu2);background:rgba(99,57,255,.1);padding:2px 7px;border-radius:5px;font-size:.78rem}
+.table-wrap{overflow-x:auto;border-radius:14px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+thead th{padding:10px 14px;text-align:left;color:rgba(255,255,255,.28);font-weight:700;border-bottom:1px solid var(--line2);text-transform:uppercase;font-size:.68rem;letter-spacing:.9px;background:rgba(255,255,255,.02)}
+tbody tr{border-bottom:1px solid var(--line2);transition:.15s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+td{padding:13px 14px;vertical-align:middle}
+.kod-badge{font-family:monospace;font-size:.78rem;color:var(--pu2);background:rgba(99,57,255,.1);padding:3px 8px;border-radius:7px;display:inline-block;margin-bottom:3px}
+.slug-badge{font-family:monospace;font-size:.78rem;color:rgba(255,255,255,.4);background:rgba(255,255,255,.05);padding:3px 8px;border-radius:7px;display:inline-block}
+.rest-name{font-weight:800;font-size:.88rem;margin-bottom:3px}
+.rest-meta{font-size:.72rem;color:rgba(255,255,255,.26);margin-top:2px}
+.url-btns{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+.pkg{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;font-size:.7rem;font-weight:800;text-transform:uppercase}
+.pkg-temel{background:rgba(255,255,255,.06);color:rgba(255,255,255,.4)}
+.pkg-pro{background:rgba(243,156,18,.12);color:var(--gold);border:1px solid rgba(243,156,18,.2)}
+.pkg-kurumsal{background:rgba(99,57,255,.14);color:var(--pu2);border:1px solid rgba(99,57,255,.26)}
+.status{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:99px;font-size:.7rem;font-weight:800}
+.status::before{content:"";width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.s-aktif{background:rgba(46,204,113,.1);color:var(--green);border:1px solid rgba(46,204,113,.2)}
+.s-aktif::before{background:var(--green);box-shadow:0 0 4px var(--green)}
+.s-pasif{background:rgba(231,76,60,.1);color:var(--red);border:1px solid rgba(231,76,60,.2)}
+.s-pasif::before{background:var(--red)}
+.actions{display:flex;gap:5px;flex-wrap:wrap}
+.pkg-form{display:flex;gap:5px;align-items:center}
+.pkg-form select{width:100px;padding:5px 9px;font-size:.77rem}
+.lis-label{font-size:.7rem;font-weight:700;margin-top:3px;display:block}
+.lis-bar{margin-top:4px;height:4px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden;width:110px}
+.lis-bar-fill{height:100%;border-radius:99px}
+.lis-ok{color:var(--green)}.lis-warn{color:var(--gold)}.lis-danger{color:var(--red)}.lis-none{color:var(--muted)}
+.odeme-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;font-size:.69rem;font-weight:800}
+.odendi{background:rgba(46,204,113,.1);color:var(--green);border:1px solid rgba(46,204,113,.2)}
+.bekliyor{background:rgba(231,76,60,.1);color:var(--red);border:1px solid rgba(231,76,60,.2)}
+/* Müşteri kartı */
+.musteri-kart{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px;transition:.2s}
+.musteri-kart:hover{border-color:rgba(255,255,255,.1)}
+.mk-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:12px}
+.mk-ad{font-weight:900;font-size:.95rem}
+.mk-kod{font-family:monospace;font-size:.73rem;color:var(--pu2);background:rgba(99,57,255,.1);padding:2px 8px;border-radius:6px;margin-left:8px}
+.mk-meta{font-size:.77rem;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+.mk-meta span{display:flex;align-items:center;gap:5px}
+.mk-restoranlar{margin-top:10px;padding-top:10px;border-top:1px solid var(--line2)}
+.mk-rest-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.02);border-radius:10px;margin-bottom:6px;gap:10px}
+.mk-rest-item:last-child{margin-bottom:0}
+/* Modaller */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:20px;overflow-y:auto}
+.modal-ov.open{display:flex}
+.modal{background:#0f0f0f;border:1px solid rgba(255,255,255,.09);border-radius:24px;padding:26px;width:100%;max-width:540px;animation:mci .3s cubic-bezier(.22,1,.36,1);text-align:left;margin:auto}
+.modal.modal-sm{max-width:380px;text-align:center}
+@keyframes mci{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:none}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.modal-title{font-size:.95rem;font-weight:900;display:flex;align-items:center;gap:9px}
+.modal-icon{font-size:2.2rem;margin-bottom:14px}
+.modal h3{margin:0 0 8px;font-size:1rem;font-weight:900}
+.modal p{color:rgba(255,255,255,.42);font-size:.84rem;margin:0 0 18px;line-height:1.5}
+.modal-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.modal-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+.modal input,.modal select,.modal textarea{margin-bottom:10px}
+.modal-label{font-size:.71rem;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.8px;text-transform:uppercase;margin-bottom:5px;display:block}
+.checkbox-row{display:flex;align-items:center;gap:8px;padding:9px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;cursor:pointer;margin-bottom:10px}
+.checkbox-row input{width:16px;height:16px;cursor:pointer;accent-color:var(--green)}
+.checkbox-row label{font-size:.84rem;color:rgba(255,255,255,.65);cursor:pointer;margin:0}
+.toast-wrap{position:fixed;top:20px;right:20px;z-index:99999;display:grid;gap:8px;width:min(340px,calc(100vw - 30px))}
+.toast{padding:11px 15px;border-radius:13px;color:#fff;font-weight:700;font-size:.83rem;animation:ti .28s ease;display:flex;align-items:center;gap:9px}
+.toast.success{background:rgba(46,204,113,.13);border:1px solid rgba(46,204,113,.26)}
+.toast.error{background:rgba(231,76,60,.13);border:1px solid rgba(231,76,60,.26)}
+@keyframes ti{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.empty{text-align:center;padding:36px 20px;color:rgba(255,255,255,.2)}
+.empty i{font-size:2.2rem;display:block;margin-bottom:10px;opacity:.18}
+.step-badge{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--pu);color:#fff;font-size:.75rem;font-weight:900;flex-shrink:0}
+.top-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.action-pills{display:flex;gap:8px;flex-wrap:wrap}
+.action-pill{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:rgba(255,255,255,.68);font-size:.77rem;font-weight:700}
+.quick-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-bottom:18px}
+.chart-shell{padding:10px 0 4px}
+.chart-bars{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;align-items:end;min-height:220px}
+.chart-col{display:flex;flex-direction:column;align-items:center;gap:10px}
+.chart-bar-wrap{height:180px;width:100%;display:flex;align-items:flex-end}
+.chart-bar{width:100%;border-radius:16px 16px 8px 8px;background:linear-gradient(180deg,#a896ff,#6339ff);box-shadow:0 14px 28px rgba(99,57,255,.22);min-height:14px}
+.chart-value{font-size:.76rem;font-weight:800;color:var(--pu3)}
+.chart-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+.plan-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.plan-card{border:1px solid var(--line);border-radius:18px;padding:18px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015))}
+.plan-card.featured{border-color:rgba(243,156,18,.24);box-shadow:0 18px 38px rgba(243,156,18,.08)}
+.plan-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:.69rem;font-weight:800;text-transform:uppercase;background:rgba(255,255,255,.05);color:rgba(255,255,255,.55)}
+.plan-card.featured .plan-badge{background:rgba(243,156,18,.12);color:var(--gold)}
+.plan-name{font-size:1rem;font-weight:900;margin:12px 0 4px}
+.plan-price{font-size:1.6rem;font-weight:900;margin-bottom:8px}
+.plan-copy{font-size:.78rem;color:var(--muted);line-height:1.6}
+.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.mini-list{display:grid;gap:10px}
+.mini-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+.mini-main{display:grid;gap:4px}
+.mini-title{font-weight:800;font-size:.86rem}
+.mini-sub{font-size:.74rem;color:var(--muted)}
+.copy-code{font-family:monospace;font-size:.76rem;padding:4px 8px;border-radius:8px;background:rgba(99,57,255,.12);color:var(--pu2)}
+.trial-note{padding:12px 14px;border-radius:14px;background:rgba(243,156,18,.08);border:1px solid rgba(243,156,18,.18);font-size:.8rem;color:rgba(255,216,153,.92)}
+.ghost-note{font-size:.78rem;color:var(--muted);line-height:1.6}
+/* Tooltip */
+[title]{position:relative;cursor:pointer}
+.btn[title]:hover::after{
+    content:attr(title);
+    position:absolute;
+    bottom:calc(100% + 6px);
+    left:50%;
+    transform:translateX(-50%);
+    white-space:nowrap;
+    background:rgba(20,20,20,.97);
+    border:1px solid rgba(255,255,255,.1);
+    color:#f0f0f0;
+    font-size:.72rem;
+    font-weight:600;
+    padding:5px 10px;
+    border-radius:8px;
+    z-index:999;
+    pointer-events:none;
+    box-shadow:0 4px 12px rgba(0,0,0,.4);
+    letter-spacing:.2px;
+}
+.btn[title]:hover::before{
+    content:'';
+    position:absolute;
+    bottom:calc(100% + 1px);
+    left:50%;
+    transform:translateX(-50%);
+    border:5px solid transparent;
+    border-top-color:rgba(255,255,255,.1);
+    z-index:1000;
+    pointer-events:none;
+}
+/* Premium buton */
+.btn-premium{background:linear-gradient(135deg,#f39c12,#ffb84d);color:#1a0f00;box-shadow:0 4px 14px rgba(243,156,18,.3);font-weight:900}
+.btn-premium:hover{filter:brightness(1.08);transform:translateY(-1px)}
+/* Deneme badge */
+.trial-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:rgba(255,184,77,.1);border:1px solid rgba(255,184,77,.22);color:#ffb84d;font-size:.7rem;font-weight:800;animation:trialPulse 2.5s ease-in-out infinite}
+@keyframes trialPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,184,77,0)}50%{box-shadow:0 0 0 4px rgba(255,184,77,.12)}}
+/* Plan comparison table */
+.plan-compare{width:100%;border-collapse:collapse;margin-top:12px;font-size:.78rem}
+.plan-compare th{padding:9px 12px;text-align:center;font-size:.7rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.07)}
+.plan-compare td{padding:9px 12px;text-align:center;border-bottom:1px solid rgba(255,255,255,.04);color:rgba(255,255,255,.65)}
+.plan-compare td:first-child{text-align:left;color:rgba(255,255,255,.5);padding-left:4px}
+.plan-compare tr:last-child td{border-bottom:none}
+.plan-compare .check{color:#2ecc71}.plan-compare .cross{color:rgba(255,255,255,.18)}.plan-compare .partial{color:#f39c12}
+.plan-compare th.col-pro{color:#f39c12;background:rgba(243,156,18,.04)}
+.plan-compare td.col-pro{background:rgba(243,156,18,.02)}
+/* Gelir grafiği gelişmiş */
+.chart-month-total{font-size:.65rem;color:rgba(255,255,255,.22);margin-top:2px}
+/* Referans card */
+.ref-stat{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:rgba(99,57,255,.05);border:1px solid rgba(99,57,255,.12);margin-bottom:8px}
+.ref-stat-n{font-size:1.4rem;font-weight:900;color:var(--pu3)}
+.ref-stat-l{font-size:.72rem;color:var(--muted)}
+/* Ödeme hatırlatıcı - acil badge */
+.overdue-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:99px;font-size:.65rem;font-weight:800;background:rgba(231,76,60,.12);color:#e74c3c;border:1px solid rgba(231,76,60,.2);animation:overdueFlash 1.8s ease-in-out infinite}
+@keyframes overdueFlash{0%,100%{opacity:1}50%{opacity:.6}}
+@media(max-width:1000px){.stats-grid{grid-template-columns:1fr 1fr 1fr}.fg-5{grid-template-columns:1fr 1fr}.quick-grid,.mini-grid,.plan-grid{grid-template-columns:1fr}}
+@media(max-width:640px){.stats-grid{grid-template-columns:1fr 1fr}.topbar{padding:0 14px}.wrap{padding:16px 12px 80px}.fg-3,.fg-2{grid-template-columns:1fr}.chart-bars{gap:8px}.top-actions{align-items:flex-start}}
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(99,57,255,.28);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:rgba(99,57,255,.48)}
+/* ── MODAL GLOW ── */
+.modal{background:#0f0f0f;border:1px solid rgba(255,255,255,.09);border-radius:24px;padding:26px;width:100%;max-width:540px;animation:mci .3s cubic-bezier(.22,1,.36,1);text-align:left;margin:auto;box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 0 1px rgba(99,57,255,.08)}
+/* ── MUSTERI KART HOVER ── */
+.musteri-kart:hover{border-color:rgba(99,57,255,.22);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+</style>
+</head>
+<body>
+
+<div class="toast-wrap">
+{% with msgs=get_flashed_messages(with_categories=true) %}
+  {% for cat,msg in msgs %}
+  <div class="toast {{cat}}"><i class="fas {{ 'fa-circle-check' if cat=='success' else 'fa-circle-exclamation' }}"></i>{{msg}}</div>
+  {% endfor %}
+{% endwith %}
+</div>
+
+<!-- Sil Modal -->
+<div class="modal-ov" id="delModal">
+  <div class="modal modal-sm">
+    <div class="modal-icon" style="color:var(--red)"><i class="fas fa-triangle-exclamation"></i></div>
+    <h3>Restoranı Sil</h3>
+    <p id="delDesc">Bu işlem geri alınamaz.</p>
+    <div class="modal-acts">
+      <button class="btn btn-soft" onclick="closeModal('delModal')"><i class="fas fa-xmark"></i> Vazgeç</button>
+      <form id="delForm" method="POST" style="margin:0"><button class="btn btn-red" type="submit"><i class="fas fa-trash"></i> Sil</button></form>
+    </div>
+  </div>
+</div>
+
+<!-- Müşteri Sil Modal -->
+<div class="modal-ov" id="mdelModal">
+  <div class="modal modal-sm">
+    <div class="modal-icon" style="color:var(--red)"><i class="fas fa-triangle-exclamation"></i></div>
+    <h3>Müşteriyi Sil</h3>
+    <p id="mdelDesc">Müşteri kaydı silinecek. Bağlı restoranlar korunur.</p>
+    <div class="modal-acts">
+      <button class="btn btn-soft" onclick="closeModal('mdelModal')"><i class="fas fa-xmark"></i> Vazgeç</button>
+      <form id="mdelForm" method="POST" style="margin:0"><button class="btn btn-red" type="submit"><i class="fas fa-trash"></i> Sil</button></form>
+    </div>
+  </div>
+</div>
+
+<!-- Şifre Modal -->
+<div class="modal-ov" id="pwModal">
+  <div class="modal modal-sm">
+    <div class="modal-icon" style="color:var(--gold)"><i class="fas fa-key"></i></div>
+    <h3 id="pwTitle">Şifre Sıfırla</h3>
+    <p id="pwDesc">Admin şifresi güncellenecek.</p>
+    <form id="pwForm" method="POST" style="margin:0">
+      <input type="text" name="new_password" placeholder="Yeni şifre" required style="margin-bottom:14px;text-align:center">
+      <div class="modal-acts">
+        <button class="btn btn-soft" type="button" onclick="closeModal('pwModal')"><i class="fas fa-xmark"></i> Vazgeç</button>
+        <button class="btn btn-gold" type="submit"><i class="fas fa-check"></i> Güncelle</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Lisans Yenile Modal -->
+<div class="modal-ov" id="lisansModal">
+  <div class="modal modal-sm">
+    <div class="modal-icon" style="color:var(--green)"><i class="fas fa-rotate"></i></div>
+    <h3 id="lisansTitle">Lisans Yenile</h3>
+    <p id="lisansDesc">Lisans süresi uzatılacak.</p>
+    <form id="lisansForm" method="POST" style="margin:0">
+      <label class="modal-label">Uzatma Süresi</label>
+      <select name="sure" style="margin-bottom:14px">
+        <option value="1">1 Ay</option>
+        <option value="3">3 Ay</option>
+        <option value="6">6 Ay</option>
+        <option value="12" selected>12 Ay (1 Yıl)</option>
+        <option value="24">24 Ay (2 Yıl)</option>
+      </select>
+      <div class="modal-acts">
+        <button class="btn btn-soft" type="button" onclick="closeModal('lisansModal')"><i class="fas fa-xmark"></i> Vazgeç</button>
+        <button class="btn btn-green" type="submit"><i class="fas fa-rotate"></i> Yenile</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Müşteri Düzenle Modal -->
+<div class="modal-ov" id="mduzenleModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-user-pen" style="color:var(--blue)"></i> Müşteri Düzenle</div>
+      <button class="btn btn-soft btn-sm" onclick="closeModal('mduzenleModal')"><i class="fas fa-xmark"></i></button>
+    </div>
+    <form id="mduzenleForm" method="POST">
+      <div class="modal-2col">
+        <div><label class="modal-label">Ad Soyad *</label><input type="text" name="ad_soyad" id="md_ad" required></div>
+        <div><label class="modal-label">TC / VKN</label><input type="text" name="tc_vkn" id="md_tcvkn"></div>
+      </div>
+      <div class="modal-2col">
+        <div><label class="modal-label">Telefon</label><input type="text" name="telefon" id="md_tel"></div>
+        <div><label class="modal-label">E-posta</label><input type="email" name="email" id="md_email"></div>
+      </div>
+      <div class="modal-2col">
+        <div><label class="modal-label">Şehir</label><input type="text" name="sehir" id="md_sehir"></div>
+        <div><label class="modal-label">İlçe</label><input type="text" name="ilce" id="md_ilce"></div>
+      </div>
+      <label class="modal-label">Notlar</label>
+      <textarea name="notlar" id="md_notlar" rows="2" style="margin-bottom:14px"></textarea>
+      <div class="modal-acts">
+        <button class="btn btn-soft" type="button" onclick="closeModal('mduzenleModal')"><i class="fas fa-xmark"></i> İptal</button>
+        <button class="btn btn-blue" type="submit"><i class="fas fa-save"></i> Kaydet</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Lisans Ata Modal -->
+<div class="modal-ov" id="lisansAtaModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-shield-halved" style="color:var(--green)"></i> <span id="laTitle">Lisans Ata / Restoran Oluştur</span></div>
+      <button class="btn btn-soft btn-sm" onclick="closeModal('lisansAtaModal')"><i class="fas fa-xmark"></i></button>
+    </div>
+    <form id="lisansAtaForm" method="POST">
+      <div style="background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.15);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:.8rem;color:rgba(46,204,113,.8)">
+        <i class="fas fa-circle-info" style="margin-right:6px"></i>Bu müşteri için yeni bir restoran ve lisans oluşturulacak.
+      </div>
+      <div class="modal-2col">
+        <div><label class="modal-label">Restoran Adı</label><input type="text" name="restoran_adi" id="la_isim" placeholder="Örn: Tanova Bandırma" required></div>
+        <div><label class="modal-label">URL Slug <span class="tip">· Küçük harf, tire</span></label><input type="text" name="slug" id="la_slug" placeholder="tanova-bandirma" required pattern="[a-z0-9\-]+"></div>
+      </div>
+      <div class="modal-3col">
+        <div><label class="modal-label">Paket</label>
+          <select name="paket">
+            <option value="temel">🔵 Temel</option>
+            <option value="deneme">✨ 14 Gün Deneme</option>
+            <option value="pro">🟡 Pro</option>
+            <option value="kurumsal">🟣 Kurumsal</option>
+          </select>
+        </div>
+        <div><label class="modal-label">Admin Şifresi</label><input type="text" name="password" value="admin123" required></div>
+        <div><label class="modal-label">Lisans Süresi</label>
+          <select name="sure">
+            <option value="1">1 Ay</option>
+            <option value="3">3 Ay</option>
+            <option value="6">6 Ay</option>
+            <option value="12" selected>12 Ay</option>
+            <option value="24">24 Ay</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-3col">
+        <div><label class="modal-label">Ücret (₺)</label><input type="number" name="ucret" placeholder="0" step="0.01" min="0"></div>
+        <div><label class="modal-label">Ödeme Tipi</label>
+          <select name="odeme_tipi">
+            <option value="nakit">Nakit</option>
+            <option value="havale">Havale</option>
+            <option value="kredi">Kredi Kartı</option>
+          </select>
+        </div>
+        <div><label class="modal-label">Lisans Tipi</label>
+          <select name="lisans_tipi">
+            <option value="yillik">Yıllık</option>
+            <option value="aylik">Aylık</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-2col">
+        <div><label class="modal-label">Referans Kodu</label><input type="text" name="referans_kodu" placeholder="REF-0001"></div>
+        <div class="trial-note"><i class="fas fa-bolt" style="margin-right:6px"></i>Deneme paketi seçilirse süre otomatik 14 gün atanır ve ücret 0 olarak kaydedilir.</div>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" name="odendi_mi" id="la_odendi">
+        <label for="la_odendi"><i class="fas fa-check-circle" style="color:var(--green);margin-right:4px"></i> Ödeme alındı</label>
+      </div>
+      <div class="modal-acts">
+        <button class="btn btn-soft" type="button" onclick="closeModal('lisansAtaModal')"><i class="fas fa-xmark"></i> İptal</button>
+        <button class="btn btn-green" type="submit"><i class="fas fa-plus"></i> Oluştur</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-icon"><i class="fas fa-crown"></i></div>
+    <div><div class="brand-name">QR MENÜ PLATFORM</div><div class="brand-sub">Süper Yönetici Paneli</div></div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <a class="btn btn-soft" href="/superadmin/logout"><i class="fas fa-right-from-bracket"></i> Çıkış</a>
+  </div>
+</div>
+
+<!-- Tablar -->
+<div class="tab-nav" id="tabNav">
+  <div class="tab-indicator" id="tabIndicator"></div>
+  <button class="tab-btn active" data-tab="genel" onclick="switchTab('genel',this)"><i class="fas fa-gauge"></i> Genel Bakış</button>
+  <button class="tab-btn" data-tab="musteriler" onclick="switchTab('musteriler',this)"><i class="fas fa-users"></i> Müşteriler</button>
+  <button class="tab-btn" data-tab="restoranlar" onclick="switchTab('restoranlar',this)"><i class="fas fa-store"></i> Restoranlar</button>
+</div>
+
+<div class="wrap">
+
+  <!-- GENEL BAKIŞ -->
+  <div class="tab-content active" id="tab-genel">
+    {% if suresi_dolmus %}
+    <div class="alert-bar danger"><i class="fas fa-circle-xmark"></i><div><strong>{{ suresi_dolmus|length }} restoran</strong> lisansı sona erdi ve otomatik pasife alındı.</div></div>
+    {% endif %}
+    {% if yaklasan %}
+    <div class="alert-bar warn"><i class="fas fa-triangle-exclamation"></i><div><strong>{{ yaklasan|length }} restoran</strong> 30 gün içinde bitiyor: {% for t in yaklasan %}<strong>{{ t.restoran_adi }}</strong>{% if not loop.last %}, {% endif %}{% endfor %}</div></div>
+    {% endif %}
+
+    <div class="stats-grid">
+      <div class="stat s-pu"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-n">{{ stats.toplam_musteri }}</div><div class="stat-l">Toplam Müşteri</div></div>
+      <div class="stat s-green"><div class="stat-icon"><i class="fas fa-store"></i></div><div class="stat-n">{{ stats.aktif }}</div><div class="stat-l">Aktif Restoran</div></div>
+      <div class="stat s-gold"><div class="stat-icon"><i class="fas fa-turkish-lira-sign"></i></div><div class="stat-n">{{ "{:,.0f}".format(stats.toplam_gelir).replace(",",".") }}₺</div><div class="stat-l">Toplam Gelir</div></div>
+      <div class="stat s-blue"><div class="stat-icon"><i class="fas fa-eye"></i></div><div class="stat-n">{{ stats.toplam_gorunum }}</div><div class="stat-l">Menü Görüntülenme</div></div>
+      <div class="stat s-orange"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-n">{{ stats.yaklasan_lisans }}</div><div class="stat-l">Yaklaşan Lisans</div></div>
+      <div class="stat s-red"><div class="stat-icon"><i class="fas fa-ban"></i></div><div class="stat-n">{{ stats.suresi_dolmus }}</div><div class="stat-l">Süresi Dolmuş</div></div>
+      <div class="stat s-gold"><div class="stat-icon"><i class="fas fa-star"></i></div><div class="stat-n">{{ stats.pro }}</div><div class="stat-l">Pro Paket</div></div>
+      <div class="stat s-pu"><div class="stat-icon"><i class="fas fa-building"></i></div><div class="stat-n">{{ stats.kurumsal }}</div><div class="stat-l">Kurumsal Paket</div></div>
+    </div>
+
+    <div class="top-actions">
+      <div class="action-pills">
+        <span class="action-pill trial-badge"><i class="fas fa-bolt"></i> 14 Gün Deneme <strong>aktif</strong></span>
+        <span class="action-pill"><i class="fas fa-bell"></i> {{ stats.odeme_bekleyen }} ödeme bekliyor</span>
+        <span class="action-pill"><i class="fas fa-user-plus"></i> {{ stats.deneme }} aktif deneme</span>
+      </div>
+      <a class="btn btn-premium" href="/superadmin/musteri_export"><i class="fas fa-file-excel"></i> Müşteri Excel Export</a>
+    </div>
+
+    <div class="quick-grid">
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title"><i class="fas fa-chart-column" style="color:var(--pu2)"></i> Aylık Gelir Grafiği</div><div class="card-desc">Son 6 ayda açılan veya yenilenen restoran lisans gelirleri. <a href="/superadmin/gelir_raporu" style="color:var(--pu2);text-decoration:none;font-weight:700;font-size:.73rem">Tüm Rapor →</a></div></div>
+          <span class="action-pill"><i class="fas fa-chart-line"></i> {{ "{:,.0f}".format(stats.toplam_gelir).replace(",",".") }}₺ toplam</span>
+        </div>
+        <div class="chart-shell">
+          <div class="chart-bars">
+            {% for value in chart_values %}
+            <div class="chart-col">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:{{ ((value / chart_max) * 100)|round(0, 'ceil') if chart_max else 8 }}%"></div>
+              </div>
+              <div class="chart-value">{{ "{:,.0f}".format(value).replace(",",".") }}₺</div>
+              <div class="chart-label">{{ chart_labels[loop.index0] }}</div>
+              <div class="chart-month-total">{% if value > 0 %}+{{ "{:,.0f}".format(value).replace(",",".") }}{% endif %}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title"><i class="fas fa-layer-group" style="color:var(--gold)"></i> Paket Karşılaştırma</div><div class="card-desc">Satışta hızlı karar için net paket çerçevesi.</div></div>
+        </div>
+        <div class="plan-grid">
+          <div class="plan-card">
+            <span class="plan-badge"><i class="fas fa-seedling"></i> Temel</span>
+            <div class="plan-name">Başlangıç</div>
+            <div class="plan-price">Standart</div>
+            <div class="plan-copy">QR menü, kategori ve ürün yönetimi, tema seçimi, çift dil ve temel raporlar.</div>
+          </div>
+          <div class="plan-card featured">
+            <span class="plan-badge"><i class="fas fa-fire"></i> Pro</span>
+            <div class="plan-name">En çok satılan</div>
+            <div class="plan-price">Büyüme</div>
+            <div class="plan-copy">Öne çıkan ürünler, premium QR, Excel içe aktarma, hızlı fiyat güncelleme ve gelişmiş görünüm.</div>
+          </div>
+          <div class="plan-card">
+            <span class="plan-badge"><i class="fas fa-crown"></i> Kurumsal</span>
+            <div class="plan-name">Çok şubeli</div>
+            <div class="plan-price">Kurumsal</div>
+            <div class="plan-copy">Çok kullanıcı, lisans takibi, ödeme akışı, daha sık destek ve operasyon görünürlüğü.</div>
+          </div>
+        </div>
+        <table class="plan-compare">
+          <thead><tr>
+            <th style="text-align:left">Özellik</th>
+            <th>Temel</th>
+            <th class="col-pro">Pro ⭐</th>
+            <th>Kurumsal</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>QR Menü</td><td class="check">✓</td><td class="check col-pro">✓</td><td class="check">✓</td></tr>
+            <tr><td>Tema Seçimi</td><td class="check">✓</td><td class="check col-pro">✓</td><td class="check">✓</td></tr>
+            <tr><td>TR/EN Dil</td><td class="check">✓</td><td class="check col-pro">✓</td><td class="check">✓</td></tr>
+            <tr><td>Öne Çıkan Ürünler</td><td class="cross">—</td><td class="check col-pro">✓</td><td class="check">✓</td></tr>
+            <tr><td>Excel Import</td><td class="cross">—</td><td class="check col-pro">✓</td><td class="check">✓</td></tr>
+            <tr><td>Hızlı Fiyat Güncelleme</td><td class="cross">—</td><td class="check col-pro">✓</td><td class="check">✓</td></tr>
+            <tr><td>Acı Seviyesi 🌶️</td><td class="cross">—</td><td class="check col-pro">✓</td><td class="check">✓</td></tr>
+            <tr><td>Çok Kullanıcı</td><td class="cross">—</td><td class="cross col-pro">—</td><td class="check">✓</td></tr>
+            <tr><td>Öncelikli Destek</td><td class="cross">—</td><td class="partial col-pro">Orta</td><td class="check">✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mini-grid">
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title"><i class="fas fa-bell" style="color:var(--orange)"></i> Ödeme Hatırlatıcı</div><div class="card-desc">Bekleyen ödemeler için hızlı aksiyon.</div></div>
+        </div>
+        {% if odeme_bekleyenler %}
+        <div class="mini-list">
+          {% for t in odeme_bekleyenler %}
+          <div class="mini-item">
+            <div class="mini-main">
+              <div class="mini-title">{{ t.restoran_adi }}</div>
+              <div class="mini-sub">{{ t.musteri.ad_soyad if t.musteri else 'Müşteri atanmadı' }}{% if t.ucret %} · {{ "{:,.0f}".format(t.ucret).replace(",",".") }}₺{% endif %}</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+              {% if t.musteri and t.musteri.telefon %}
+              <a class="btn btn-green btn-sm" title="WhatsApp ile Hatırlat" href="https://wa.me/{{ t.musteri.telefon|replace(' ','')|replace('+','')|replace('(','')|replace(')','')|replace('-','') }}?text=Merhaba%2C%20QR%20menu%20odemesi%20icin%20hatirlatma%20paylasiyorum." target="_blank"><i class="fab fa-whatsapp"></i> Hatırlat</a>
+              {% endif %}
+              <button class="btn btn-soft btn-sm" title="Lisans Yenile" onclick="openLisans({{ t.id }},'{{ t.restoran_adi }}')"><i class="fas fa-rotate"></i> Lisans</button>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="ghost-note">Şu anda ödeme bekleyen restoran yok. Bu alan geciken veya açık lisanslı müşterileri hızlı takip etmek için hazır.</div>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title"><i class="fas fa-users-rays" style="color:var(--pu2)"></i> Referans Sistemi</div><div class="card-desc">Kod üretildi, yeni lisans atamada referansla bağlanır.</div></div>
+          <a class="btn btn-soft btn-sm" href="/superadmin/referans_export" title="Excel export"><i class="fas fa-file-excel"></i></a>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+          <div class="ref-stat"><div><div class="ref-stat-n">{{ top_referrers|length if top_referrers else 0 }}</div><div class="ref-stat-l">Aktif Referansçı</div></div></div>
+          <div class="ref-stat"><div><div class="ref-stat-n" style="color:var(--gold)">{{ "{:,.0f}".format(top_referrers|sum(attribute="gelir")|default(0)).replace(",",".") }}₺</div><div class="ref-stat-l">Ref. Kaynaklı Gelir</div></div></div>
+        </div>
+        {% if top_referrers %}
+        <div class="mini-list">
+          {% for item in top_referrers %}
+          <div class="mini-item">
+            <div class="mini-main">
+              <div class="mini-title">{{ item.musteri.ad_soyad }}</div>
+              <div class="mini-sub">{{ item.count }} yönlendirme · {{ "{:,.0f}".format(item.gelir).replace(",",".") }}₺ gelir</div>
+            </div>
+            <div class="copy-code">{{ item.musteri.referans_kodu }}</div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="ghost-note">Her müşteri için otomatik referans kodu üretildi. Yeni restoran açarken bu kod girildiğinde yönlendirme sayısı ve gelir takibi burada görünür.</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Nasıl çalışır -->
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px"><i class="fas fa-circle-info" style="color:var(--pu2)"></i> Platform Kullanım Akışı</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:180px;display:flex;gap:10px;align-items:flex-start">
+          <span class="step-badge">1</span>
+          <div><div style="font-weight:800;font-size:.88rem;margin-bottom:3px">Müşteri Ekle</div><div style="font-size:.77rem;color:var(--muted)">Ad, tel, TC/VKN bilgilerini gir</div></div>
+        </div>
+        <div style="color:var(--muted);align-self:center;font-size:.8rem">â†’</div>
+        <div style="flex:1;min-width:180px;display:flex;gap:10px;align-items:flex-start">
+          <span class="step-badge">2</span>
+          <div><div style="font-weight:800;font-size:.88rem;margin-bottom:3px">Lisans Ata</div><div style="font-size:.77rem;color:var(--muted)">Restoran oluştur, paket ve süre belirle</div></div>
+        </div>
+        <div style="color:var(--muted);align-self:center;font-size:.8rem">â†’</div>
+        <div style="flex:1;min-width:180px;display:flex;gap:10px;align-items:flex-start">
+          <span class="step-badge">3</span>
+          <div><div style="font-weight:800;font-size:.88rem;margin-bottom:3px">Müşteriye Ver</div><div style="font-size:.77rem;color:var(--muted)">URL ve şifreyi müşteriye ilet</div></div>
+        </div>
+        <div style="color:var(--muted);align-self:center;font-size:.8rem">â†’</div>
+        <div style="flex:1;min-width:180px;display:flex;gap:10px;align-items:flex-start">
+          <span class="step-badge">4</span>
+          <div><div style="font-weight:800;font-size:.88rem;margin-bottom:3px">Takip Et</div><div style="font-size:.77rem;color:var(--muted)">Lisans, ödeme ve görüntülenme izle</div></div>
+        </div>
+      </div>
+    </div>
+
+    {% if yaklasan %}
+    <div class="card">
+      <div class="card-head"><div><div class="card-title" style="color:var(--gold)"><i class="fas fa-clock"></i> Yaklaşan Yenilemeler</div></div></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Restoran</th><th>Müşteri</th><th>Bitiş</th><th>Kalan</th><th>İşlem</th></tr></thead>
+        <tbody>
+          {% for t in yaklasan %}
+          {% set kalan = (t.lisans_bitis - now).days %}
+          <tr>
+            <td><div class="rest-name">{{ t.restoran_adi }}</div><span class="pkg pkg-{{ t.paket }}">{{ t.paket|title }}</span></td>
+            <td style="font-size:.8rem">{{ t.musteri.ad_soyad if t.musteri else '"”' }}</td>
+            <td style="font-size:.8rem;color:var(--muted)">{{ t.lisans_bitis.strftime('%d.%m.%Y') }}</td>
+            <td><span class="lis-label {{ 'lis-warn' if kalan > 7 else 'lis-danger' }}">{{ kalan }} gün</span></td>
+            <td><button class="btn btn-green btn-sm" title="Lisans Yenile" onclick="openLisans({{ t.id }},'{{ t.restoran_adi }}')"><i class="fas fa-rotate"></i> Yenile</button></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table></div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- MÜŞTERİLER -->
+  <div class="tab-content" id="tab-musteriler">
+
+    <!-- Yeni Müşteri Ekle -->
+    <div class="card">
+      <div class="card-head">
+        <div><div class="card-title"><i class="fas fa-user-plus" style="color:var(--pu2)"></i> Yeni Müşteri Ekle</div><div class="card-desc">Önce müşteriyi kaydedin, sonra ona restoran ve lisans atayın.</div></div>
+      </div>
+      <form action="/superadmin/musteri_ekle" method="POST">
+        <div class="form-grid fg-3" style="margin-bottom:10px">
+          <div class="field-wrap"><label>Ad Soyad *</label><input type="text" name="ad_soyad" placeholder="Ahmet Yılmaz" required></div>
+          <div class="field-wrap"><label>Telefon</label><input type="text" name="telefon" placeholder="05xx xxx xx xx"></div>
+          <div class="field-wrap"><label>E-posta</label><input type="email" name="email" placeholder="ornek@mail.com"></div>
+        </div>
+        <div class="form-grid fg-3" style="margin-bottom:10px">
+          <div class="field-wrap"><label>TC / VKN <span class="tip">· Kimlik No</span></label><input type="text" name="tc_vkn" placeholder="12345678901"></div>
+          <div class="field-wrap"><label>Şehir</label><input type="text" name="sehir" placeholder="İstanbul"></div>
+          <div class="field-wrap"><label>İlçe</label><input type="text" name="ilce" placeholder="Kadıköy"></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-end">
+          <div style="flex:1"><label style="font-size:.71rem;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;display:block">Notlar</label><input type="text" name="notlar" placeholder="İsteğe bağlı not..."></div>
+          <button class="btn btn-pu" type="submit" style="padding:10px 20px;white-space:nowrap"><i class="fas fa-plus"></i> Müşteriyi Ekle</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Müşteri Listesi -->
+    {% if musteriler %}
+    {% for m in musteriler %}
+    <div class="musteri-kart">
+      <div class="mk-top">
+        <div>
+          <span class="mk-ad">{{ m.ad_soyad }}</span>
+          <span class="mk-kod">{{ m.musteri_kodu }}</span>
+          {% if m.referans_kodu %}<span class="copy-code" style="margin-left:8px">{{ m.referans_kodu }}</span>{% endif %}
+          {% if m.tc_vkn %}<span style="font-family:monospace;font-size:.72rem;color:var(--muted);margin-left:8px">{{ m.tc_vkn }}</span>{% endif %}
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-green btn-sm" title="Lisans Ata / Restoran Oluştur" onclick="openLisansAta({{ m.id }},'{{ m.ad_soyad|replace("'","") }}')"><i class="fas fa-plus"></i> Lisans Ata</button>
+          <button class="btn btn-blue btn-sm" title="Müşteriyi Düzenle" onclick="openMduzenle({{ m.id }},'{{ m.ad_soyad|replace("'","") }}','{{ m.telefon }}','{{ m.email }}','{{ m.tc_vkn }}','{{ m.sehir }}','{{ m.ilce }}','{{ m.notlar|replace("'","") }}')"><i class="fas fa-pen"></i></button>
+          <button class="btn btn-red btn-sm" title="Müşteriyi Sil" onclick="openMdel({{ m.id }},'{{ m.ad_soyad|replace("'","") }}')"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+      <div class="mk-meta">
+        {% if m.telefon %}<span><i class="fas fa-phone"></i> {{ m.telefon }}</span>{% endif %}
+        {% if m.email %}<span><i class="fas fa-envelope"></i> {{ m.email }}</span>{% endif %}
+        {% if m.sehir %}<span><i class="fas fa-location-dot"></i> {{ m.sehir }}{% if m.ilce %} / {{ m.ilce }}{% endif %}</span>{% endif %}
+        <span><i class="fas fa-calendar"></i> {{ m.created_at.strftime('%d.%m.%Y') if m.created_at else '"”' }}</span>
+      </div>
+      {% if m.notlar %}
+      <div style="font-size:.77rem;color:var(--muted);margin-top:6px;padding:6px 10px;background:rgba(255,255,255,.02);border-radius:8px"><i class="fas fa-note-sticky" style="margin-right:5px;opacity:.5"></i>{{ m.notlar }}</div>
+      {% endif %}
+
+      <!-- Bağlı Restoranlar -->
+      <div class="mk-restoranlar">
+        {% if m.restoranlar %}
+        {% for t in m.restoranlar %}
+        {% set kalan = ((t.lisans_bitis - now).days) if t.lisans_bitis else None %}
+        <div class="mk-rest-item">
+          <div>
+            <div style="font-weight:700;font-size:.84rem">{{ t.restoran_adi }}</div>
+            <div style="display:flex;gap:6px;margin-top:3px;align-items:center;flex-wrap:wrap">
+              <span class="kod-badge">{{ t.restoran_kodu or '"”' }}</span>
+              <span class="slug-badge">{{ t.slug }}</span>
+              <span class="pkg pkg-{{ t.paket }}">{{ t.paket|title }}</span>
+              <span class="status {{ 's-aktif' if t.aktif else 's-pasif' }}">{{ 'Aktif' if t.aktif else 'Pasif' }}</span>
+              {% if t.lisans_bitis %}
+                {% if kalan < 0 %}<span class="lis-label lis-danger">Süresi doldu</span>
+                {% elif kalan <= 7 %}<span class="lis-label lis-danger">{{ kalan }} gün</span>
+                {% elif kalan <= 30 %}<span class="lis-label lis-warn">{{ kalan }} gün</span>
+                {% else %}<span class="lis-label lis-ok">{{ kalan }} gün</span>{% endif %}
+              {% endif %}
+              {% if t.ucret %}<span style="font-size:.72rem;color:var(--gold);font-weight:800">{{ "{:,.0f}".format(t.ucret).replace(",",".") }}₺</span>{% endif %}
+              <span class="odeme-badge {{ 'odendi' if t.odendi_mi else 'bekliyor' }}"><i class="fas {{ 'fa-check' if t.odendi_mi else 'fa-clock' }}"></i> {{ 'Ödendi' if t.odendi_mi else 'Bekliyor' }}</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:5px;flex-shrink:0">
+            <a href="/r/{{ t.slug }}/" target="_blank" class="btn btn-soft btn-sm" title="Menüyü Görüntüle"><i class="fas fa-eye"></i></a>
+            <a href="/r/{{ t.slug }}/admin" target="_blank" class="btn btn-soft btn-sm" title="Admin Paneli"><i class="fas fa-cog"></i></a>
+            <button class="btn btn-green btn-sm" title="Lisans Yenile" onclick="openLisans({{ t.id }},'{{ t.restoran_adi }}')"><i class="fas fa-rotate"></i></button>
+            <button class="btn btn-gold btn-sm" title="Şifre Sıfırla" onclick="openPw({{ t.id }},'{{ t.restoran_adi }}')"><i class="fas fa-key"></i></button>
+            <button class="btn btn-red btn-sm" title="Restoranı Sil" onclick="openDel({{ t.id }},'{{ t.restoran_adi }}')"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div style="font-size:.8rem;color:rgba(255,255,255,.22);text-align:center;padding:8px">
+          <i class="fas fa-store" style="margin-right:6px;opacity:.4"></i>Henüz restoran yok "” <button onclick="openLisansAta({{ m.id }},'{{ m.ad_soyad|replace("'","") }}')" style="background:none;border:none;color:var(--pu2);cursor:pointer;font-size:.8rem;font-weight:700;padding:0">Lisans Ata</button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="empty"><i class="fas fa-users"></i><p>Henüz müşteri eklenmedi.<br>Yukarıdaki formu kullanarak ilk müşteriyi ekleyin.</p></div>
+    {% endif %}
+  </div>
+
+  <!-- RESTORANLAR -->
+  <div class="tab-content" id="tab-restoranlar">
+    <div class="card">
+      <div class="card-head">
+        <div><div class="card-title"><i class="fas fa-store" style="color:var(--pu2)"></i> Tüm Restoranlar</div><div class="card-desc">Paket, durum ve şifre yönetimi. Lisans atamak için Müşteriler sekmesini kullanın.</div></div>
+        <span style="font-size:.77rem;color:var(--muted);background:rgba(255,255,255,.04);border:1px solid var(--line);padding:4px 11px;border-radius:99px;white-space:nowrap">{{ tenants|length }} restoran</span>
+      </div>
+      {% if tenants %}
+      <div class="table-wrap"><table>
+        <thead><tr><th>Restoran</th><th>Müşteri</th><th>Paket</th><th>Lisans</th><th>Görüntülenme</th><th>İşlemler</th></tr></thead>
+        <tbody>
+          {% for t in tenants %}
+          {% set kalan = ((t.lisans_bitis - now).days) if t.lisans_bitis else None %}
+          <tr>
+            <td>
+              <div class="kod-badge">{{ t.restoran_kodu or '"”' }}</div>
+              <div class="rest-name">{{ t.restoran_adi }}</div>
+              <div class="slug-badge">{{ t.slug }}</div>
+              <div class="url-btns">
+                <a href="/r/{{ t.slug }}/" target="_blank" class="btn btn-soft btn-sm" title="Menüyü Görüntüle"><i class="fas fa-eye"></i> Menü</a>
+                <a href="/r/{{ t.slug }}/admin" target="_blank" class="btn btn-soft btn-sm" title="Admin Paneli"><i class="fas fa-cog"></i> Panel</a>
+              </div>
+            </td>
+         <td style="font-size:.83rem">
+              <form action="/superadmin/musteri_ata/{{ t.id }}" method="POST" style="margin:0">
+                <select name="musteri_id" style="background:#1a1a1a;border:1px solid rgba(255,255,255,.12);color:#f0f0f0;border-radius:10px;padding:5px 8px;font-size:.75rem;cursor:pointer;max-width:160px" onchange="this.form.submit()" title="Müşteriyi Değiştir">
+                  <option value="">— Müşteri Yok —</option>
+                  {% for m in musteriler %}
+                  <option value="{{ m.id }}" {{ 'selected' if t.musteri_id == m.id }}>{{ m.ad_soyad }}</option>
+                  {% endfor %}
+                </select>
+              </form>
+            </td>
+            <td>
+              <form action="/superadmin/paket/{{ t.id }}" method="POST" class="pkg-form">
+                <select name="paket"><option value="temel" {{ 'selected' if t.paket=='temel' }}>Temel</option><option value="pro" {{ 'selected' if t.paket=='pro' }}>Pro</option><option value="kurumsal" {{ 'selected' if t.paket=='kurumsal' }}>Kurumsal</option></select>
+                <button class="btn btn-soft btn-sm" type="submit"><i class="fas fa-check"></i></button>
+              </form>
+              <span class="pkg pkg-{{ t.paket }}" style="margin-top:5px;display:inline-flex">{{ t.paket|title }}</span>
+            </td>
+            <td>
+              {% if t.lisans_bitis %}
+                {% if kalan < 0 %}<span class="lis-label lis-danger"><i class="fas fa-ban"></i> Doldu</span>
+                {% elif kalan <= 7 %}<span class="lis-label lis-danger"><i class="fas fa-fire"></i> {{ kalan }}g</span>
+                {% elif kalan <= 30 %}<span class="lis-label lis-warn"><i class="fas fa-clock"></i> {{ kalan }}g</span>
+                {% else %}<span class="lis-label lis-ok"><i class="fas fa-check"></i> {{ kalan }}g</span>{% endif %}
+                <div style="font-size:.69rem;color:var(--muted);margin-top:2px">{{ t.lisans_bitis.strftime('%d.%m.%Y') }}</div>
+              {% else %}<span class="lis-label lis-none">Yok</span>{% endif %}
+              <span class="status {{ 's-aktif' if t.aktif else 's-pasif' }}" style="margin-top:4px;display:inline-flex">{{ 'Aktif' if t.aktif else 'Pasif' }}</span>
+            </td>
+            <td style="font-weight:700;color:var(--blue)">{{ t.view_count or 0 }}</td>
+            <td>
+              <div class="actions">
+                <a class="btn btn-sm {{ 'btn-red' if t.aktif else 'btn-green' }}" title="{{ 'Pasife Al' if t.aktif else 'Aktife Al' }}" href="/superadmin/durum/{{ t.id }}"><i class="fas {{ 'fa-ban' if t.aktif else 'fa-check' }}"></i></a>
+                <button class="btn btn-green btn-sm" title="Lisans Yenile" onclick="openLisans({{ t.id }},'{{ t.restoran_adi }}')"><i class="fas fa-rotate"></i></button>
+                <button class="btn btn-gold btn-sm" title="Şifre Sıfırla" onclick="openPw({{ t.id }},'{{ t.restoran_adi }}')"><i class="fas fa-key"></i></button>
+                <button class="btn btn-red btn-sm" title="Restoranı Sil" onclick="openDel({{ t.id }},'{{ t.restoran_adi }}')"><i class="fas fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table></div>
+      {% else %}<div class="empty"><i class="fas fa-store"></i><p>Henüz restoran yok.<br>Müşteri ekleyip lisans atayın.</p></div>{% endif %}
+    </div>
+  </div>
+
+</div>
+
+<script>
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function openDel(id,name){document.getElementById('delDesc').textContent='"'+name+'" kalıcı silinecek.';document.getElementById('delForm').action='/superadmin/sil/'+id;document.getElementById('delModal').classList.add('open')}
+function openMdel(id,name){document.getElementById('mdelDesc').textContent='"'+name+'" müşteri kaydı silinecek.';document.getElementById('mdelForm').action='/superadmin/musteri_sil/'+id;document.getElementById('mdelModal').classList.add('open')}
+function openPw(id,name){document.getElementById('pwTitle').textContent='"'+name+'" · Şifre Sıfırla';document.getElementById('pwForm').action='/superadmin/sifre/'+id;document.getElementById('pwModal').classList.add('open')}
+function openLisans(id,name){document.getElementById('lisansTitle').textContent='"'+name+'" · Lisans Yenile';document.getElementById('lisansForm').action='/superadmin/lisans_yenile/'+id;document.getElementById('lisansModal').classList.add('open')}
+function openLisansAta(mid,name){
+  document.getElementById('laTitle').textContent='"'+name+'" · Lisans Ata';
+  document.getElementById('lisansAtaForm').action='/superadmin/lisans_ata/'+mid;
+  document.getElementById('la_isim').value='';
+  document.getElementById('la_slug').value='';
+  document.getElementById('lisansAtaModal').classList.add('open');
+}
+function openMduzenle(id,ad,tel,email,tcvkn,sehir,ilce,notlar){
+  document.getElementById('mduzenleForm').action='/superadmin/musteri_duzenle/'+id;
+  document.getElementById('md_ad').value=ad;
+  document.getElementById('md_tel').value=tel;
+  document.getElementById('md_email').value=email;
+  document.getElementById('md_tcvkn').value=tcvkn;
+  document.getElementById('md_sehir').value=sehir;
+  document.getElementById('md_ilce').value=ilce;
+  document.getElementById('md_notlar').value=notlar;
+  document.getElementById('mduzenleModal').classList.add('open');
+}
+['delModal','mdelModal','pwModal','lisansModal','lisansAtaModal','mduzenleModal'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id)})
+});
+const TAB_ORDER = ['genel', 'musteriler', 'restoranlar'];
+let currentTab = 'genel';
+let tabAnimating = false;
+
+function moveTabIndicator(btn) {
+  const indicator = document.getElementById('tabIndicator');
+  if (!indicator || !btn) return;
+  indicator.style.width = btn.offsetWidth + 'px';
+  indicator.style.left = btn.offsetLeft + 'px';
+}
+
+function switchTab(name, btn) {
+  if (tabAnimating || currentTab === name) return;
+  const oldIdx = TAB_ORDER.indexOf(currentTab);
+  const newIdx = TAB_ORDER.indexOf(name);
+  const goingRight = newIdx > oldIdx;
+  const currentEl = document.getElementById('tab-' + currentTab);
+  const nextEl = document.getElementById('tab-' + name);
+
+  tabAnimating = true;
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  btn.classList.add('active');
+  moveTabIndicator(btn);
+
+  currentEl.style.setProperty('--tab-to', goingRight ? '-24px' : '24px');
+  currentEl.classList.add('tab-switching');
+  nextEl.style.setProperty('--tab-from', goingRight ? '28px' : '-28px');
+
+  setTimeout(() => {
+    currentEl.classList.remove('active', 'tab-switching');
+    nextEl.classList.add('active');
+    currentTab = name;
+    tabAnimating = false;
+    if (history.replaceState) history.replaceState(null, '', '#tab-' + name);
+  }, 300);
+}
+
+window.addEventListener('resize', () => {
+  moveTabIndicator(document.querySelector('.tab-btn.active'));
+});
+document.addEventListener('DOMContentLoaded', () => {
+  moveTabIndicator(document.querySelector('.tab-btn.active'));
+});
+document.querySelectorAll('.toast').forEach((t,i)=>{setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300)},3500+i*200)});
+
+// Slug auto-format
+document.getElementById('la_slug').addEventListener('input',function(){
+  this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-');
+});
+
+function syncTrialMode(){
+  const form = document.getElementById('lisansAtaForm');
+  if(!form) return;
+  const paket = form.querySelector('select[name="paket"]');
+  const sure = form.querySelector('select[name="sure"]');
+  const ucret = form.querySelector('input[name="ucret"]');
+  const odendi = document.getElementById('la_odendi');
+  if(!paket || !sure || !ucret || !odendi) return;
+  const isTrial = paket.value === 'deneme';
+  sure.disabled = isTrial;
+  if(isTrial){
+    sure.value = '1';
+    ucret.value = '0';
+    odendi.checked = false;
+    odendi.disabled = true;
+  }else{
+    odendi.disabled = false;
+  }
+}
+document.querySelector('#lisansAtaForm select[name="paket"]').addEventListener('change', syncTrialMode);
+syncTrialMode();
+
+// URL hash ile tab aç
+const hash = window.location.hash.replace('#', '');
+const hashTab = hash.startsWith('tab-') ? hash.replace('tab-', '') : '';
+if (TAB_ORDER.includes(hashTab)) {
+  const btn = document.querySelector('.tab-btn[data-tab="' + hashTab + '"]');
+  if (btn) switchTab(hashTab, btn);
+}
+</script>
+</body>
+</html>

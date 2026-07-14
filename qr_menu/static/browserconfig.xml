@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+    <msapplication>
+        <tile>
+            <square70x70logo src="/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo or 'default-icon.png' }}"/>
+            <square150x150logo src="/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo or 'default-icon.png' }}"/>
+            <square310x310logo src="/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo or 'default-icon.png' }}"/>
+            <wide310x150logo src="/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo or 'default-icon.png' }}"/>
+            <TileColor>#f39c12</TileColor>
+        </tile>
+    </msapplication>
+</browserconfig>

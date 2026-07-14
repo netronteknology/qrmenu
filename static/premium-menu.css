@@ -1,0 +1,15 @@
+/* ════════════════════════════════════
+   PREMIUM MENU CSS - Modular Import Structure
+   ════════════════════════════════════ */
+
+/* Import CSS variables and theme definitions */
+@import url('css_parts/variables.css');
+
+/* Import layout components (header, footer, general structure) */
+@import url('css_parts/layout.css');
+
+/* Import menu items (product cards, category lists) */
+@import url('css_parts/menu-items.css');
+
+/* Import animations and transitions */
+@import url('css_parts/animations.css');

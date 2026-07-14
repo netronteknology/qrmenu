@@ -1,0 +1,240 @@
+{
+  "categories": {
+    "1": {
+      "tr": "Çorbalar",
+      "en": "Soups",
+      "ar": "الشوربات"
+    },
+    "2": {
+      "tr": "Pideler",
+      "en": "Pizzas",
+      "ar": "البيتزا"
+    },
+    "3": {
+      "tr": "Tatlılar",
+      "en": "Desserts",
+      "ar": "الحلويات"
+    },
+    "4": {
+      "tr": "İçecekler",
+      "en": "Beverages",
+      "ar": "المشروبات"
+    },
+    "5": {
+      "tr": "Salatalar",
+      "en": "Salads",
+      "ar": "السلطات"
+    },
+    "6": {
+      "tr": "Ana Yemekler",
+      "en": "Main Courses",
+      "ar": "الأطباق الرئيسية"
+    },
+    "7": {
+      "tr": "Başlangıçlar",
+      "en": "Appetizers",
+      "ar": "المقبلات"
+    },
+    "8": {
+      "tr": "Tatlılar",
+      "en": "Desserts",
+      "ar": "الحلويات"
+    }
+  },
+  "products": {
+    "1": {
+      "name": {
+        "tr": "Mercimek Çorbası",
+        "en": "Lentil Soup",
+        "ar": "شوربة العدس"
+      },
+      "description": {
+        "tr": "Geleneksel tarifimiz, taze sebzelerle",
+        "en": "Traditional recipe with fresh vegetables",
+        "ar": "وصفتنا التقليدية مع الخضروات الطازجة"
+      }
+    },
+    "2": {
+      "name": {
+        "tr": "Margarita Pizza",
+        "en": "Margherita Pizza",
+        "ar": "بيتزا مارغريتا"
+      },
+      "description": {
+        "tr": "Domates, mozzarella ve fesleğen",
+        "en": "Tomato, mozzarella and basil",
+        "ar": "طماطم، موزاريلا وبasil"
+      }
+    },
+    "3": {
+      "name": {
+        "tr": "Baklava",
+        "en": "Baklava",
+        "ar": "البقلاوة"
+      },
+      "description": {
+        "tr": "Antep fıstıklı, şerbetli",
+        "en": "With pistachios, syrup",
+        "ar": "مع الفستق والشراب"
+      }
+    },
+    "4": {
+      "name": {
+        "tr": "Ayran",
+        "en": "Ayran",
+        "ar": "الآيران"
+      },
+      "description": {
+        "tr": "Taze yoğurt, soğuk ve ferahlatıcı",
+        "en": "Fresh yogurt, cold and refreshing",
+        "ar": "الزبادي الطازج، بارد ومنعش"
+      }
+    },
+    "5": {
+      "name": {
+        "tr": "Çoban Salata",
+        "en": "Shepherd's Salad",
+        "ar": "سلطة الراعي"
+      },
+      "description": {
+        "tr": "Domates, salatalık, biber, soğan",
+        "en": "Tomato, cucumber, pepper, onion",
+        "ar": "طماطم، خيار، فلفل، بصل"
+      }
+    }
+  },
+  "ui": {
+    "all": {
+      "tr": "Tümü",
+      "en": "All",
+      "ar": "الكل"
+    },
+    "search_placeholder": {
+      "tr": "Ürün ara...",
+      "en": "Search products...",
+      "ar": "البحث عن المنتجات..."
+    },
+    "featured_products": {
+      "tr": "Öne Çıkan Ürünler",
+      "en": "Featured Products",
+      "ar": "المنتجات المميزة"
+    },
+    "categories": {
+      "tr": "Kategoriler",
+      "en": "Categories",
+      "ar": "الفئات"
+    },
+    "call_waiter": {
+      "tr": "Garson Çağır",
+      "en": "Call Waiter",
+      "ar": "استدعاء النادل"
+    },
+    "whatsapp": {
+      "tr": "WhatsApp",
+      "en": "WhatsApp",
+      "ar": "واتساب"
+    },
+    "instagram": {
+      "tr": "Instagram",
+      "en": "Instagram",
+      "ar": "انستغرام"
+    },
+    "location": {
+      "tr": "Konum",
+      "en": "Location",
+      "ar": "الموقع"
+    },
+    "empty_state": {
+      "tr": "Aradığınız kritere uygun ürün bulunamadı.",
+      "en": "No products found matching your criteria.",
+      "ar": "لم يتم العثور على منتجات تطابق معاييرك."
+    },
+    "new": {
+      "tr": "Yeni",
+      "en": "New",
+      "ar": "جديد"
+    },
+    "popular": {
+      "tr": "Popüler",
+      "en": "Popular",
+      "ar": "شائع"
+    },
+    "spicy": {
+      "tr": "Acılı",
+      "en": "Spicy",
+      "ar": "حار"
+    },
+    "allergen": {
+      "tr": "Alerjen",
+      "en": "Allergens",
+      "ar": "مسببات الحساسية"
+    },
+    "enlarge_photo": {
+      "tr": "Fotoğrafı Büyüt",
+      "en": "Enlarge Photo",
+      "ar": "تكبير الصورة"
+    },
+    "price": {
+      "tr": "Fiyat",
+      "en": "Price",
+      "ar": "السعر"
+    },
+    "opening_hours": {
+      "tr": "Çalışma Saatleri",
+      "en": "Opening Hours",
+      "ar": "ساعات العمل"
+    },
+    "status_open": {
+      "tr": "Açık",
+      "en": "Open",
+      "ar": "مفتوح"
+    },
+    "status_closed": {
+      "tr": "Kapalı",
+      "en": "Closed",
+      "ar": "مغلق"
+    },
+    "last_price_update": {
+      "tr": "Son fiyat güncelleme",
+      "en": "Last price update",
+      "ar": "آخر تحديث للسعر"
+    },
+    "allergens": {
+      "gluten": {
+        "tr": "Glüten",
+        "en": "Gluten",
+        "ar": "الجلوتين"
+      },
+      "dairy": {
+        "tr": "Süt",
+        "en": "Dairy",
+        "ar": "الألبان"
+      },
+      "nuts": {
+        "tr": "Kuruyemiş",
+        "en": "Nuts",
+        "ar": "المكسرات"
+      },
+      "eggs": {
+        "tr": "Yumurta",
+        "en": "Eggs",
+        "ar": "البيض"
+      },
+      "soy": {
+        "tr": "Soya",
+        "en": "Soy",
+        "ar": "فول الصويا"
+      },
+      "fish": {
+        "tr": "Balık",
+        "en": "Fish",
+        "ar": "الأسماك"
+      },
+      "shellfish": {
+        "tr": "Kabuklu Deniz Ürünleri",
+        "en": "Shellfish",
+        "ar": "قشريات البحر"
+      }
+    }
+  }
+}
