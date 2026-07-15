@@ -293,7 +293,48 @@ def sa_login():
 def sa_logout():
     session.pop('sa_id', None)
     return redirect(url_for('sa_login'))
+# ══════════════════════════════════════════════
+#  SÜPER ADMİN ŞİFRE DEĞİŞTİRME
+# ══════════════════════════════════════════════
+@app.route('/superadmin/sifre-degistir', methods=['GET', 'POST'])
+@sa_required
+def sa_sifre_degistir():
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
 
+        if not current_password or not new_password or not confirm_password:
+            err('Lütfen tüm alanları doldurun.')
+            return redirect(url_for('sa_sifre_degistir'))
+
+        if new_password != confirm_password:
+            err('Yeni şifreler birbiriyle uyuşmuyor.')
+            return redirect(url_for('sa_sifre_degistir'))
+
+        # Session'daki id üzerinden SuperAdmin kullanıcısını çekiyoruz
+        sid = session.get('sa_id')
+        sa = SuperAdmin.query.get(sid)
+        if not sa:
+            err('Sistemde superadmin bulunamadı.')
+            return redirect(url_for('sa_sifre_degistir'))
+
+        # Mevcut şifre kontrolü
+        if not sa.check_password(current_password):
+            err('Mevcut şifreniz yanlış.')
+            return redirect(url_for('sa_sifre_degistir'))
+
+        # Şifreyi modeldeki set_password fonksiyonuyla güncelliyoruz
+        sa.set_password(new_password)
+        db.session.commit()
+
+        ok('Şifreniz başarıyla güncellendi! Lütfen yeni şifreyle tekrar giriş yapın.')
+        
+        # Güvenlik için oturumu temizle ve giriş ekranına at
+        session.pop('sa_id', None)
+        return redirect(url_for('sa_login'))
+
+    return render_template('superadmin/change_password.html')
 
 @app.route('/superadmin')
 @sa_required
