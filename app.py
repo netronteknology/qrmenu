@@ -619,6 +619,26 @@ def sa_logout():
     return redirect(url_for('sa_login'))
 
 
+@app.route('/superadmin/sifre-degistir', methods=['POST'])
+@sa_required
+def sa_sifre_degistir():
+    sa = SuperAdmin.query.get(session['sa_id'])
+    eski  = request.form.get('eski_sifre', '')
+    yeni  = request.form.get('yeni_sifre', '')
+    yeni2 = request.form.get('yeni_sifre2', '')
+    if not sa.check_password(eski):
+        flash('Mevcut şifre yanlış.', 'error')
+    elif len(yeni) < 8:
+        flash('Yeni şifre en az 8 karakter olmalı.', 'error')
+    elif yeni != yeni2:
+        flash('Şifreler eşleşmiyor.', 'error')
+    else:
+        sa.set_password(yeni)
+        db.session.commit()
+        flash('Şifre başarıyla değiştirildi.', 'success')
+    return redirect(url_for('sa_panel') + '#tab-ayarlar')
+
+
 @app.route('/superadmin')
 @sa_required
 def sa_panel():
