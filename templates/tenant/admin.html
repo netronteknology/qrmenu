@@ -1298,24 +1298,54 @@
                                     <div style="font-size:.68rem;color:rgba(255,255,255,.35)">Klasik Altın</div>
                                 </div>
                             </label>
-                            <label style="cursor:pointer">
-                                <input type="radio" name="tema" value="zeytin" {{ 'checked' if tenant.tema=='zeytin' }} style="display:none">
-                                <div class="tema-opt {% if tenant.tema=='zeytin' %}tema-active{% endif %}" style="--c:#b85c38" onclick="this.closest('label').querySelector('input').checked=true;document.querySelectorAll('.tema-opt').forEach(x=>x.classList.remove('tema-active'));this.classList.add('tema-active')">
-                                    <div style="width:28px;height:28px;border-radius:50%;background:#b85c38;margin:0 auto 6px"></div>
-                                    <div style="font-size:.75rem;font-weight:700;color:#f1b387">Toskana Bistro</div>
-                                    <div style="font-size:.68rem;color:rgba(255,255,255,.35)">Sıcak Terakota</div>
+                        </div>
+
+                        <!-- White Mod Toggle -->
+                        <div style="margin-top:14px">
+                            <label style="display:flex;align-items:center;gap:12px;cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 16px">
+                                <div style="position:relative;width:44px;height:24px;flex-shrink:0">
+                                    <input type="checkbox" name="white_mod" value="1" id="whiteMod" {{ 'checked' if tenant.white_mod }} style="opacity:0;position:absolute;inset:0;width:100%;height:100%;cursor:pointer;z-index:1;margin:0" onchange="document.getElementById('whiteModTrack').style.background=this.checked?'#f39c12':'rgba(255,255,255,.15)';document.getElementById('whiteModThumb').style.left=this.checked?'22px':'2px'">
+                                    <div id="whiteModTrack" style="position:absolute;inset:0;border-radius:99px;transition:.2s;background:{{ '#f39c12' if tenant.white_mod else 'rgba(255,255,255,.15)' }}"></div>
+                                    <div id="whiteModThumb" style="position:absolute;top:2px;left:{{ '22px' if tenant.white_mod else '2px' }};width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>
                                 </div>
-                            </label>
-                            <label style="cursor:pointer">
-                                <input type="radio" name="tema" value="gece" {{ 'checked' if tenant.tema=='gece' }} style="display:none">
-                                <div class="tema-opt {% if tenant.tema=='gece' %}tema-active{% endif %}" style="--c:#a78bfa" onclick="this.closest('label').querySelector('input').checked=true;document.querySelectorAll('.tema-opt').forEach(x=>x.classList.remove('tema-active'));this.classList.add('tema-active')">
-                                    <div style="width:28px;height:28px;border-radius:50%;background:#a78bfa;margin:0 auto 6px"></div>
-                                    <div style="font-size:.75rem;font-weight:700;color:#a78bfa">Gece</div>
-                                    <div style="font-size:.68rem;color:rgba(255,255,255,.35)">Şık Lounge</div>
+                                <div>
+                                    <div style="font-size:.85rem;font-weight:600">Beyaz Tema</div>
+                                    <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:2px">Açık renk arka plan, koyu yazı</div>
                                 </div>
                             </label>
                         </div>
                     </div>
+
+                    <!-- Görünüm Modu -->
+                    <div style="margin-bottom:18px">
+                        <div style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px"><i class="fas fa-table-cells" style="margin-right:6px"></i>Ürün Görünüm Modu</div>
+                        <div style="display:flex;gap:10px">
+                            <label style="flex:1;cursor:pointer">
+                                <input type="radio" name="menu_gorunum" value="liste" {{ 'checked' if not tenant.menu_gorunum or tenant.menu_gorunum=='liste' }} style="display:none">
+                                <div onclick="this.closest('label').querySelector('input').checked=true;document.querySelectorAll('.gorunum-opt').forEach(x=>x.classList.remove('gorunum-active'));this.classList.add('gorunum-active')"
+                                    class="gorunum-opt {{ 'gorunum-active' if not tenant.menu_gorunum or tenant.menu_gorunum=='liste' }}"
+                                    style="border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;text-align:center;transition:.2s">
+                                    <i class="fas fa-list" style="font-size:1.3rem;color:rgba(255,255,255,.5);display:block;margin-bottom:6px"></i>
+                                    <div style="font-size:.8rem;font-weight:700">Liste</div>
+                                    <div style="font-size:.68rem;color:rgba(255,255,255,.35)">Detaylı görünüm</div>
+                                </div>
+                            </label>
+                            <label style="flex:1;cursor:pointer">
+                                <input type="radio" name="menu_gorunum" value="grid" {{ 'checked' if tenant.menu_gorunum=='grid' }} style="display:none">
+                                <div onclick="this.closest('label').querySelector('input').checked=true;document.querySelectorAll('.gorunum-opt').forEach(x=>x.classList.remove('gorunum-active'));this.classList.add('gorunum-active')"
+                                    class="gorunum-opt {{ 'gorunum-active' if tenant.menu_gorunum=='grid' }}"
+                                    style="border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;text-align:center;transition:.2s">
+                                    <i class="fas fa-grid-2" style="font-size:1.3rem;color:rgba(255,255,255,.5);display:block;margin-bottom:6px"></i>
+                                    <div style="font-size:.8rem;font-weight:700">Grid</div>
+                                    <div style="font-size:.68rem;color:rgba(255,255,255,.35)">Kare kartlar</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <style>
+                        .gorunum-active { border-color: var(--gold) !important; background: rgba(243,156,18,.07) !important; }
+                        .gorunum-active i, .gorunum-active div { color: var(--gold) !important; }
+                    </style>
 
                     <!-- Dil Seçimi -->
                     {%- set aktif = (tenant.aktif_diller or 'tr,en').split(',') -%}

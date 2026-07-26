@@ -30,6 +30,45 @@
         --accent-soft: rgba(243,156,18,0.08);
     }
 
+    /* WHITE MOD */
+    body.white-mod{--bg:#f5f5f5;--card:rgba(255,255,255,.97);--line:rgba(0,0,0,.08);--text:#1a1a1a;--muted:#555;background:#f0f0f0 !important}
+    body.white-mod .splash,body.white-mod .hero,body.white-mod .toolbar,body.white-mod .menu-wrap{background:#f0f0f0}
+    body.white-mod .splash-title,body.white-mod .hero-title{color:#1a1a1a !important}
+    body.white-mod .splash-sub,body.white-mod .hero-sub,body.white-mod .product-desc,body.white-mod .cat-meta{color:#555 !important}
+    body.white-mod .product-name,body.white-mod .cat-name{color:#1a1a1a !important}
+    body.white-mod .cat-card,body.white-mod .product,body.white-mod .feature-card{background:#fff !important;border-color:rgba(0,0,0,.08) !important}
+    body.white-mod .search{background:#fff !important;color:#1a1a1a !important;border-color:rgba(0,0,0,.12) !important}
+    body.white-mod .search::placeholder{color:#999 !important}
+    body.white-mod .chips button{background:#fff !important;color:#444 !important;border-color:rgba(0,0,0,.12) !important}
+    body.white-mod .chips button.active{background:var(--gold) !important;color:#000 !important;border-color:var(--gold) !important}
+    body.white-mod .hero-pill{background:rgba(0,0,0,.06) !important;color:#333 !important;border-color:rgba(0,0,0,.12) !important}
+    body.white-mod .lang button{background:#fff !important;color:#444 !important;border-color:rgba(0,0,0,.12) !important}
+    body.white-mod .lang button.active{background:var(--gold) !important;color:#000 !important}
+    body.white-mod .legal-note,body.white-mod .footer-note,body.white-mod .price-note,body.white-mod .menu-foot{color:#333 !important}
+
+    /* GRID GORUNUM */
+    body[data-gorunum="grid"] .product-grid{display:grid !important;grid-template-columns:1fr 1fr !important;gap:12px !important;padding:12px !important}
+    body[data-gorunum="grid"] .product{flex-direction:column !important;border-radius:14px !important;border:1px solid var(--line) !important;padding:0 !important;overflow:hidden;cursor:pointer}
+    body[data-gorunum="grid"] .product img{width:100% !important;height:130px !important;object-fit:cover !important;border-radius:0 !important}
+    body[data-gorunum="grid"] .product-img-placeholder{width:100% !important;height:130px !important;border-radius:0 !important}
+    body[data-gorunum="grid"] .product-body{padding:10px !important}
+    body[data-gorunum="grid"] .product-desc,body[data-gorunum="grid"] .badge-list,body[data-gorunum="grid"] .allergen-note,body[data-gorunum="grid"] .detail-btn{display:none !important}
+    body[data-gorunum="grid"] .product-name{font-size:.82rem !important}
+    body[data-gorunum="grid"] .price{font-size:.85rem !important;margin-top:4px !important}
+
+    /* GRID MODAL */
+    .grid-modal-overlay{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.78);align-items:flex-end;justify-content:center}
+    .grid-modal-overlay.open{display:flex}
+    .grid-modal-box{background:var(--card);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:520px;max-height:85dvh;overflow-y:auto;animation:slideUp .25s ease;position:relative}
+    @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .grid-modal-img{width:100%;height:200px;object-fit:cover;border-radius:12px;margin-bottom:14px}
+    .grid-modal-name{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:4px}
+    .grid-modal-price{font-size:1rem;font-weight:700;color:var(--gold);margin-bottom:10px}
+    .grid-modal-desc{font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:12px}
+    .grid-modal-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+    .grid-modal-allergens{font-size:.75rem;color:rgba(243,156,18,.8);margin-top:8px}
+    .grid-modal-close{position:absolute;top:14px;right:16px;background:rgba(255,255,255,.08);border:none;border-radius:50%;width:32px;height:32px;color:var(--muted);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
     /* ════════════════════════════════════
        ZEYTİN TEMA â€” Akdeniz / Yunan Stili
        Beyaz zemin, lacivert + zeytin yeşili, tatil havası
@@ -4193,7 +4232,8 @@
         body.tema-gece .allergen-chip:hover { background: rgba(184,163,255,.12) !important; border-color: rgba(184,163,255,.3) !important; }
         </style>
 </head>
-<body class="{% if tenant.tema and tenant.tema != 'amber' %}tema-{{ tenant.tema }}{% endif %}">
+<body class="{% if tenant.tema and tenant.tema != 'amber' %}tema-{{ tenant.tema }}{% endif %}{% if tenant.white_mod %} white-mod{% endif %}"
+      data-gorunum="{{ tenant.menu_gorunum or 'liste' }}">
     <div class="splash" id="splash">
         <div class="splash-noise"></div>
         <div class="splash-particles" id="splashParticles"></div>
@@ -4473,8 +4513,22 @@
             <div class="footer-signature">
                 <div class="footer-kdv">
                     <i class="fas fa-info-circle"></i>
-                    <span class="tr">* Fiyatlarımıza KDV dahildir. İşletmemizde %{{ tenant.service_fee_percentage or 0 }} servis ücreti (kuver) uygulanmaktadır. Mevzuat uyarınca dijital menü fiyatlarımız ile kasa fiyatlarımız birebir aynıdır.</span>
-                    <span class="en hidden">* Prices include VAT. A {{ tenant.service_fee_percentage or 0 }}% service charge applies. Digital menu prices match register prices as required by law.</span>
+                    {% if tenant.kdv_dahil or tenant.service_fee_percentage %}
+                    <span class="tr">*
+                        {% if tenant.kdv_dahil %}Fiyatlarımıza KDV dahildir.{% endif %}
+                        {% if tenant.service_fee_percentage and tenant.service_fee_percentage > 0 %}
+                            İşletmemizde %{{ tenant.service_fee_percentage|int }} servis ücreti (kuver) uygulanmaktadır.
+                        {% endif %}
+                        Mevzuat uyarınca dijital menü fiyatlarımız ile kasa fiyatlarımız birebir aynıdır.
+                    </span>
+                    <span class="en hidden">*
+                        {% if tenant.kdv_dahil %}Prices include VAT.{% endif %}
+                        {% if tenant.service_fee_percentage and tenant.service_fee_percentage > 0 %}
+                            A {{ tenant.service_fee_percentage|int }}% service charge applies.
+                        {% endif %}
+                        Digital menu prices match register prices as required by law.
+                    </span>
+                    {% endif %}
                 </div>
                 {% if tenant.son_fiyat_guncelleme %}
                 <div class="footer-update">
@@ -4529,6 +4583,19 @@
 
     <div class="lightbox" id="lightbox" onclick="closeLightbox()">
         <img id="lightboxImg" src="" alt="">
+    </div>
+
+    <!-- GRID MODAL -->
+    <div class="grid-modal-overlay" id="gridModal" onclick="closeGridModal()">
+        <div class="grid-modal-box" onclick="event.stopPropagation()">
+            <button class="grid-modal-close" onclick="closeGridModal()"><i class="fas fa-times"></i></button>
+            <img class="grid-modal-img" id="gmImg" src="" alt="" style="display:none">
+            <div class="grid-modal-name" id="gmName"></div>
+            <div class="grid-modal-price" id="gmPrice"></div>
+            <div class="grid-modal-desc" id="gmDesc"></div>
+            <div class="grid-modal-badges" id="gmBadges"></div>
+            <div class="grid-modal-allergens" id="gmAllergens"></div>
+        </div>
     </div>
 
     <button class="theme-fab" id="themeFab" type="button" onclick="toggleTheme()" aria-label="Temayi degistir" title="Temayi degistir">
@@ -5270,6 +5337,41 @@
             document.getElementById('lightbox').classList.remove('show');
         }
 
+        // GRID MODAL
+        const GORUNUM = document.body.dataset.gorunum || 'liste';
+        if (GORUNUM === 'grid') {
+            document.querySelectorAll('.product').forEach(card => {
+                card.addEventListener('click', function() {
+                    const img    = this.querySelector('img');
+                    const name   = this.querySelector('.product-name');
+                    const price  = this.querySelector('.price');
+                    const desc   = this.querySelector('.product-desc');
+                    const badges = this.querySelector('.badge-list');
+                    const alrj   = this.querySelector('.allergen-note');
+                    const gmImg  = document.getElementById('gmImg');
+                    const gmName = document.getElementById('gmName');
+                    const gmPrice= document.getElementById('gmPrice');
+                    const gmDesc = document.getElementById('gmDesc');
+                    const gmBdg  = document.getElementById('gmBadges');
+                    const gmAlrj = document.getElementById('gmAllergens');
+
+                    if (img) { gmImg.src = img.src; gmImg.style.display = ''; }
+                    else { gmImg.style.display = 'none'; }
+                    gmName.textContent  = name  ? name.textContent  : '';
+                    gmPrice.textContent = price ? price.textContent : '';
+                    gmDesc.textContent  = desc  ? desc.textContent  : '';
+                    gmBdg.innerHTML     = badges ? badges.innerHTML  : '';
+                    gmAlrj.textContent  = alrj  ? alrj.textContent  : '';
+                    document.getElementById('gridModal').classList.add('open');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+        }
+        function closeGridModal() {
+            document.getElementById('gridModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
         document.getElementById('menuSearch').addEventListener('input', applyFilters);
 
         window.addEventListener('load', function() {
@@ -5289,12 +5391,18 @@
             toggleTopFab();
 
             const afterSplash = () => {
+                const aktifDiller = window.AKTIF_DILLER || ['tr'];
                 if (savedLang) {
                     setLang(savedLang, null);
                     applyFilters();
                     setTimeout(focusProductByHash, 260);
+                } else if (aktifDiller.length <= 1) {
+                    // Tek dil: dil seçimi gösterme, direkt menü
+                    setLang(aktifDiller[0] || 'tr', null);
+                    applyFilters();
+                    setTimeout(focusProductByHash, 260);
                 } else {
-                    // Dil ekranını göster
+                    // Çoklu dil: dil seçim ekranını göster
                     langWelcome.classList.add('show');
                 }
             };

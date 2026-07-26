@@ -729,6 +729,7 @@ td{padding:13px 14px;vertical-align:middle}
           <div style="display:flex;gap:5px;flex-shrink:0">
             <a href="/r/{{ t.slug }}/" target="_blank" class="btn btn-soft btn-sm" title="Menüyü Görüntüle"><i class="fas fa-eye"></i></a>
             <a href="/r/{{ t.slug }}/admin" target="_blank" class="btn btn-soft btn-sm" title="Admin Paneli"><i class="fas fa-cog"></i></a>
+            <a href="/superadmin/durum/{{ t.id }}" class="btn btn-sm {{ 'btn-red' if t.aktif else 'btn-green' }}" title="{{ 'Pasife Al' if t.aktif else 'Aktife Al' }}"><i class="fas {{ 'fa-ban' if t.aktif else 'fa-check' }}"></i></a>
             <button class="btn btn-green btn-sm" title="Lisans Yenile" onclick="openLisans({{ t.id }},'{{ t.restoran_adi }}')"><i class="fas fa-rotate"></i></button>
             <button class="btn btn-gold btn-sm" title="Şifre Sıfırla" onclick="openPw({{ t.id }},'{{ t.restoran_adi }}')"><i class="fas fa-key"></i></button>
             <button class="btn btn-red btn-sm" title="Restoranı Sil" onclick="openDel({{ t.id }},'{{ t.restoran_adi }}')"><i class="fas fa-trash"></i></button>

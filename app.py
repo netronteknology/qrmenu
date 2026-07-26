@@ -182,7 +182,9 @@ class Tenant(db.Model):
     restoran_kodu   = db.Column(db.String(20), unique=True, nullable=True)  # QRM-0001
     musteri_id      = db.Column(db.Integer, db.ForeignKey('musteri.id'), nullable=True)
     referrer_id     = db.Column(db.Integer, nullable=True)
-    tema            = db.Column(db.String(20), default='amber')  # amber / zeytin / gece
+    tema            = db.Column(db.String(20), default='amber')
+    menu_gorunum    = db.Column(db.String(10), default='liste')  # liste / grid
+    white_mod       = db.Column(db.Boolean, default=False)  # True = beyaz tema
     aktif_diller    = db.Column(db.String(60), default='tr,en')  # virgülle ayrılmış: tr,en,it,ru vs.
     kdv_dahil       = db.Column(db.Boolean, default=True)  # "Fiyatlara KDV dahildir" notu
     acilis_saati    = db.Column(db.String(5), default='10:00')
@@ -453,6 +455,8 @@ def ensure_schema():
             'kapanis_saati': "kapanis_saati VARCHAR(5) DEFAULT '23:30'",
             'son_fiyat_guncelleme': 'son_fiyat_guncelleme DATETIME',
             'service_fee_percentage': 'service_fee_percentage FLOAT DEFAULT 0',
+            'menu_gorunum': "menu_gorunum VARCHAR(10) DEFAULT 'liste'",
+            'white_mod': 'white_mod BOOLEAN DEFAULT 0',
         },
         'musteri': {
             'referans_kodu': 'referans_kodu VARCHAR(20)',
@@ -894,6 +898,9 @@ def t_ayarlar(slug, tenant, me):
     tema = request.form.get('tema', '').strip()
     if tema in ('amber', 'zeytin', 'gece'):
         tenant.tema = tema
+    tenant.white_mod    = bool(request.form.get('white_mod'))
+    gorunum = request.form.get('menu_gorunum', 'liste')
+    tenant.menu_gorunum = gorunum if gorunum in ('liste', 'grid') else 'liste'
     tenant.kdv_dahil = bool(request.form.get('kdv_dahil'))
     try:
         tenant.service_fee_percentage = max(0.0, float(request.form.get('service_fee_percentage') or 0))
