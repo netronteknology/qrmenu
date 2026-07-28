@@ -1902,6 +1902,32 @@
                 </div>
             </div>
 
+            <div class="card">
+                <h3 class="card-title">
+                    <span><i class="fas fa-rotate-right" style="margin-right:8px;color:var(--gold)"></i>QR Yedeği</span>
+                </h3>
+                <div class="card-body">
+                    <p class="field-hint" style="margin-top:0;">
+                        Sadece bu restoranın QR kodları yedeklenir. İçeri aktarma, QR görsellerini ve ayarlarını taşır.
+                    </p>
+                    <div class="form-grid-2" style="align-items:end;">
+                        <a class="btn btn-soft" href="/r/{{ tenant.slug }}/admin/qr_yedek">
+                            <i class="fas fa-download"></i> QR Yedeğini İndir
+                        </a>
+                        <form action="/r/{{ tenant.slug }}/admin/qr_yukle" method="POST" enctype="multipart/form-data" style="display:grid;gap:10px;">
+                            <input type="file" name="backup_file" accept=".zip" required>
+                            <select name="restore_mode">
+                                <option value="replace">Mevcut QR'ları temizle, yedeği yükle</option>
+                                <option value="merge">Mevcut QR'lara ekle</option>
+                            </select>
+                            <button type="submit" class="btn btn-green">
+                                <i class="fas fa-upload"></i> Yedeği Yükle
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- Yeni QR Oluştur — daraltılabilir -->
             <div class="card">
                 <h3 class="card-title collapsible" onclick="toggleCard('form-qr', this)">
@@ -2625,7 +2651,6 @@ const URUNLER_DATA = [
 </script>
 </body>
 </html>
-
 
 
 

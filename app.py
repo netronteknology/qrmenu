@@ -1330,6 +1330,135 @@ def t_qr_sil(slug, tenant, me, qid):
     return redirect(url_for('t_admin', slug=slug) + '#qrcodes')
 
 
+@app.route('/r/<slug>/admin/qr_yedek')
+@login_required
+def t_qr_yedek(slug, tenant, me):
+    import zipfile
+
+    qrs = QRCodeItem.query.filter_by(tenant_id=tenant.id).order_by(QRCodeItem.id.asc()).all()
+    payload = {
+        'version': 1,
+        'type': 'qr_backup',
+        'tenant_slug': tenant.slug,
+        'tenant_name': tenant.restoran_adi,
+        'exported_at': datetime.utcnow().isoformat() + 'Z',
+        'qrcodes': [
+            {
+                'id': q.id,
+                'isim': q.isim,
+                'hedef_url': q.hedef_url,
+                'dosya': q.dosya,
+                'kilitli': q.kilitli,
+                'silme_hazir': q.silme_hazir,
+                'renk_on': q.renk_on,
+                'renk_arka': q.renk_arka,
+                'logo_var': q.logo_var,
+            }
+            for q in qrs
+        ],
+    }
+
+    buf = BytesIO()
+    with zipfile.ZipFile(buf, 'w', compression=zipfile.ZIP_DEFLATED) as z:
+        z.writestr('qr_backup.json', json.dumps(payload, ensure_ascii=False, indent=2))
+        base_dir = upload_dir(slug, 'qrcodes')
+        for q in qrs:
+            fp = os.path.join(base_dir, q.dosya)
+            if os.path.exists(fp):
+                z.write(fp, arcname=f'qrcodes/{q.dosya}')
+
+    buf.seek(0)
+    fname = f'qr_yedek_{slug}_{datetime.utcnow().strftime("%Y%m%d_%H%M%S")}.zip'
+    return send_file(buf, as_attachment=True, download_name=fname, mimetype='application/zip')
+
+
+@app.route('/r/<slug>/admin/qr_yukle', methods=['POST'])
+@login_required
+def t_qr_yukle(slug, tenant, me):
+    import zipfile
+
+    def _bool(v, default=False):
+        if v is None:
+            return default
+        if isinstance(v, bool):
+            return v
+        if isinstance(v, (int, float)):
+            return bool(v)
+        s = str(v).strip().lower()
+        if s in ('1', 'true', 'yes', 'on', 'evet'):
+            return True
+        if s in ('0', 'false', 'no', 'off', ''):
+            return False
+        return default
+
+    file = request.files.get('backup_file')
+    if not file or not file.filename.lower().endswith('.zip'):
+        err('Geçerli bir QR yedeği (.zip) seç.')
+        return redirect(url_for('t_admin', slug=slug) + '#qrcodes')
+
+    restore_mode = request.form.get('restore_mode', 'replace')
+    try:
+        zf = zipfile.ZipFile(file.stream)
+        names = set(zf.namelist())
+        if 'qr_backup.json' not in names:
+            raise ValueError('qr_backup.json bulunamadı.')
+        payload = json.loads(zf.read('qr_backup.json').decode('utf-8'))
+        if payload.get('type') != 'qr_backup':
+            raise ValueError('Yedek türü QR değil.')
+    except Exception as e:
+        err(f'Yedek okunamadı: {e}')
+        return redirect(url_for('t_admin', slug=slug) + '#qrcodes')
+
+    base_dir = upload_dir(slug, 'qrcodes')
+    os.makedirs(base_dir, exist_ok=True)
+
+    if restore_mode == 'replace':
+        for old in QRCodeItem.query.filter_by(tenant_id=tenant.id).all():
+            try:
+                os.remove(os.path.join(base_dir, old.dosya))
+            except OSError:
+                pass
+            db.session.delete(old)
+        db.session.commit()
+
+    imported = 0
+    skipped = 0
+    for item in payload.get('qrcodes', []):
+        src_name = item.get('dosya') or f'{uuid.uuid4().hex}.png'
+        arc_name = f'qrcodes/{src_name}'
+        if arc_name not in names:
+            skipped += 1
+            continue
+
+        target_name = src_name
+        if restore_mode != 'replace':
+            root, ext = os.path.splitext(target_name)
+            idx = 1
+            while os.path.exists(os.path.join(base_dir, target_name)):
+                target_name = f'{root}_{idx}{ext or ".png"}'
+                idx += 1
+
+        with open(os.path.join(base_dir, target_name), 'wb') as out:
+            out.write(zf.read(arc_name))
+
+        db.session.add(QRCodeItem(
+            tenant_id=tenant.id,
+            isim=item.get('isim') or 'QR',
+            hedef_url=item.get('hedef_url') or f'{request.host_url}r/{slug}/',
+            dosya=target_name,
+            kilitli=_bool(item.get('kilitli'), True),
+            silme_hazir=_bool(item.get('silme_hazir'), False),
+            renk_on=item.get('renk_on') or '#000000',
+            renk_arka=item.get('renk_arka') or '#ffffff',
+            logo_var=_bool(item.get('logo_var'), False),
+        ))
+        imported += 1
+
+    db.session.commit()
+    ok(f'{imported} QR kod içe aktarıldı. {skipped} öğe atlandı.')
+    return redirect(url_for('t_admin', slug=slug) + '#qrcodes')
+
+
 @app.route('/superadmin/sifre/<int:tid>', methods=['POST'])
 @sa_required
 def sa_sifre(tid):
