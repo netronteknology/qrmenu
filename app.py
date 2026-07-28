@@ -492,7 +492,7 @@ def ensure_schema():
     db.session.execute(text("UPDATE tenant SET acilis_saati = '10:00' WHERE acilis_saati IS NULL OR acilis_saati = ''"))
     db.session.execute(text("UPDATE tenant SET kapanis_saati = '23:30' WHERE kapanis_saati IS NULL OR kapanis_saati = ''"))
     db.session.execute(text("UPDATE tenant SET service_fee_percentage = 0 WHERE service_fee_percentage IS NULL"))
-    db.session.execute(text("UPDATE urun SET contains_alcohol = 0 WHERE contains_alcohol IS NULL"))
+    db.session.execute(text("UPDATE urun SET contains_alcohol = FALSE WHERE contains_alcohol IS NULL"))
     db.session.execute(text("UPDATE urun SET calorie = kalori WHERE calorie IS NULL AND kalori > 0"))
     db.session.commit()
 
@@ -1855,4 +1855,3 @@ def api_featured(slug):
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=5000)
-
