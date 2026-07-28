@@ -5557,7 +5557,8 @@
 
         function applyCompactMode(compact) {
             isCompactMode = compact;
-            document.body.classList.toggle('compact-mode', compact);
+            const isGrid = document.body.dataset.gorunum === 'grid';
+            document.body.classList.toggle('compact-mode', compact && !isGrid);
             const btn  = document.getElementById('viewToggleBtn');
             const icon = document.getElementById('viewToggleIcon');
             if (btn)  btn.classList.toggle('active', compact);
