@@ -7,7 +7,7 @@ from functools import wraps
 from flask import (Flask, render_template, request, redirect,
                    url_for, session, flash, send_file, abort, jsonify)
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import text
+from sqlalchemy import text, inspect
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
@@ -481,9 +481,10 @@ def ensure_schema():
         },
     }
 
+    inspector = inspect(db.engine)
+
     for table_name, columns in column_sql.items():
-        rows = db.session.execute(text(f"PRAGMA table_info('{table_name}')")).fetchall()
-        mevcut = {row[1] for row in rows}
+        mevcut = {row["name"] for row in inspector.get_columns(table_name)}
         for column_name, ddl in columns.items():
             if column_name not in mevcut:
                 db.session.execute(text(f'ALTER TABLE {table_name} ADD COLUMN {ddl}'))
@@ -1854,5 +1855,4 @@ def api_featured(slug):
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=5000)
-
 
