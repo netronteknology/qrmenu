@@ -49,13 +49,13 @@
     /* GRID GORUNUM */
     body[data-gorunum="grid"] .product-grid{display:grid !important;grid-template-columns:1fr 1fr !important;gap:10px !important;padding:10px !important}
     body[data-gorunum="grid"] .product{flex-direction:column !important;border-radius:16px !important;padding:0 !important;overflow:hidden !important;cursor:pointer !important;gap:0 !important;align-items:stretch !important}
-    body[data-gorunum="grid"] .product > img{width:100% !important;height:140px !important;object-fit:cover !important;border-radius:0 !important;box-shadow:none !important;display:block !important}
-    body[data-gorunum="grid"] .product-body{padding:8px 10px 10px !important;width:100% !important}
-    body[data-gorunum="grid"] .product-top{flex-direction:column !important;align-items:flex-start !important;gap:2px !important}
-    body[data-gorunum="grid"] .product-price-col{width:100% !important}
-    body[data-gorunum="grid"] .product-name{font-size:.8rem !important;font-weight:700 !important;line-height:1.3 !important;display:-webkit-box !important;-webkit-line-clamp:2 !important;-webkit-box-orient:vertical !important;overflow:hidden !important}
+    body[data-gorunum="grid"] .product > img{width:100% !important;height:auto !important;aspect-ratio:4/3 !important;object-fit:cover !important;border-radius:0 !important;box-shadow:none !important;display:block !important;padding-bottom:0 !important;position:static !important}
+    body[data-gorunum="grid"] .product-body{padding:6px 8px 8px !important;width:100% !important}
+    body[data-gorunum="grid"] .product-top{flex-direction:row !important;align-items:center !important;justify-content:space-between !important;gap:4px !important}
+    body[data-gorunum="grid"] .product-price-col{flex-shrink:0 !important}
+    body[data-gorunum="grid"] .product-name{font-size:.75rem !important;font-weight:700 !important;line-height:1.25 !important;display:-webkit-box !important;-webkit-line-clamp:2 !important;-webkit-box-orient:vertical !important;overflow:hidden !important;flex:1 !important}
     body[data-gorunum="grid"] .product-name.en{display:none !important}
-    body[data-gorunum="grid"] .price{font-size:.85rem !important;margin-top:3px !important}
+    body[data-gorunum="grid"] .price{font-size:.78rem !important;margin-top:0 !important;white-space:nowrap !important}
     body[data-gorunum="grid"] .product-desc,
     body[data-gorunum="grid"] .badge-list,
     body[data-gorunum="grid"] .allergen-tags,
@@ -5557,8 +5557,7 @@
 
         function applyCompactMode(compact) {
             isCompactMode = compact;
-            const isGrid = document.body.dataset.gorunum === 'grid';
-            document.body.classList.toggle('compact-mode', compact && !isGrid);
+            document.body.classList.toggle('compact-mode', compact);
             const btn  = document.getElementById('viewToggleBtn');
             const icon = document.getElementById('viewToggleIcon');
             if (btn)  btn.classList.toggle('active', compact);
