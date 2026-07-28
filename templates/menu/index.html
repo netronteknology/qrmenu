@@ -47,14 +47,22 @@
     body.white-mod .legal-note,body.white-mod .footer-note,body.white-mod .price-note,body.white-mod .menu-foot{color:#333 !important}
 
     /* GRID GORUNUM */
-    body[data-gorunum="grid"] .product-grid{display:grid !important;grid-template-columns:1fr 1fr !important;gap:12px !important;padding:12px !important}
-    body[data-gorunum="grid"] .product{flex-direction:column !important;border-radius:14px !important;border:1px solid var(--line) !important;padding:0 !important;overflow:hidden;cursor:pointer}
-    body[data-gorunum="grid"] .product img{width:100% !important;height:130px !important;object-fit:cover !important;border-radius:0 !important}
-    body[data-gorunum="grid"] .product-img-placeholder{width:100% !important;height:130px !important;border-radius:0 !important}
-    body[data-gorunum="grid"] .product-body{padding:10px !important}
-    body[data-gorunum="grid"] .product-desc,body[data-gorunum="grid"] .badge-list,body[data-gorunum="grid"] .allergen-note,body[data-gorunum="grid"] .detail-btn{display:none !important}
-    body[data-gorunum="grid"] .product-name{font-size:.82rem !important}
-    body[data-gorunum="grid"] .price{font-size:.85rem !important;margin-top:4px !important}
+    body[data-gorunum="grid"] .product-grid{display:grid !important;grid-template-columns:1fr 1fr !important;gap:10px !important;padding:10px !important}
+    body[data-gorunum="grid"] .product{flex-direction:column !important;border-radius:14px !important;border:1px solid var(--line) !important;padding:0 !important;overflow:hidden;cursor:pointer;gap:0 !important;background:rgba(255,255,255,.06) !important}
+    body[data-gorunum="grid"] .product img{width:100% !important;height:120px !important;object-fit:cover !important;border-radius:0 !important;box-shadow:none !important;cursor:pointer}
+    body[data-gorunum="grid"] .product-img-placeholder{width:100% !important;height:120px !important;border-radius:0 !important;display:flex;align-items:center;justify-content:center}
+    body[data-gorunum="grid"] .product-body{padding:8px 10px 10px !important;width:100% !important}
+    body[data-gorunum="grid"] .product-desc,
+    body[data-gorunum="grid"] .badge-list,
+    body[data-gorunum="grid"] .allergen-note,
+    body[data-gorunum="grid"] .detail-btn,
+    body[data-gorunum="grid"] .product-origin,
+    body[data-gorunum="grid"] .legal-badges,
+    body[data-gorunum="grid"] .legal-badge,
+    body[data-gorunum="grid"] .contains-alcohol-note{display:none !important}
+    body[data-gorunum="grid"] .product-name{font-size:.80rem !important;font-weight:700 !important;line-height:1.3 !important;display:-webkit-box !important;-webkit-line-clamp:2 !important;-webkit-box-orient:vertical !important;overflow:hidden !important}
+    body[data-gorunum="grid"] .product-top{flex-direction:column !important;align-items:flex-start !important;gap:4px !important}
+    body[data-gorunum="grid"] .price{font-size:.85rem !important;margin-top:2px !important;display:block !important}
 
     /* GRID MODAL */
     .grid-modal-overlay{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.78);align-items:flex-end;justify-content:center}
@@ -4592,7 +4600,8 @@
             <img class="grid-modal-img" id="gmImg" src="" alt="" style="display:none">
             <div class="grid-modal-name" id="gmName"></div>
             <div class="grid-modal-price" id="gmPrice"></div>
-            <div class="grid-modal-desc" id="gmDesc"></div>
+            <div id="gmLegal" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
+            <div class="grid-modal-desc" id="gmDesc" style="margin-bottom:10px"></div>
             <div class="grid-modal-badges" id="gmBadges"></div>
             <div class="grid-modal-allergens" id="gmAllergens"></div>
         </div>
@@ -5348,20 +5357,30 @@
                     const desc   = this.querySelector('.product-desc');
                     const badges = this.querySelector('.badge-list');
                     const alrj   = this.querySelector('.allergen-note');
-                    const gmImg  = document.getElementById('gmImg');
-                    const gmName = document.getElementById('gmName');
-                    const gmPrice= document.getElementById('gmPrice');
-                    const gmDesc = document.getElementById('gmDesc');
-                    const gmBdg  = document.getElementById('gmBadges');
-                    const gmAlrj = document.getElementById('gmAllergens');
+                    const legal  = this.querySelector('.legal-badges');
+                    const origin = this.querySelector('.product-origin.tr') || this.querySelector('.product-origin');
+
+                    const gmImg   = document.getElementById('gmImg');
+                    const gmName  = document.getElementById('gmName');
+                    const gmPrice = document.getElementById('gmPrice');
+                    const gmDesc  = document.getElementById('gmDesc');
+                    const gmBdg   = document.getElementById('gmBadges');
+                    const gmAlrj  = document.getElementById('gmAllergens');
+                    const gmLegal = document.getElementById('gmLegal');
 
                     if (img) { gmImg.src = img.src; gmImg.style.display = ''; }
                     else { gmImg.style.display = 'none'; }
-                    gmName.textContent  = name  ? name.textContent  : '';
-                    gmPrice.textContent = price ? price.textContent : '';
-                    gmDesc.textContent  = desc  ? desc.textContent  : '';
+                    gmName.textContent  = name   ? name.dataset.tr || name.textContent : '';
+                    gmPrice.textContent = price  ? price.textContent : '';
+                    gmDesc.textContent  = desc   ? desc.dataset.tr  || desc.textContent : '';
                     gmBdg.innerHTML     = badges ? badges.innerHTML  : '';
-                    gmAlrj.textContent  = alrj  ? alrj.textContent  : '';
+                    gmAlrj.innerHTML    = alrj   ? '<i class="fas fa-triangle-exclamation"></i> ' + alrj.textContent : '';
+                    gmLegal.innerHTML   = '';
+                    if (legal) gmLegal.innerHTML = legal.innerHTML;
+                    if (origin && origin.textContent.trim()) {
+                        gmLegal.innerHTML += '<span style="font-size:.72rem;color:var(--muted);background:rgba(255,255,255,.06);padding:2px 8px;border-radius:99px">' + origin.textContent.trim() + '</span>';
+                    }
+
                     document.getElementById('gridModal').classList.add('open');
                     document.body.style.overflow = 'hidden';
                 });
