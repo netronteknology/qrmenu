@@ -2243,9 +2243,10 @@
         .cat-card.open .cat-content .product-grid > .product:nth-child(n+7) { transition-delay: .28s; }
 
         .product-grid {
-            display: flex;
-            flex-direction: column;
-            max-width: 600px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            max-width: 500px;
             margin: 0 auto;
         }
 
@@ -2283,114 +2284,115 @@
 
         .product {
             display: flex;
-            flex-direction: row;
-            gap: 14px;
-            align-items: flex-start;
-            padding: 14px 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            background: transparent;
-            border-radius: 0;
-            box-shadow: none;
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-            border-left: none;
-            border-right: none;
-            border-top: none;
-            transition: background .15s;
+            flex-direction: column;
+            gap: 8px;
+            align-items: stretch;
+            padding: 10px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
             -webkit-tap-highlight-color: transparent;
             position: relative;
             overflow: hidden;
         }
-        .product:last-child { border-bottom: none; }
-        .product:hover { background: rgba(255,255,255,.025); }
-        .product:active { background: rgba(243,156,18,.04); }
-        .product::before { display: none; }
+        .product::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(243,156,18,.18), transparent);
+            opacity: 0;
+            transition: opacity .3s;
+        }
+        .product:hover {
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
+        .product:hover::before { opacity: 1; }
+
+        .product:active {
+            transform: scale(0.99);
+        }
 
         .product img {
-            width: 88px;
-            height: 88px;
-            min-width: 88px;
+            width: 100%;
+            height: 190px;
             border-radius: 12px;
             object-fit: cover;
             display: block;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
-            transition: transform 0.2s ease;
         }
-        .product:hover img { transform: scale(1.03); }
+        .product:hover img {
+            transform: scale(1.04);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+        }
 
         .product-body {
-            flex: 1;
-            min-width: 0;
+            width: 100%;
         }
 
         .product-top {
             display: flex;
             justify-content: space-between;
-            gap: 8px;
-            align-items: flex-start;
+            gap: 10px;
+            align-items: center;
         }
 
         .product-name {
             font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
+            font-weight: 600;
             text-transform: uppercase;
-            font-size: .82rem;
+            font-size: .85rem;
             color: var(--text);
-            line-height: 1.25;
-            letter-spacing: 0.4px;
+            line-height: 1.2;
+            letter-spacing: 0.5px;
         }
 
         .product-desc {
             font-family: 'Montserrat', sans-serif;
             color: var(--muted);
-            font-size: .72rem;
-            line-height: 1.45;
+            font-size: .75rem;
+            line-height: 1.4;
             margin-top: 4px;
             font-weight: 300;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
 
         .price {
             font-family: 'Montserrat', sans-serif;
-            color: var(--gold);
-            font-weight: 800;
-            font-size: .88rem;
+            color: #D4AF37;
+            font-weight: 700;
+            font-size: .85rem;
             white-space: nowrap;
-            flex-shrink: 0;
+            background: rgba(212,175,55,0.1);
+            padding: 4px 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(212,175,55,0.2);
         }
 
         .product-price-col {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 4px;
+            gap: 6px;
             flex-shrink: 0;
         }
 
-        .legal-badges { display: none; }
-        .allergen-tags { display: none; }
-        .product-origin { display: none; }
-        .product-alcohol-warning { display: none; }
-
-        .product-img-placeholder {
-            width: 88px;
-            min-width: 88px;
-            height: 88px;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.06);
+        .legal-badges {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            flex-wrap: nowrap;
+            gap: 5px;
+            max-width: 100%;
+            overflow-x: auto;
+            scrollbar-width: none;
         }
-        .product-img-placeholder i {
-            font-size: 1.5rem;
-            color: rgba(255,255,255,0.15);
-        }
+        .legal-badges::-webkit-scrollbar { display: none; }
 
         .legal-badge {
             display: inline-flex;
@@ -2460,17 +2462,16 @@
         .badge-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 6px;
+            gap: 8px;
+            margin-top: 10px;
         }
 
         .badge {
-            padding: 3px 8px;
+            padding: 6px 10px;
             border-radius: 999px;
-            font-size: .62rem;
-            font-weight: 800;
+            font-size: .72rem;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: .4px;
         }
 
         .badge.new {
