@@ -2247,6 +2247,7 @@
             flex-direction: column;
             max-width: 600px;
             margin: 0 auto;
+            padding: 12px 0 4px;
         }
 
         /* URL hash ile hedef ürüne premium odak efekti */
@@ -2286,43 +2287,45 @@
             flex-direction: row;
             gap: 14px;
             align-items: flex-start;
-            padding: 14px 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            background: transparent;
-            border-radius: 0;
-            box-shadow: none;
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-            border-left: none;
-            border-right: none;
-            border-top: none;
-            transition: background .15s;
+            padding: 14px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(243,156,18,0.15);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15), inset 0 1px 0 rgba(243,156,18,0.08);
+            transition: border-color .2s, box-shadow .2s, background .2s;
             -webkit-tap-highlight-color: transparent;
             position: relative;
             overflow: hidden;
+            margin-bottom: 10px;
         }
-        .product:last-child { border-bottom: none; }
-        .product:hover { background: rgba(255,255,255,.025); }
-        .product:active { background: rgba(243,156,18,.04); }
-        .product::before { display: none; }
+        .product::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 10%; right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(243,156,18,.35), transparent);
+        }
+        .product:hover {
+            border-color: rgba(243,156,18,0.4);
+            box-shadow: 0 4px 20px rgba(243,156,18,0.12), inset 0 1px 0 rgba(243,156,18,0.12);
+            background: rgba(243,156,18,0.04);
+        }
+        .product:active { transform: scale(0.99); }
 
         .product img {
-            width: 88px;
-            height: 88px;
-            min-width: 88px;
+            width: 90px;
+            height: 90px;
+            min-width: 90px;
             border-radius: 12px;
             object-fit: cover;
             display: block;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             cursor: pointer;
             transition: transform 0.2s ease;
         }
         .product:hover img { transform: scale(1.03); }
 
-        .product-body {
-            flex: 1;
-            min-width: 0;
-        }
+        .product-body { flex: 1; min-width: 0; }
 
         .product-top {
             display: flex;
@@ -2371,17 +2374,13 @@
             flex-shrink: 0;
         }
 
-        .legal-badges { display: none; }
-        .allergen-tags { display: none; }
-        .product-origin { display: none; }
-        .product-alcohol-warning { display: none; }
-
         .product-img-placeholder {
-            width: 88px;
-            min-width: 88px;
-            height: 88px;
+            width: 90px;
+            min-width: 90px;
+            height: 90px;
             border-radius: 12px;
             background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(243,156,18,0.1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -2389,17 +2388,25 @@
         }
         .product-img-placeholder i {
             font-size: 1.5rem;
-            color: rgba(255,255,255,0.15);
+            color: rgba(243,156,18,0.2);
         }
+
+        .legal-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 5px;
+        }
+        .legal-badges::-webkit-scrollbar { display: none; }
 
         .legal-badge {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             white-space: nowrap;
-            padding: 3px 8px;
+            padding: 2px 6px;
             border-radius: 999px;
-            font-size: .62rem;
+            font-size: .57rem;
             font-weight: 700;
             letter-spacing: .3px;
             border: 1px solid transparent;
@@ -2407,54 +2414,38 @@
 
         .legal-badge.calorie {
             color: #ff8a9b;
-            background: rgba(255,90,120,.1);
-            border-color: rgba(255,90,120,.22);
+            background: rgba(255,90,120,.08);
+            border-color: rgba(255,90,120,.18);
         }
-        .legal-badge.calorie i { font-size: .58rem; opacity: .85; }
+        .legal-badge.calorie i { font-size: .55rem; }
 
         .legal-badge.portion {
-            color: rgba(255,255,255,.72);
-            background: rgba(255,255,255,.06);
-            border-color: rgba(255,255,255,.12);
+            color: rgba(255,255,255,.45);
+            background: rgba(255,255,255,.04);
+            border-color: rgba(255,255,255,.09);
         }
 
-        .product-origin {
-            font-size: .68rem;
-            font-style: italic;
-            color: rgba(255,255,255,.42);
-            margin-top: 3px;
-            line-height: 1.3;
-        }
-
-        .product-alcohol-warning {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: .66rem;
-            font-weight: 600;
-            color: rgba(255,200,120,.75);
-            margin-top: 4px;
-        }
-        .product-alcohol-warning i { font-size: .6rem; opacity: .8; }
+        .product-origin { display: none; }
+        .product-alcohol-warning { display: none; }
 
         .allergen-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 8px;
+            gap: 4px;
+            margin-top: 5px;
         }
 
         .allergen-tag {
             display: inline-block;
-            padding: 3px 7px;
-            border-radius: 6px;
-            font-size: .58rem;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: .54rem;
             font-weight: 700;
             line-height: 1.2;
             white-space: nowrap;
-            color: #9b1c1c;
-            background: rgba(255,220,220,.92);
-            border: 1px solid rgba(180,40,40,.25);
+            color: rgba(255,140,140,.85);
+            background: rgba(255,80,80,.07);
+            border: 1px solid rgba(255,80,80,.15);
         }
 
         .badge-list {
@@ -2467,7 +2458,7 @@
         .badge {
             padding: 3px 8px;
             border-radius: 999px;
-            font-size: .62rem;
+            font-size: .6rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: .4px;
