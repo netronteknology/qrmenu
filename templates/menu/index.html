@@ -73,13 +73,13 @@
     body[data-gorunum="grid"] .product-grid{display:grid !important;grid-template-columns:1fr 1fr !important;gap:8px !important;padding:8px !important}
     body[data-gorunum="grid"] .product{flex-direction:column !important;border-radius:14px !important;padding:0 !important;overflow:hidden !important;cursor:pointer !important;gap:0 !important;align-items:stretch !important;margin-bottom:0 !important}
     body[data-gorunum="grid"] .product > img{width:100% !important;height:auto !important;aspect-ratio:1/1 !important;object-fit:cover !important;border-radius:0 !important;box-shadow:none !important;display:block !important}
-    body[data-gorunum="grid"] .product-img-placeholder{width:100% !important;aspect-ratio:1/1 !important;height:auto !important;border-radius:0 !important;min-height:unset !important}
+    body[data-gorunum="grid"] .product-img-placeholder{width:100% !important;height:90px !important;aspect-ratio:unset !important;border-radius:0 !important;min-height:unset !important;background:rgba(255,255,255,.04) !important}
     body[data-gorunum="grid"] .product-body{padding:7px 8px 8px !important;width:100% !important}
     body[data-gorunum="grid"] .product-top{flex-direction:column !important;align-items:flex-start !important;gap:2px !important}
     body[data-gorunum="grid"] .product-price-col{width:100% !important}
     body[data-gorunum="grid"] .product-name{font-size:.75rem !important;font-weight:700 !important;line-height:1.25 !important;display:-webkit-box !important;-webkit-line-clamp:2 !important;-webkit-box-orient:vertical !important;overflow:hidden !important;width:100% !important}
     body[data-gorunum="grid"] .product-name.en{display:none !important}
-    body[data-gorunum="grid"] .price{font-size:.82rem !important;margin-top:2px !important;white-space:nowrap !important;display:block !important}
+    body[data-gorunum="grid"] .price{font-size:.82rem !important;margin-top:2px !important;white-space:nowrap !important;display:block !important;color:var(--gold) !important}
     body[data-gorunum="grid"] .product-desc,
     body[data-gorunum="grid"] .badge-list,
     body[data-gorunum="grid"] .allergen-tags,
@@ -91,17 +91,23 @@
     body[data-gorunum="grid"] .spice-level{display:none !important}
 
     /* GRID MODAL */
-    .grid-modal-overlay{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.78);align-items:flex-end;justify-content:center}
+    .grid-modal-overlay{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);align-items:flex-end;justify-content:center}
     .grid-modal-overlay.open{display:flex}
-    .grid-modal-box{background:var(--card);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:520px;max-height:85dvh;overflow-y:auto;animation:slideUp .25s ease;position:relative}
-    @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
-    .grid-modal-img{width:100%;height:200px;object-fit:cover;border-radius:12px;margin-bottom:14px}
-    .grid-modal-name{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:4px}
-    .grid-modal-price{font-size:1rem;font-weight:700;color:var(--gold);margin-bottom:10px}
-    .grid-modal-desc{font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:12px}
-    .grid-modal-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-    .grid-modal-allergens{font-size:.75rem;color:rgba(243,156,18,.8);margin-top:8px}
-    .grid-modal-close{position:absolute;top:14px;right:16px;background:rgba(255,255,255,.08);border:none;border-radius:50%;width:32px;height:32px;color:var(--muted);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .grid-modal-box{background:var(--card);border-radius:24px 24px 0 0;width:100%;max-width:520px;max-height:92dvh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.25,.46,.45,.94);position:relative;padding-bottom:env(safe-area-inset-bottom,16px)}
+    @keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .grid-modal-close{position:absolute;top:14px;right:16px;background:rgba(255,255,255,.1);border:none;border-radius:50%;width:34px;height:34px;color:var(--muted);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1}
+    .grid-modal-img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:24px 24px 0 0;display:block}
+    .grid-modal-img.hidden{display:none}
+    .grid-modal-body{padding:18px 20px 20px}
+    .grid-modal-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+    .grid-modal-name{font-size:1.05rem;font-weight:800;color:var(--text);line-height:1.3;flex:1;text-transform:uppercase;letter-spacing:.3px}
+    .grid-modal-price{font-size:1.05rem;font-weight:800;color:var(--gold);white-space:nowrap;flex-shrink:0}
+    .grid-modal-desc{font-size:.83rem;color:var(--muted);line-height:1.65;margin-bottom:14px}
+    .grid-modal-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+    .grid-modal-legal{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+    .grid-modal-allergens{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+    .grid-modal-allergen-label{font-size:.7rem;font-weight:700;color:rgba(255,140,140,.8);margin-bottom:5px;display:flex;align-items:center;gap:5px}
+    .grid-modal-divider{height:1px;background:rgba(255,255,255,.06);margin:12px 0}
 
     /* ════════════════════════════════════
        ZEYTİN TEMA â€” Akdeniz / Yunan Stili
@@ -4615,13 +4621,23 @@
     <div class="grid-modal-overlay" id="gridModal" onclick="closeGridModal()">
         <div class="grid-modal-box" onclick="event.stopPropagation()">
             <button class="grid-modal-close" onclick="closeGridModal()"><i class="fas fa-times"></i></button>
-            <img class="grid-modal-img" id="gmImg" src="" alt="" style="display:none">
-            <div class="grid-modal-name" id="gmName"></div>
-            <div class="grid-modal-price" id="gmPrice"></div>
-            <div id="gmLegal" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
-            <div class="grid-modal-desc" id="gmDesc" style="margin-bottom:10px"></div>
-            <div class="grid-modal-badges" id="gmBadges"></div>
-            <div class="grid-modal-allergens" id="gmAllergens"></div>
+            <img class="grid-modal-img" id="gmImg" src="" alt="">
+            <div class="grid-modal-body">
+                <div class="grid-modal-top">
+                    <div class="grid-modal-name" id="gmName"></div>
+                    <div class="grid-modal-price" id="gmPrice"></div>
+                </div>
+                <div class="grid-modal-desc" id="gmDesc"></div>
+                <div class="grid-modal-badges" id="gmBadges"></div>
+                <div id="gmLegal" class="grid-modal-legal"></div>
+                <div id="gmAllergenWrap" style="display:none">
+                    <div class="grid-modal-divider"></div>
+                    <div class="grid-modal-allergen-label">
+                        <i class="fas fa-triangle-exclamation"></i> Alerjenler
+                    </div>
+                    <div class="grid-modal-allergens" id="gmAllergens"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -5379,32 +5395,45 @@
                     const legal  = this.querySelector('.legal-badges');
                     const origin = this.querySelector('.product-origin.tr') || this.querySelector('.product-origin');
 
-                    const gmImg   = document.getElementById('gmImg');
-                    const gmName  = document.getElementById('gmName');
-                    const gmPrice = document.getElementById('gmPrice');
-                    const gmDesc  = document.getElementById('gmDesc');
-                    const gmBdg   = document.getElementById('gmBadges');
-                    const gmAlrj  = document.getElementById('gmAllergens');
-                    const gmLegal = document.getElementById('gmLegal');
+                    const gmImg        = document.getElementById('gmImg');
+                    const gmName       = document.getElementById('gmName');
+                    const gmPrice      = document.getElementById('gmPrice');
+                    const gmDesc       = document.getElementById('gmDesc');
+                    const gmBdg        = document.getElementById('gmBadges');
+                    const gmAlrj       = document.getElementById('gmAllergens');
+                    const gmAlrjWrap   = document.getElementById('gmAllergenWrap');
+                    const gmLegal      = document.getElementById('gmLegal');
 
+                    // Görsel
                     if (img && img.src && !img.src.endsWith('/')) {
                         gmImg.src = img.src;
-                        gmImg.style.display = '';
+                        gmImg.classList.remove('hidden');
                     } else {
-                        gmImg.style.display = 'none';
+                        gmImg.classList.add('hidden');
                     }
-                    gmName.textContent  = nameEl  ? nameEl.textContent.trim()  : '';
-                    gmPrice.textContent = price   ? price.textContent.trim()   : '';
-                    gmDesc.textContent  = descEl  ? descEl.textContent.trim()  : '';
-                    gmBdg.innerHTML     = badges  ? badges.innerHTML           : '';
-                    gmAlrj.innerHTML    = '';
-                    if (alrjEl && alrjEl.children.length > 0) {
-                        gmAlrj.innerHTML = '<i class="fas fa-triangle-exclamation" style="color:var(--gold)"></i> ' + alrjEl.innerHTML;
-                    }
+
+                    // İsim, fiyat, açıklama
+                    gmName.textContent  = nameEl ? nameEl.textContent.trim() : '';
+                    gmPrice.textContent = price  ? price.textContent.trim()  : '';
+                    gmDesc.textContent  = descEl ? descEl.textContent.trim() : '';
+
+                    // Rozetler
+                    gmBdg.innerHTML = badges ? badges.innerHTML : '';
+
+                    // Legal (kalori, gramaj)
                     gmLegal.innerHTML = '';
-                    if (legal) gmLegal.innerHTML = legal.innerHTML;
+                    if (legal && legal.children.length > 0) gmLegal.innerHTML = legal.innerHTML;
                     if (origin && origin.textContent.trim()) {
-                        gmLegal.innerHTML += '<span style="font-size:.72rem;color:var(--muted);background:rgba(255,255,255,.06);padding:2px 8px;border-radius:99px;display:inline-block;margin-top:4px">' + origin.textContent.trim() + '</span>';
+                        gmLegal.innerHTML += '<span style="font-size:.72rem;color:var(--muted);background:rgba(255,255,255,.06);padding:2px 8px;border-radius:99px;display:inline-block">' + origin.textContent.trim() + '</span>';
+                    }
+
+                    // Alerjenler
+                    if (alrjEl && alrjEl.children.length > 0) {
+                        gmAlrj.innerHTML = alrjEl.innerHTML;
+                        gmAlrjWrap.style.display = '';
+                    } else {
+                        gmAlrj.innerHTML = '';
+                        gmAlrjWrap.style.display = 'none';
                     }
 
                     document.getElementById('gridModal').classList.add('open');
