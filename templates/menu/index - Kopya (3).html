@@ -31,43 +31,20 @@
     }
 
     /* WHITE MOD */
-    body.white-mod{
-        --bg:#f7f4ef;
-        --card:rgba(255,255,255,1);
-        --line:rgba(0,0,0,.07);
-        --text:#1a1208;
-        --muted:#7a6a55;
-        --gold:#c8860a;
-        --gold-2:#e0a020;
-        background:#f7f4ef !important;
-    }
-    body.white-mod .splash,body.white-mod .hero,body.white-mod .toolbar,body.white-mod .menu-wrap{background:#f7f4ef !important}
-    body.white-mod .splash-title,body.white-mod .hero-title{color:#1a1208 !important}
-    body.white-mod .splash-sub,body.white-mod .hero-sub,body.white-mod .product-desc,body.white-mod .cat-meta{color:#7a6a55 !important}
-    body.white-mod .product-name,body.white-mod .cat-name{color:#1a1208 !important;font-weight:800 !important}
-    body.white-mod .cat-card,body.white-mod .feature-card{background:#fff !important;border-color:rgba(200,134,10,.15) !important;box-shadow:0 2px 12px rgba(0,0,0,.06) !important}
-    body.white-mod .product{background:#fff !important;border-color:rgba(200,134,10,.2) !important;box-shadow:0 2px 10px rgba(0,0,0,.05) !important}
-    body.white-mod .product:hover{border-color:rgba(200,134,10,.5) !important;box-shadow:0 4px 18px rgba(200,134,10,.12) !important}
-    body.white-mod .search{background:#fff !important;color:#1a1208 !important;border-color:rgba(0,0,0,.12) !important;box-shadow:0 2px 8px rgba(0,0,0,.06) !important}
-    body.white-mod .search::placeholder{color:#b0a090 !important}
-    body.white-mod .chips button{background:#fff !important;color:#5a4a35 !important;border-color:rgba(0,0,0,.10) !important}
-    body.white-mod .chips button.active{background:var(--gold) !important;color:#fff !important;border-color:var(--gold) !important}
-    body.white-mod .hero-pill{background:rgba(0,0,0,.05) !important;color:#5a4a35 !important;border-color:rgba(0,0,0,.10) !important}
-    body.white-mod .lang button{background:#fff !important;color:#5a4a35 !important;border-color:rgba(0,0,0,.10) !important}
-    body.white-mod .lang button.active{background:var(--gold) !important;color:#fff !important}
-    body.white-mod .footer-signature{background:#f7f4ef !important;border-color:rgba(200,134,10,.15) !important}
-    body.white-mod .footer-kdv,body.white-mod .footer-update,body.white-mod .menu-foot{color:#7a6a55 !important}
-    body.white-mod .footer-kdv span,body.white-mod .footer-update span{color:#5a4a35 !important}
-    body.white-mod .allergen-tag{color:#8b3a3a !important;background:rgba(180,40,40,.07) !important;border-color:rgba(180,40,40,.2) !important}
-    body.white-mod .price{color:var(--gold) !important}
-    body.white-mod .cat-head{background:linear-gradient(135deg,rgba(200,134,10,.08),rgba(200,134,10,.02)) !important}
-    body.white-mod .cat-name{color:#1a1208 !important}
-    body.white-mod .cat-meta{color:#c8860a !important}
-    body.white-mod .badge.new{background:rgba(46,180,80,.1) !important;color:#1a6b30 !important;border-color:rgba(46,180,80,.25) !important}
-    body.white-mod .badge.popular{background:rgba(200,134,10,.1) !important;color:#8b6000 !important;border-color:rgba(200,134,10,.25) !important}
-    body.white-mod .badge.spicy{background:rgba(180,40,40,.08) !important;color:#8b1a1a !important;border-color:rgba(180,40,40,.2) !important}
-    body.white-mod .menu-end{color:#c8860a !important}
-    body.white-mod .menu-end-line{background:linear-gradient(90deg,transparent,rgba(200,134,10,.3),transparent) !important}
+    body.white-mod{--bg:#f5f5f5;--card:rgba(255,255,255,.97);--line:rgba(0,0,0,.08);--text:#1a1a1a;--muted:#555;background:#f0f0f0 !important}
+    body.white-mod .splash,body.white-mod .hero,body.white-mod .toolbar,body.white-mod .menu-wrap{background:#f0f0f0}
+    body.white-mod .splash-title,body.white-mod .hero-title{color:#1a1a1a !important}
+    body.white-mod .splash-sub,body.white-mod .hero-sub,body.white-mod .product-desc,body.white-mod .cat-meta{color:#555 !important}
+    body.white-mod .product-name,body.white-mod .cat-name{color:#1a1a1a !important}
+    body.white-mod .cat-card,body.white-mod .product,body.white-mod .feature-card{background:#fff !important;border-color:rgba(0,0,0,.08) !important}
+    body.white-mod .search{background:#fff !important;color:#1a1a1a !important;border-color:rgba(0,0,0,.12) !important}
+    body.white-mod .search::placeholder{color:#999 !important}
+    body.white-mod .chips button{background:#fff !important;color:#444 !important;border-color:rgba(0,0,0,.12) !important}
+    body.white-mod .chips button.active{background:var(--gold) !important;color:#000 !important;border-color:var(--gold) !important}
+    body.white-mod .hero-pill{background:rgba(0,0,0,.06) !important;color:#333 !important;border-color:rgba(0,0,0,.12) !important}
+    body.white-mod .lang button{background:#fff !important;color:#444 !important;border-color:rgba(0,0,0,.12) !important}
+    body.white-mod .lang button.active{background:var(--gold) !important;color:#000 !important}
+    body.white-mod .legal-note,body.white-mod .footer-note,body.white-mod .price-note,body.white-mod .menu-foot{color:#333 !important}
 
     /* GRID GORUNUM */
     body[data-gorunum="grid"] .product-grid{display:grid !important;grid-template-columns:1fr 1fr !important;gap:10px !important;padding:10px !important}
@@ -2448,9 +2425,8 @@
             border-color: rgba(255,255,255,.09);
         }
 
-        .product-origin { display: none !important; }
-        .product-alcohol-warning { display: none !important; }
-        .legal-badges { display: none !important; }
+        .product-origin { display: none; }
+        .product-alcohol-warning { display: none; }
 
         .allergen-tags {
             display: flex;
@@ -2666,14 +2642,13 @@
 
         .footer-signature {
             margin-top: 28px;
-            padding: 22px 16px calc(14px + env(safe-area-inset-bottom, 16px));
+            padding: 22px 16px 14px;
             border-top: 1px solid rgba(255,255,255,0.06);
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 8px;
-            background: var(--bg);
         }
 
         .footer-kdv {
