@@ -4714,8 +4714,12 @@
                              id="product-{{ urun.id }}"
                              data-kat="{{ kat.id }}"
                              data-tr="{{ urun.isim ~ ' ' ~ (urun.aciklama or '') }}"
-                             data-en="{{ (urun.isim_en or urun.isim) ~ ' ' ~ (urun.aciklama_en or urun.aciklama or '') }}">
-                            <img src="/static/uploads/{{ tenant.slug }}/urunler/{{ urun.resim }}" alt="{{ urun.isim }}" onclick="openProductLightbox(this.src, '{{ urun.isim|e }}', event)" style="cursor: pointer;">
+                             data-en="{{ (urun.isim_en or urun.isim) ~ ' ' ~ (urun.aciklama_en or urun.aciklama or '') }}"
+                             data-urun-tipi="{{ urun.urun_tipi or 'standart' }}"
+                             data-urun-id="{{ urun.id }}"
+                             onclick="handleProductClick(this, event)"
+                             style="{% if urun.urun_tipi == 'builder' %}cursor: pointer;{% endif %}">
+                            <img src="/static/uploads/{{ tenant.slug }}/urunler/{{ urun.resim }}" alt="{{ urun.isim }}" onclick="handleProductClick(this, event)" style="cursor: pointer;">
                             <div class="product-body">
                                 <div class="product-top">
                                     <div>
@@ -5943,6 +5947,22 @@
         window.addEventListener('hashchange', focusProductByHash);
 
         window.addEventListener('scroll', toggleTopFab, { passive: true });
+
+        function handleProductClick(element, event) {
+            const productCard = element.closest('.product');
+            const urunTipi = productCard.dataset.urunTipi;
+            const urunId = productCard.dataset.urunId;
+            
+            if (urunTipi === 'builder') {
+                event.preventDefault();
+                event.stopPropagation();
+                window.location.href = '/r/{{ tenant.slug }}/builder/' + urunId;
+            } else {
+                const img = productCard.querySelector('img');
+                const name = productCard.querySelector('.product-name.tr').textContent;
+                openProductLightbox(img.src, name, event);
+            }
+        }
 
         // Dil dropdown dışı tıklamada kapat
         document.addEventListener('click', function(e) {
