@@ -4532,7 +4532,7 @@
                 <a class="social-btn" href="{{ tenant.konum_url }}" target="_blank"><i class="fas fa-location-dot"></i> Konum</a>
                 {% endif %}
                 {% if tenant.wifi_sifresi %}
-                <button class="social-btn wifi-btn" onclick="openWifiModal()" data-i18n="ui_wifi"><i class="fas fa-gift"></i> WiFi Şifresi</button>
+                <button class="social-btn wifi-btn" onclick="openWifiModal()"><i class="fas fa-gift"></i> WiFi Şifresi</button>
                 {% endif %}
             </div>
 
@@ -4584,8 +4584,8 @@
             <a class="feature-card"
                href="/r/{{ tenant.slug }}/#product-{{ urun.id }}"
                data-kat="{{ urun.kategori_id }}"
-               data-tr="{{ (urun.isim ~ ' ' ~ (urun.aciklama or ''))|lower }}"
-               data-en="{{ ((urun.isim_en or urun.isim) ~ ' ' ~ (urun.aciklama_en or urun.aciklama or ''))|lower }}"
+               data-tr="{{ urun.isim ~ ' ' ~ (urun.aciklama or '') }}"
+               data-en="{{ (urun.isim_en or urun.isim) ~ ' ' ~ (urun.aciklama_en or urun.aciklama or '') }}"
                data-product-id="{{ urun.id }}">
                 <div class="feature-img">
                     {% if urun.resim %}
@@ -4635,8 +4635,8 @@
                         <div class="product menu-item"
                              id="product-{{ urun.id }}"
                              data-kat="{{ kat.id }}"
-                             data-tr="{{ (urun.isim ~ ' ' ~ urun.aciklama)|lower }}"
-                             data-en="{{ ((urun.isim_en or urun.isim) ~ ' ' ~ (urun.aciklama_en or urun.aciklama))|lower }}">
+                             data-tr="{{ urun.isim ~ ' ' ~ (urun.aciklama or '') }}"
+                             data-en="{{ (urun.isim_en or urun.isim) ~ ' ' ~ (urun.aciklama_en or urun.aciklama or '') }}">
                             <img src="/static/uploads/{{ tenant.slug }}/urunler/{{ urun.resim }}" alt="{{ urun.isim }}" onclick="openProductLightbox(this.src, '{{ urun.isim|e }}', event)" style="cursor: pointer;">
                             <div class="product-body">
                                 <div class="product-top">
