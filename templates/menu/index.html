@@ -2667,6 +2667,96 @@
             z-index: 2;
         }
 
+        /* WiFi Modal Styles */
+        .wifi-modal-card {
+            max-width: 380px;
+            text-align: center;
+        }
+
+        .wifi-modal-content {
+            padding: 30px 24px;
+        }
+
+        .wifi-gift-icon {
+            font-size: 4rem;
+            color: var(--gold);
+            margin-bottom: 16px;
+            animation: giftBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes giftBounce {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .wifi-modal-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .wifi-password-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.08);
+            border: 2px solid rgba(243,156,18,0.3);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+        }
+
+        .wifi-password {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .wifi-copy-btn {
+            background: var(--gold);
+            border: none;
+            border-radius: 12px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #000;
+        }
+
+        .wifi-copy-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(243,156,18,0.4);
+        }
+
+        .wifi-copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        .wifi-hint {
+            font-size: 0.85rem;
+            color: var(--muted);
+            opacity: 0.7;
+        }
+
+        .wifi-btn {
+            background: linear-gradient(135deg, rgba(243,156,18,0.15), rgba(243,156,18,0.05));
+            border-color: rgba(243,156,18,0.3);
+        }
+
+        .wifi-btn:hover {
+            background: linear-gradient(135deg, rgba(243,156,18,0.25), rgba(243,156,18,0.1));
+            border-color: rgba(243,156,18,0.5);
+        }
+
         .lightbox img {
             max-width: min(92vw, 900px);
             max-height: 88vh;
@@ -4380,6 +4470,9 @@
                 {% if tenant.konum_url %}
                 <a class="social-btn" href="{{ tenant.konum_url }}" target="_blank"><i class="fas fa-location-dot"></i> Konum</a>
                 {% endif %}
+                {% if tenant.wifi_sifresi %}
+                <button class="social-btn wifi-btn" onclick="openWifiModal()" data-i18n="ui_wifi"><i class="fas fa-gift"></i> WiFi</button>
+                {% endif %}
             </div>
 
             <div class="hero-meta">
@@ -4587,6 +4680,26 @@
             <img id="lightboxImage" src="" alt="">
             <div class="lightbox-close" onclick="event.stopPropagation();closeProductLightbox()">
                 <i class="fas fa-times"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- WiFi Modal -->
+    <div class="modal" id="wifiModal" onclick="closeWifiModal(event)">
+        <div class="modal-card wifi-modal-card">
+            <button class="modal-close" type="button" onclick="forceCloseWifiModal()"><i class="fas fa-xmark"></i></button>
+            <div class="wifi-modal-content">
+                <div class="wifi-gift-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <h2 class="wifi-modal-title" data-i18n="ui_wifi_title">WiFi Şifresi</h2>
+                <div class="wifi-password-box">
+                    <span class="wifi-password" id="wifiPassword">{{ tenant.wifi_sifresi }}</span>
+                    <button class="wifi-copy-btn" onclick="copyWifiPassword()" data-i18n="ui_copy">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <p class="wifi-hint" data-i18n="ui_wifi_hint">Kopyala butonuna tıklayarak şifreyi kopyalayabilirsiniz</p>
             </div>
         </div>
     </div>
@@ -4855,7 +4968,11 @@
             emptyState:     { tr:'Aradığınız kritere uygun ürün bulunamadı.', en:'No products matched your search.', ar:'لا توجد منتجات مطابقة.', de:'Keine Produkte gefunden.', fr:'Aucun produit trouvé.', ru:'Товары не найдены.', zh:'未找到相关产品。' },
             splash:         { tr:"{{ tenant.splash_text or 'Lezzet menümüze hoş geldiniz' }}", en:'Welcome to our menu', ar:'مرحبا بكم في قائمتنا', de:'Willkommen auf unserer Speisekarte', fr:'Bienvenue sur notre menu', ru:'Добро пожаловать', zh:'欢迎浏览我们的菜单' },
             openNow:        { tr:'Şu an açık', en:'Open now', ar:'مفتوح الآن', de:'Jetzt geöffnet', fr:'Ouvert maintenant', ru:'Сейчас открыто', zh:'正在营业' },
-            closedNow:      { tr:'Şu an kapalı', en:'Closed now', ar:'مغلق الآن', de:'Jetzt geschlossen', fr:'Fermé maintenant', ru:'Сейчас закрыто', zh:'已打烊' }
+            closedNow:      { tr:'Şu an kapalı', en:'Closed now', ar:'مغلق الآن', de:'Jetzt geschlossen', fr:'Fermé maintenant', ru:'Сейчас закрыто', zh:'已打烊' },
+            wifi:           { tr:'WiFi', en:'WiFi', ar:'واي فاي', de:'WLAN', fr:'WiFi', ru:'Wi-Fi', zh:'WiFi' },
+            wifiTitle:      { tr:'WiFi Şifresi', en:'WiFi Password', ar:'كلمة مرور الواي فاي', de:'WLAN-Passwort', fr:'Mot de passe WiFi', ru:'Пароль Wi-Fi', zh:'WiFi密码' },
+            copy:           { tr:'Kopyala', en:'Copy', ar:'نسخ', de:'Kopieren', fr:'Copier', ru:'Копировать', zh:'复制' },
+            wifiHint:       { tr:'Kopyala butonuna tıklayarak şifreyi kopyalayabilirsiniz', en:'Click copy button to copy the password', ar:'انقر على زر النسخ لنسخ كلمة المرور', de:'Klicken Sie auf Kopieren, um das Passwort zu kopieren', fr:'Cliquez sur Copier pour copier le mot de passe', ru:'Нажмите Копировать, чтобы скопировать пароль', zh:'点击复制按钮复制密码' }
         };
 
         function langText(group, lang) {
@@ -4942,6 +5059,14 @@
             document.getElementById('menuSearch').placeholder = langText('searchPlaceholder', stableLang);
             document.getElementById('emptyState').textContent = langText('emptyState', stableLang);
             if (_subEl) _subEl.textContent = langText('splash', stableLang);
+
+            // WiFi modal metinlerini güncelle
+            const wifiTitle = document.querySelector('.wifi-modal-title');
+            const wifiHint = document.querySelector('.wifi-hint');
+            const wifiBtn = document.querySelector('.wifi-btn');
+            if (wifiTitle) wifiTitle.textContent = langText('wifiTitle', stableLang);
+            if (wifiHint) wifiHint.textContent = langText('wifiHint', stableLang);
+            if (wifiBtn) wifiBtn.textContent = langText('wifi', stableLang);
 
             const priceUpdatePill = document.getElementById('priceUpdatePill');
             const priceUpdateText = document.getElementById('priceUpdateText');
@@ -5306,6 +5431,35 @@
 
         function forceCloseProductModal() {
             document.getElementById('productModal').classList.remove('show');
+        }
+
+        // WiFi Modal Functions
+        function openWifiModal() {
+            document.getElementById('wifiModal').classList.add('show');
+        }
+
+        function closeWifiModal(e) {
+            if (e.target.id === 'wifiModal') forceCloseWifiModal();
+        }
+
+        function forceCloseWifiModal() {
+            document.getElementById('wifiModal').classList.remove('show');
+        }
+
+        function copyWifiPassword() {
+            const password = document.getElementById('wifiPassword').textContent;
+            navigator.clipboard.writeText(password).then(() => {
+                const btn = document.querySelector('.wifi-copy-btn');
+                const originalIcon = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                btn.style.background = '#4CAF50';
+                setTimeout(() => {
+                    btn.innerHTML = originalIcon;
+                    btn.style.background = '';
+                }, 1500);
+            }).catch(() => {
+                alert('Kopyalama başarısız. Şifreyi manuel kopyalayın.');
+            });
         }
 
         function trackView(uid) {

@@ -78,6 +78,7 @@ def get_menu_data(tenant_slug):
             'whatsapp': tenant.whatsapp,
             'instagram': tenant.instagram,
             'konum_url': tenant.konum_url,
+            'wifi_sifresi': tenant.wifi_sifresi,
             'splash_text': tenant.splash_text,
             'acilis_saati': tenant.acilis_saati,
             'kapanis_saati': tenant.kapanis_saati,
@@ -173,6 +174,7 @@ class Tenant(db.Model):
     whatsapp        = db.Column(db.String(60),  default='')
     instagram       = db.Column(db.String(160), default='')
     konum_url       = db.Column(db.String(255), default='')
+    wifi_sifresi    = db.Column(db.String(100), default='')
     splash_text     = db.Column(db.String(200), default='Lezzet menümüze hoş geldiniz')
     aktif           = db.Column(db.Boolean, default=True)
     paket           = db.Column(db.String(20), default='temel')
@@ -457,6 +459,7 @@ def ensure_schema():
             'service_fee_percentage': 'service_fee_percentage FLOAT DEFAULT 0',
             'menu_gorunum': "menu_gorunum VARCHAR(10) DEFAULT 'liste'",
             'white_mod': 'white_mod BOOLEAN DEFAULT 0',
+            'wifi_sifresi': "wifi_sifresi VARCHAR(100) DEFAULT ''",
         },
         'musteri': {
             'referans_kodu': 'referans_kodu VARCHAR(20)',
@@ -905,6 +908,7 @@ def t_ayarlar(slug, tenant, me):
     tenant.whatsapp        = clean(request.form.get('whatsapp'))
     tenant.instagram       = clean(request.form.get('instagram'))
     tenant.konum_url       = clean(request.form.get('konum_url'))
+    tenant.wifi_sifresi    = clean(request.form.get('wifi_sifresi'))
     tenant.splash_text     = clean(request.form.get('splash_text'), tenant.splash_text)
     tenant.acilis_saati    = normalize_time(request.form.get('acilis_saati'), tenant.acilis_saati or '10:00')
     tenant.kapanis_saati   = normalize_time(request.form.get('kapanis_saati'), tenant.kapanis_saati or '23:30')
