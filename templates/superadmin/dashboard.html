@@ -471,6 +471,19 @@ td{padding:13px 14px;vertical-align:middle}
       <div class="stat s-pu"><div class="stat-icon"><i class="fas fa-building"></i></div><div class="stat-n">{{ stats.kurumsal }}</div><div class="stat-l">Kurumsal Paket</div></div>
     </div>
 
+    <!-- KASA TAKİBİ -->
+    <div class="card">
+      <div class="card-head">
+        <div><div class="card-title"><i class="fas fa-cash-register" style="color:var(--green)"></i> Kasa Takibi</div><div class="card-desc">Tahsilat ve ödeme tipi bazlı gelir dağılımı.</div></div>
+      </div>
+      <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 0;">
+        <div class="stat s-green"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-n">{{ "{:,.0f}".format(stats.tahsil_edilen).replace(",",".") }}₺</div><div class="stat-l">Tahsil Edilen</div></div>
+        <div class="stat s-red"><div class="stat-icon"><i class="fas fa-hourglass-half"></i></div><div class="stat-n">{{ "{:,.0f}".format(stats.bekleyen_tutar).replace(",",".") }}₺</div><div class="stat-l">Bekleyen Tutar</div></div>
+        <div class="stat s-blue"><div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div><div class="stat-n">{{ "{:,.0f}".format(stats.odeme_nakit).replace(",",".") }}₺</div><div class="stat-l">Nakit Ödemeler</div></div>
+        <div class="stat s-orange"><div class="stat-icon"><i class="fas fa-university"></i></div><div class="stat-n">{{ "{:,.0f}".format(stats.odeme_havale).replace(",",".") }}₺</div><div class="stat-l">Havale Ödemeler</div></div>
+      </div>
+    </div>
+
     <div class="top-actions">
       <div class="action-pills">
         <span class="action-pill trial-badge"><i class="fas fa-bolt"></i> 14 Gün Deneme <strong>aktif</strong></span>

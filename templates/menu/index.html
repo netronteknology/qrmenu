@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, interactive-widget=resizes-content">
     <title>{{ tenant.restoran_adi }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,8 +56,8 @@
     body.white-mod .lang button{background:#fff !important;color:#5a4a35 !important;border-color:rgba(0,0,0,.10) !important}
     body.white-mod .lang button.active{background:var(--gold) !important;color:#fff !important}
     body.white-mod .footer-signature{background:#f7f4ef !important;border-color:rgba(200,134,10,.15) !important}
-    body.white-mod .footer-kdv,body.white-mod .footer-update,body.white-mod .menu-foot{color:#7a6a55 !important}
-    body.white-mod .footer-kdv span,body.white-mod .footer-update span{color:#5a4a35 !important}
+    body.white-mod .footer-kdv,body.white-mod .footer-update,body.white-mod .menu-foot{color:#4a3a25 !important}
+    body.white-mod .footer-kdv span,body.white-mod .footer-update span{color:#2a1a05 !important}
     body.white-mod .allergen-tag{color:#8b3a3a !important;background:rgba(180,40,40,.07) !important;border-color:rgba(180,40,40,.2) !important}
     body.white-mod .price{color:var(--gold) !important}
     body.white-mod .cat-head{background:linear-gradient(135deg,rgba(200,134,10,.08),rgba(200,134,10,.02)) !important}
@@ -1277,11 +1277,14 @@
         }
 
         .hero-title {
-            max-width: min(100%, 16ch);
+            max-width: min(100%, 32ch);
             margin-inline: auto;
             text-wrap: balance;
             line-height: 1.05;
             word-break: break-word;
+            font-size: clamp(1.4rem, 5vw, 2.4rem);
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 700;
         }
 
         .sub {
@@ -5148,11 +5151,26 @@
         function applyFilters() {
             const q = document.getElementById('menuSearch').value.toLowerCase().trim();
             let visibleCount = 0;
+            const isSearching = q.length > 0;
+
+            // TR karakter normalizasyonu için yardımcı fonksiyon
+            const normalizeTr = (str) => {
+                return str
+                    .toLowerCase()
+                    .replace(/ı/g, 'i')
+                    .replace(/ğ/g, 'g')
+                    .replace(/ü/g, 'u')
+                    .replace(/ş/g, 's')
+                    .replace(/ö/g, 'o')
+                    .replace(/ç/g, 'c');
+            };
+            const normalizedQuery = normalizeTr(q);
 
             document.querySelectorAll('.menu-item').forEach(item => {
                 const text = currentLang === 'tr' ? item.dataset.tr : item.dataset.en;
+                const normalizedText = normalizeTr(text);
                 const categoryOk = currentCategory === 'all' || item.dataset.kat === currentCategory;
-                const searchOk = text.includes(q);
+                const searchOk = normalizedText.includes(normalizedQuery);
                 const show = categoryOk && searchOk;
                 item.classList.toggle('hidden', !show);
                 if (show) visibleCount++;
@@ -5161,7 +5179,8 @@
             document.querySelectorAll('.menu-category').forEach(cat => {
                 const categoryOk = currentCategory === 'all' || cat.dataset.kat === currentCategory;
                 const visibleItems = cat.querySelector('.menu-item:not(.hidden)');
-                const showCategory = categoryOk && visibleItems;
+                // Arama yapınca kategori başlıklarını gizle, sadece ürün kartları göster
+                const showCategory = categoryOk && visibleItems && !isSearching;
                 cat.classList.toggle('hidden', !showCategory);
                 if (!showCategory) {
                     cat.classList.remove('open');
@@ -5176,10 +5195,9 @@
             let featuredVisible = 0;
 
             document.querySelectorAll('#featuredGrid .feature-card').forEach(card => {
-                // Arama filtresi her zaman uygulansın; kategori sınırlaması olmadan
-                // çünkü kategoriye tıklayınca tüm featured bölümünü zaten gizleyeceğiz
                 const text = currentLang === 'tr' ? card.dataset.tr : card.dataset.en;
-                const searchOk = text.includes(q);
+                const normalizedText = normalizeTr(text);
+                const searchOk = normalizedText.includes(normalizedQuery);
                 card.classList.toggle('hidden', !searchOk);
                 if (searchOk) featuredVisible++;
             });
@@ -5190,12 +5208,11 @@
                 card.classList.toggle('hidden', !show);
             });
 
-            // ── Öne Çıkan Ürünler: sadece "Tümü" seçiliyken görünsün ──
-            // Bir kategori seçildiğinde smooth (CSS transition) ile gizlenir
-            const showFeaturedSection = (currentCategory === 'all') && (featuredVisible > 0);
+            // ── Öne Çıkan Ürünler: arama yapınca her zaman gizlensin ──
+            // Sadece "Tümü" seçiliyken VE arama yoksa görünsün
+            const showFeaturedSection = (currentCategory === 'all') && (!isSearching) && (featuredVisible > 0);
             featTitle.classList.toggle('featured-collapsed', !showFeaturedSection);
             featured.classList.toggle('featured-collapsed', !showFeaturedSection);
-            // Eski inline display:none kaldırıldı; class ile yönetiyoruz
             featTitle.style.display = '';
             featured.style.display = '';
 

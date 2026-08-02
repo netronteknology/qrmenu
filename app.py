@@ -659,6 +659,13 @@ def sa_panel():
     yaklasan      = [t for t in tenants if t.lisans_bitis and now < t.lisans_bitis < now + timedelta(days=30)]
     suresi_dolmus = [t for t in tenants if t.lisans_bitis and t.lisans_bitis < now]
 
+    # Kasa takibi istatistikleri
+    tahsil_edilen = sum(t.ucret or 0 for t in tenants if t.odendi_mi)
+    bekleyen_tutar = sum(t.ucret or 0 for t in tenants if not t.odendi_mi)
+    odeme_nakit = sum(t.ucret or 0 for t in tenants if t.odeme_tipi == 'nakit' and t.odendi_mi)
+    odeme_havale = sum(t.ucret or 0 for t in tenants if t.odeme_tipi == 'havale' and t.odendi_mi)
+    odeme_kredi = sum(t.ucret or 0 for t in tenants if t.odeme_tipi == 'kredi' and t.odendi_mi)
+
     stats = dict(
         toplam_musteri=len(musteriler),
         toplam=len(tenants),
@@ -668,6 +675,11 @@ def sa_panel():
         deneme=sum(1 for t in tenants if t.paket=='deneme'),
         toplam_gorunum=sum(t.view_count or 0 for t in tenants),
         toplam_gelir=sum(t.ucret or 0 for t in tenants),
+        tahsil_edilen=tahsil_edilen,
+        bekleyen_tutar=bekleyen_tutar,
+        odeme_nakit=odeme_nakit,
+        odeme_havale=odeme_havale,
+        odeme_kredi=odeme_kredi,
         yaklasan_lisans=len(yaklasan),
         suresi_dolmus=len(suresi_dolmus),
         odeme_bekleyen=sum(1 for t in tenants if not t.odendi_mi),
