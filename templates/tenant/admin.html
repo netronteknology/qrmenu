@@ -1213,6 +1213,7 @@
         <button class="nav-btn" id="btn-kullanicilar" onclick="openTab('kullanicilar')"><i class="fas fa-user-shield"></i> Kullanıcılar</button>
         <button class="nav-btn" id="btn-kategoriler" onclick="openTab('kategoriler')"><i class="fas fa-layer-group"></i> Kategoriler</button>
         <button class="nav-btn" id="btn-urunler" onclick="openTab('urunler')"><i class="fas fa-utensils"></i> Ürünler</button>
+        <button class="nav-btn" id="btn-builder" onclick="openTab('builder')"><i class="fas fa-layer-group"></i> Builder Gruplar</button>
         <button class="nav-btn" id="btn-qrcodes" onclick="openTab('qrcodes')"><i class="fas fa-qrcode"></i> QR Kodlar</button>
 
         <div class="sidebar-bottom">
@@ -1982,6 +1983,168 @@
             {% else %}
             <div class="empty-box">Henüz ürün eklenmemiş.</div>
             {% endif %}
+        </div>
+
+        <!-- BUILDER GRUPLAR -->
+        <div class="tab" id="tab-builder">
+            <div class="page-head">
+                <div>
+                    <h2 class="page-title">Builder Gruplar</h2>
+                    <div class="page-sub">Özelleştirilebilir ürünler için seçenek grupları oluştur (Boy, Protein, Garnitür vb.).</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title collapsible" onclick="toggleCard('form-builder-grup', this)">
+                    <span><i class="fas fa-plus" style="margin-right:8px;color:var(--gold)"></i>Yeni Builder Grup</span>
+                    <i class="fas fa-chevron-down card-toggle-icon"></i>
+                </h3>
+                <div class="card-body-collapsible collapsed" id="form-builder-grup">
+                    <form action="/r/{{ tenant.slug }}/admin/builder_grup_ekle" method="POST">
+                        <label class="field-label">Grup Adı *</label>
+                        <input type="text" name="isim" placeholder="örn: Protein Seçimi" required>
+                        <small class="field-hint"><i class="fas fa-info-circle"></i> Müşterinin göreceği grup adı</small>
+
+                        <label class="field-label" style="margin-top:8px;display:block">Grup Adı (İngilizce)</label>
+                        <input type="text" name="isim_en" placeholder="Protein Selection">
+
+                        <label class="field-label" style="margin-top:8px;display:block">Açıklama</label>
+                        <input type="text" name="aciklama" placeholder="örn: İstediğiniz proteini seçin">
+                        <small class="field-hint"><i class="fas fa-info-circle"></i> Opsiyonel açıklama</small>
+
+                        <label class="field-label" style="margin-top:8px;display:block">İkon</label>
+                        <input type="text" name="ikon" placeholder="fas fa-drumstick-bite">
+                        <small class="field-hint"><i class="fas fa-info-circle"></i> Font Awesome ikon sınıfı (opsiyonel)</small>
+
+                        <label class="field-label" style="margin-top:8px;display:block">Bağlı Ürün</label>
+                        <select name="urun_id">
+                            <option value="">Tüm Builder Ürünleri İçin</option>
+                            {% for urun in urunler %}
+                            {% if urun.urun_tipi == 'builder' %}
+                            <option value="{{ urun.id }}">{{ urun.isim }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <small class="field-hint"><i class="fas fa-info-circle"></i> Boş bırakırsanız tüm builder ürünlerinde görünür</small>
+
+                        <div class="form-grid-2" style="margin-top:12px">
+                            <div>
+                                <label class="field-label">Sıra</label>
+                                <input type="number" name="sira" value="0" min="0">
+                            </div>
+                            <div>
+                                <label class="field-label">Seçim Tipi</label>
+                                <select name="secim_tipi">
+                                    <option value="radio">Tek Seçim (Radio)</option>
+                                    <option value="checkbox">Çoklu Seçim (Checkbox)</option>
+                                    <option value="dropdown">Dropdown</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid-2" style="margin-top:12px">
+                            <div>
+                                <label class="field-label">Min Seçim</label>
+                                <input type="number" name="min_secim" value="0" min="0">
+                            </div>
+                            <div>
+                                <label class="field-label">Max Seçim</label>
+                                <input type="number" name="max_secim" value="1" min="1">
+                            </div>
+                        </div>
+
+                        <div class="checks" style="margin-top:12px">
+                            <label><input type="checkbox" name="zorunlu"> Zorunlu Seçim</label>
+                            <label><input type="checkbox" name=" Gorsel_goster"> Görsel Göster</label>
+                            <label><input type="checkbox" name="fiyat_goster" checked> Fiyat Göster</label>
+                        </div>
+
+                        <button class="save-btn" type="submit" onclick="return handleSubmitButton(this)"><i class="fas fa-plus"></i> Grup Ekle</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Mevcut Gruplar</h3>
+                {% if builder_gruplar %}
+                <div style="display:flex;flex-direction:column;gap:8px">
+                    {% for grup in builder_gruplar %}
+                    <div class="box">
+                        <div class="body">
+                            <div class="top">
+                                <div>
+                                    <div class="name">{{ grup.isim }}</div>
+                                    <div class="muted">{{ grup.isim_en or '' }}</div>
+                                </div>
+                                <div class="chips">
+                                    <span class="chip {{ 'green' if grup.durum else 'red' }}">{{ 'Aktif' if grup.durum else 'Pasif' }}</span>
+                                    {% if grup.zorunlu %}<span class="chip gold">Zorunlu</span>{% endif %}
+                                    <span class="chip">{{ grup.secim_tipi }}</span>
+                                </div>
+                            </div>
+                            <div class="muted">{{ grup.aciklama or '' }}</div>
+                            <div class="muted">{{ grup.secenekler|length }} seçenek</div>
+                            <div class="actions">
+                                <a class="btn {{ 'btn-green' if grup.durum else 'btn-red' }}" href="/r/{{ tenant.slug }}/admin/builder_grup_durum/{{ grup.id }}">
+                                    <i class="fas fa-power-off"></i> {{ 'Aktif' if grup.durum else 'Pasif' }}
+                                </a>
+                                <a class="btn btn-blue" href="/r/{{ tenant.slug }}/admin/builder_grup_secenekleri/{{ grup.id }}">
+                                    <i class="fas fa-list"></i> Seçenekler
+                                </a>
+                                <button class="btn btn-soft" type="button" onclick="toggleEdit('builder-edit-{{ grup.id }}')">
+                                    <i class="fas fa-pen"></i> Düzenle
+                                </button>
+                            </div>
+                            <div class="edit" id="builder-edit-{{ grup.id }}">
+                                <form action="/r/{{ tenant.slug }}/admin/builder_grup_duzenle/{{ grup.id }}" method="POST">
+                                    <label class="field-label">Grup Adı *</label>
+                                    <input type="text" name="isim" value="{{ grup.isim }}" required>
+                                    <label class="field-label" style="margin-top:8px;display:block">Grup Adı (İngilizce)</label>
+                                    <input type="text" name="isim_en" value="{{ grup.isim_en or '' }}">
+                                    <label class="field-label" style="margin-top:8px;display:block">Açıklama</label>
+                                    <input type="text" name="aciklama" value="{{ grup.aciklama or '' }}">
+                                    <label class="field-label" style="margin-top:8px;display:block">İkon</label>
+                                    <input type="text" name="ikon" value="{{ grup.ikon or '' }}">
+                                    <div class="form-grid-2" style="margin-top:12px">
+                                        <div>
+                                            <label class="field-label">Sıra</label>
+                                            <input type="number" name="sira" value="{{ grup.sira }}" min="0">
+                                        </div>
+                                        <div>
+                                            <label class="field-label">Seçim Tipi</label>
+                                            <select name="secim_tipi">
+                                                <option value="radio" {% if grup.secim_tipi=='radio' %}selected{% endif %}>Tek Seçim</option>
+                                                <option value="checkbox" {% if grup.secim_tipi=='checkbox' %}selected{% endif %}>Çoklu Seçim</option>
+                                                <option value="dropdown" {% if grup.secim_tipi=='dropdown' %}selected{% endif %}>Dropdown</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-grid-2" style="margin-top:12px">
+                                        <div>
+                                            <label class="field-label">Min Seçim</label>
+                                            <input type="number" name="min_secim" value="{{ grup.min_secim }}" min="0">
+                                        </div>
+                                        <div>
+                                            <label class="field-label">Max Seçim</label>
+                                            <input type="number" name="max_secim" value="{{ grup.max_secim }}" min="1">
+                                        </div>
+                                    </div>
+                                    <div class="checks" style="margin-top:12px">
+                                        <label><input type="checkbox" name="zorunlu" {% if grup.zorunlu %}checked{% endif %}> Zorunlu Seçim</label>
+                                        <label><input type="checkbox" name=" Gorsel_goster" {% if grup.Gorsel_goster %}checked{% endif %}> Görsel Göster</label>
+                                        <label><input type="checkbox" name="fiyat_goster" {% if grup.fiyat_goster %}checked{% endif %}> Fiyat Göster</label>
+                                    </div>
+                                    <button class="save-btn" type="submit" onclick="return handleSubmitButton(this)"><i class="fas fa-check"></i> Grup Güncelle</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-box">Henüz builder grubu eklenmemiş.</div>
+                {% endif %}
+            </div>
         </div>
 
         <!-- QR KODLAR -->

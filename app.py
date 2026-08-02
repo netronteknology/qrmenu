@@ -973,12 +973,13 @@ def t_admin(slug, tenant, me):
     uruns = Urun.query.filter_by(tenant_id=tenant.id).order_by(Urun.sira, Urun.id.desc()).all()
     users = Kullanici.query.filter_by(tenant_id=tenant.id).all()
     qrs   = QRCodeItem.query.filter_by(tenant_id=tenant.id).order_by(QRCodeItem.id.desc()).all()
+    builder_gruplar = BuilderGrup.query.filter_by(tenant_id=tenant.id).order_by(BuilderGrup.sira, BuilderGrup.id.desc()).all()
     port  = request.host.split(':')[1] if ':' in request.host else '5000'
     local = f'http://{get_ip()}:{port}/r/{slug}/'
     return render_template('tenant/admin.html',
         tenant=tenant, me=me,
         kategoriler=kats, urunler=uruns,
-        kullanicilar=users, qrcodes=qrs, local_url=local,
+        kullanicilar=users, qrcodes=qrs, builder_gruplar=builder_gruplar, local_url=local,
         standard_allergens=STANDARD_ALLERGENS)
 
 
@@ -1255,6 +1256,74 @@ def t_gorsel_indir(slug, tenant, me):
     if stats['products_fail'] or stats['categories_fail']:
         err(f"{stats['products_fail']} urun, {stats['categories_fail']} kategori indirilemedi.")
     return redirect(url_for('t_admin', slug=slug) + '#urunler')
+
+
+# ─── Builder Gruplar ───
+@app.route('/r/<slug>/admin/builder_grup_ekle', methods=['POST'])
+@login_required
+def t_builder_grup_ekle(slug, tenant, me):
+    isim = clean(request.form.get('isim'))
+    if not isim:
+        err('Grup adı zorunlu.')
+        return redirect(url_for('t_admin', slug=slug) + '#builder')
+    
+    urun_id = request.form.get('urun_id')
+    urun_id = int(urun_id) if urun_id else None
+    
+    grup = BuilderGrup(
+        tenant_id=tenant.id,
+        urun_id=urun_id,
+        isim=isim,
+        isim_en=clean(request.form.get('isim_en')),
+        aciklama=clean(request.form.get('aciklama')),
+        ikon=clean(request.form.get('ikon')),
+        sira=int(request.form.get('sira') or 0),
+        zorunlu=bool(request.form.get('zorunlu')),
+        min_secim=int(request.form.get('min_secim') or 0),
+        max_secim=int(request.form.get('max_secim') or 1),
+        secim_tipi=request.form.get('secim_tipi', 'radio'),
+        Gorsel_goster=bool(request.form.get(' Gorsel_goster')),
+        fiyat_goster=bool(request.form.get('fiyat_goster')),
+        durum=True
+    )
+    db.session.add(grup)
+    db.session.commit()
+    ok('Builder grubu eklendi.')
+    return redirect(url_for('t_admin', slug=slug) + '#builder')
+
+
+@app.route('/r/<slug>/admin/builder_grup_duzenle/<int:gid>', methods=['POST'])
+@login_required
+def t_builder_grup_duzenle(slug, tenant, me, gid):
+    grup = BuilderGrup.query.filter_by(id=gid, tenant_id=tenant.id).first_or_404()
+    
+    urun_id = request.form.get('urun_id')
+    grup.urun_id = int(urun_id) if urun_id else None
+    grup.isim = clean(request.form.get('isim'))
+    grup.isim_en = clean(request.form.get('isim_en'))
+    grup.aciklama = clean(request.form.get('aciklama'))
+    grup.ikon = clean(request.form.get('ikon'))
+    grup.sira = int(request.form.get('sira') or 0)
+    grup.zorunlu = bool(request.form.get('zorunlu'))
+    grup.min_secim = int(request.form.get('min_secim') or 0)
+    grup.max_secim = int(request.form.get('max_secim') or 1)
+    grup.secim_tipi = request.form.get('secim_tipi', 'radio')
+    grup.Gorsel_goster = bool(request.form.get(' Gorsel_goster'))
+    grup.fiyat_goster = bool(request.form.get('fiyat_goster'))
+    
+    db.session.commit()
+    ok('Builder grubu güncellendi.')
+    return redirect(url_for('t_admin', slug=slug) + '#builder')
+
+
+@app.route('/r/<slug>/admin/builder_grup_durum/<int:gid>')
+@login_required
+def t_builder_grup_durum(slug, tenant, me, gid):
+    grup = BuilderGrup.query.filter_by(id=gid, tenant_id=tenant.id).first_or_404()
+    grup.durum = not grup.durum
+    db.session.commit()
+    ok('Durum güncellendi.')
+    return redirect(url_for('t_admin', slug=slug) + '#builder')
 
 
 # â”€â”€ Excel Aktarım â”€â”€
