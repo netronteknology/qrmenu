@@ -1326,6 +1326,79 @@ def t_builder_grup_durum(slug, tenant, me, gid):
     return redirect(url_for('t_admin', slug=slug) + '#builder')
 
 
+@app.route('/r/<slug>/admin/builder_grup_secenekleri/<int:gid>')
+@login_required
+def t_builder_grup_secenekleri(slug, tenant, me, gid):
+    grup = BuilderGrup.query.filter_by(id=gid, tenant_id=tenant.id).first_or_404()
+    secenekler = BuilderSecenek.query.filter_by(grup_id=gid).order_by(BuilderSecenek.sira, BuilderSecenek.id.desc()).all()
+    return render_template('tenant/builder_secenekleri.html', tenant=tenant, me=me, grup=grup, secenekler=secenekler)
+
+
+@app.route('/r/<slug>/admin/builder_secenek_ekle/<int:gid>', methods=['POST'])
+@login_required
+def t_builder_secenek_ekle(slug, tenant, me, gid):
+    grup = BuilderGrup.query.filter_by(id=gid, tenant_id=tenant.id).first_or_404()
+    ad = clean(request.form.get('ad'))
+    if not ad:
+        err('Seçenek adı zorunlu.')
+        return redirect(url_for('t_builder_grup_secenekleri', slug=slug, gid=gid))
+    
+    secenek = BuilderSecenek(
+        grup_id=gid,
+        ad=ad,
+        ad_en=clean(request.form.get('ad_en')),
+        fiyat_farki=float(request.form.get('fiyat_farki') or 0),
+        resim=clean(request.form.get('resim')),
+        varsayilan=bool(request.form.get('varsayilan')),
+        sira=int(request.form.get('sira') or 0),
+        durum=True
+    )
+    db.session.add(secenek)
+    db.session.commit()
+    ok('Seçenek eklendi.')
+    return redirect(url_for('t_builder_grup_secenekleri', slug=slug, gid=gid))
+
+
+@app.route('/r/<slug>/admin/builder_secenek_duzenle/<int:sid>', methods=['POST'])
+@login_required
+def t_builder_secenek_duzenle(slug, tenant, me, sid):
+    secenek = BuilderSecenek.query.filter_by(id=sid).first_or_404()
+    grup = BuilderGrup.query.filter_by(id=secenek.grup_id, tenant_id=tenant.id).first_or_404()
+    
+    secenek.ad = clean(request.form.get('ad'))
+    secenek.ad_en = clean(request.form.get('ad_en'))
+    secenek.fiyat_farki = float(request.form.get('fiyat_farki') or 0)
+    secenek.resim = clean(request.form.get('resim'))
+    secenek.varsayilan = bool(request.form.get('varsayilan'))
+    secenek.sira = int(request.form.get('sira') or 0)
+    
+    db.session.commit()
+    ok('Seçenek güncellendi.')
+    return redirect(url_for('t_builder_grup_secenekleri', slug=slug, gid=grup.id))
+
+
+@app.route('/r/<slug>/admin/builder_secenek_durum/<int:sid>')
+@login_required
+def t_builder_secenek_durum(slug, tenant, me, sid):
+    secenek = BuilderSecenek.query.filter_by(id=sid).first_or_404()
+    grup = BuilderGrup.query.filter_by(id=secenek.grup_id, tenant_id=tenant.id).first_or_404()
+    secenek.durum = not secenek.durum
+    db.session.commit()
+    ok('Durum güncellendi.')
+    return redirect(url_for('t_builder_grup_secenekleri', slug=slug, gid=grup.id))
+
+
+@app.route('/r/<slug>/admin/builder_secenek_sil/<int:sid>')
+@login_required
+def t_builder_secenek_sil(slug, tenant, me, sid):
+    secenek = BuilderSecenek.query.filter_by(id=sid).first_or_404()
+    grup = BuilderGrup.query.filter_by(id=secenek.grup_id, tenant_id=tenant.id).first_or_404()
+    db.session.delete(secenek)
+    db.session.commit()
+    ok('Seçenek silindi.')
+    return redirect(url_for('t_builder_grup_secenekleri', slug=slug, gid=grup.id))
+
+
 # â”€â”€ Excel Aktarım â”€â”€
 @app.route('/r/<slug>/admin/excel_sablon')
 @login_required
