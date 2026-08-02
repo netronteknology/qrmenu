@@ -5443,7 +5443,8 @@
             const normalizedQuery = normalizeTr(q);
 
             document.querySelectorAll('.menu-item').forEach(item => {
-                const text = currentLang === 'tr' ? item.dataset.tr : item.dataset.en;
+                // data-tr ve data-en attribute'larını kontrol et
+                const text = currentLang === 'tr' ? (item.dataset.tr || '') : (item.dataset.en || '');
                 const normalizedText = normalizeTr(text);
                 const categoryOk = currentCategory === 'all' || item.dataset.kat === currentCategory;
                 const searchOk = !isSearching || normalizedText.includes(normalizedQuery);
@@ -5471,7 +5472,7 @@
             let featuredVisible = 0;
 
             document.querySelectorAll('#featuredGrid .feature-card').forEach(card => {
-                const text = currentLang === 'tr' ? card.dataset.tr : card.dataset.en;
+                const text = currentLang === 'tr' ? (card.dataset.tr || '') : (card.dataset.en || '');
                 const normalizedText = normalizeTr(text);
                 const searchOk = !isSearching || normalizedText.includes(normalizedQuery);
                 card.classList.toggle('hidden', !searchOk);
