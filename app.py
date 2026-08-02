@@ -1073,6 +1073,87 @@ def t_kitchen(slug, tenant, me):
     return render_template('tenant/kitchen.html', tenant=tenant, me=me, siparisler=siparisler)
 
 
+@app.route('/r/<slug>/yazicilar')
+@login_required
+def t_yazicilar(slug, tenant, me):
+    yazicilar = Yazici.query.filter_by(tenant_id=tenant.id).order_by(Yazici.id).all()
+    return render_template('tenant/yazicilar.html', tenant=tenant, me=me, yazicilar=yazicilar)
+
+
+@app.route('/r/<slug>/yazici_ekle', methods=['POST'])
+@login_required
+def t_yazici_ekle(slug, tenant, me):
+    adi = request.form.get('adi', '').strip()
+    ip_adresi = request.form.get('ip_adresi', '').strip()
+    port = request.form.get('port', '9100')
+    varsayilan = request.form.get('varsayilan') == 'on'
+    
+    if not adi or not ip_adresi:
+        err('Yazıcı adı ve IP adresi gerekli.')
+        return redirect(url_for('t_yazicilar', slug=slug))
+    
+    # Varsayılan yazıcı varsa, varsayılanı kaldır
+    if varsayilan:
+        Yazici.query.filter_by(tenant_id=tenant.id, varsayilan=True).update({'varsayilan': False})
+    
+    yeni_yazici = Yazici(
+        tenant_id=tenant.id,
+        adi=adi,
+        ip_adresi=ip_adresi,
+        port=int(port),
+        varsayilan=varsayilan,
+        durum=True
+    )
+    db.session.add(yeni_yazici)
+    db.session.commit()
+    
+    ok('Yazıcı eklendi.')
+    return redirect(url_for('t_yazicilar', slug=slug))
+
+
+@app.route('/r/<slug>/yazici_duzenle/<int:yazici_id>', methods=['POST'])
+@login_required
+def t_yazici_duzenle(slug, tenant, me, yazici_id):
+    yazici = Yazici.query.filter_by(id=yazici_id, tenant_id=tenant.id).first_or_404()
+    
+    yazici.adi = request.form.get('adi', '').strip()
+    yazici.ip_adresi = request.form.get('ip_adresi', '').strip()
+    yazici.port = int(request.form.get('port', '9100'))
+    yazici.varsayilan = request.form.get('varsayilan') == 'on'
+    
+    # Varsayılan yazıcı varsa, varsayılanı kaldır
+    if yazici.varsayilan:
+        Yazici.query.filter_by(tenant_id=tenant.id, varsayilan=True).filter(Yazici.id != yazici_id).update({'varsayilan': False})
+    
+    db.session.commit()
+    
+    ok('Yazıcı güncellendi.')
+    return redirect(url_for('t_yazicilar', slug=slug))
+
+
+@app.route('/r/<slug>/yazici_durum/<int:yazici_id>')
+@login_required
+def t_yazici_durum(slug, tenant, me, yazici_id):
+    yazici = Yazici.query.filter_by(id=yazici_id, tenant_id=tenant.id).first_or_404()
+    yazici.durum = not yazici.durum
+    db.session.commit()
+    
+    durum = 'aktif' if yazici.durum else 'pasif'
+    ok(f'Yazıcı {durum} yapıldı.')
+    return redirect(url_for('t_yazicilar', slug=slug))
+
+
+@app.route('/r/<slug>/yazici_sil/<int:yazici_id>')
+@login_required
+def t_yazici_sil(slug, tenant, me, yazici_id):
+    yazici = Yazici.query.filter_by(id=yazici_id, tenant_id=tenant.id).first_or_404()
+    db.session.delete(yazici)
+    db.session.commit()
+    
+    ok('Yazıcı silindi.')
+    return redirect(url_for('t_yazicilar', slug=slug))
+
+
 @app.route('/r/<slug>/kitchen/siparis_durum/<int:siparis_id>/<string:yeni_durum>')
 @login_required
 def t_siparis_durum(slug, tenant, me, siparis_id, yeni_durum):

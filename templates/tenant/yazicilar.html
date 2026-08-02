@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yazıcı Yönetimi | {{ tenant.restoran_adi }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0f1115;
+            --card: #161920;
+            --border: rgba(255,255,255,.08);
+            --gold: #f39c12;
+            --green: #2ecc71;
+            --red: #e74c3c;
+            --text: rgba(255,255,255,.9);
+            --muted: rgba(255,255,255,.5);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
+        body { background:var(--bg); color:var(--text); min-height:100vh; }
+        
+        .header { display:flex; justify-content:space-between; align-items:center; padding:20px 30px; background:var(--card); border-bottom:1px solid var(--border); }
+        .header h1 { font-size:1.5rem; font-weight:700; }
+        .header h1 span { color:var(--gold); }
+        .header .nav { display:flex; gap:12px; }
+        .header .nav a { padding:10px 20px; background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:10px; color:var(--text); text-decoration:none; transition:.2s; }
+        .header .nav a:hover { border-color:var(--gold); color:var(--gold); }
+        
+        .container { padding:30px; max-width:1200px; margin:0 auto; }
+        
+        .form-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; margin-bottom:30px; }
+        .form-title { font-size:1.1rem; font-weight:600; margin-bottom:20px; }
+        .form-row { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-bottom:16px; }
+        .form-group { margin-bottom:16px; }
+        .form-group label { display:block; font-size:.85rem; color:var(--muted); margin-bottom:8px; }
+        .form-group input { width:100%; padding:12px 16px; background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:10px; color:var(--text); font-size:.9rem; transition:.2s; }
+        .form-group input:focus { border-color:var(--gold); outline:none; }
+        .form-group .checkbox { display:flex; align-items:center; gap:8px; }
+        .form-group .checkbox input { width:auto; }
+        
+        .btn { padding:10px 20px; border:none; border-radius:10px; font-size:.9rem; font-weight:600; cursor:pointer; transition:.2s; }
+        .btn-primary { background:var(--gold); color:#fff; }
+        .btn-primary:hover { background:#e67e22; }
+        
+        .printers-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(350px,1fr)); gap:20px; }
+        .printer-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; }
+        .printer-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+        .printer-name { font-size:1.1rem; font-weight:600; }
+        .printer-status { padding:4px 12px; border-radius:20px; font-size:.75rem; font-weight:600; }
+        .printer-status.aktif { background:rgba(46,204,113,.15); color:var(--green); }
+        .printer-status.pasif { background:rgba(231,76,60,.15); color:var(--red); }
+        .printer-default { display:inline-flex; align-items:center; gap:4px; padding:4px 8px; background:rgba(243,156,18,.15); color:var(--gold); border-radius:6px; font-size:.75rem; font-weight:600; margin-left:8px; }
+        
+        .printer-info { margin-bottom:16px; }
+        .printer-info-row { display:flex; justify-content:space-between; margin-bottom:8px; font-size:.9rem; }
+        .printer-info-label { color:var(--muted); }
+        
+        .printer-actions { display:flex; gap:8px; flex-wrap:wrap; }
+        .btn-sm { padding:6px 12px; font-size:.8rem; }
+        .btn-green { background:var(--green); color:#fff; }
+        .btn-green:hover { background:#27ae60; }
+        .btn-red { background:var(--red); color:#fff; }
+        .btn-red:hover { background:#c0392b; }
+        .btn-soft { background:rgba(255,255,255,.05); border:1px solid var(--border); color:var(--text); }
+        .btn-soft:hover { background:rgba(255,255,255,.1); }
+        
+        .empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
+        .empty-state i { font-size:4rem; margin-bottom:20px; opacity:.3; }
+        
+        @media (max-width:768px) {
+            .form-row { grid-template-columns:1fr; }
+            .printers-grid { grid-template-columns:1fr; }
+            .header { flex-direction:column; gap:12px; align-items:flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-print" style="color:var(--gold);margin-right:10px"></i>Yazıcı Yönetimi <span style="font-size:1rem;color:var(--muted);font-weight:400">| {{ tenant.restoran_adi }}</span></h1>
+        <div class="nav">
+            <a href="/r/{{ tenant.slug }}/admin"><i class="fas fa-cog"></i> Admin</a>
+            <a href="/r/{{ tenant.slug }}/kitchen"><i class="fas fa-utensils"></i> Kitchen</a>
+            <a href="/r/{{ tenant.slug }}/logout"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="form-card">
+            <div class="form-title"><i class="fas fa-plus-circle" style="color:var(--gold);margin-right:8px"></i>Yeni Yazıcı Ekle</div>
+            <form action="/r/{{ tenant.slug }}/yazici_ekle" method="POST">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Yazıcı Adı</label>
+                        <input type="text" name="adi" placeholder="Örn: Mutfak Yazıcısı" required>
+                    </div>
+                    <div class="form-group">
+                        <label>IP Adresi</label>
+                        <input type="text" name="ip_adresi" placeholder="Örn: 192.168.1.100" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Port</label>
+                        <input type="number" name="port" value="9100" placeholder="9100">
+                    </div>
+                    <div class="form-group checkbox">
+                        <label>
+                            <input type="checkbox" name="varsayilan">
+                            Varsayılan Yazıcı
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Yazıcı Ekle</button>
+            </form>
+        </div>
+
+        {% if yazicilar %}
+        <div class="printers-grid">
+            {% for yazici in yazicilar %}
+            <div class="printer-card">
+                <div class="printer-header">
+                    <div>
+                        <div class="printer-name">
+                            {{ yazici.adi }}
+                            {% if yazici.varsayilan %}
+                            <span class="printer-default"><i class="fas fa-star"></i> Varsayılan</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="printer-status {{ 'aktif' if yazici.durum else 'pasif' }}">
+                        {{ 'Aktif' if yazici.durum else 'Pasif' }}
+                    </div>
+                </div>
+
+                <div class="printer-info">
+                    <div class="printer-info-row">
+                        <span class="printer-info-label">IP Adresi:</span>
+                        <span>{{ yazici.ip_adresi }}</span>
+                    </div>
+                    <div class="printer-info-row">
+                        <span class="printer-info-label">Port:</span>
+                        <span>{{ yazici.port }}</span>
+                    </div>
+                </div>
+
+                <div class="printer-actions">
+                    <button class="btn btn-sm btn-green" onclick="testPrint({{ yazici.id }})">
+                        <i class="fas fa-print"></i> Test Yazdır
+                    </button>
+                    <button class="btn btn-sm btn-soft" onclick="editPrinter({{ yazici.id }})">
+                        <i class="fas fa-edit"></i> Düzenle
+                    </button>
+                    <button class="btn btn-sm btn-soft" onclick="toggleStatus({{ yazici.id }})">
+                        <i class="fas fa-power-off"></i> Durum
+                    </button>
+                    <button class="btn btn-sm btn-red" onclick="deletePrinter({{ yazici.id }})">
+                        <i class="fas fa-trash"></i> Sil
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-print"></i>
+            <p>Henüz yazıcı eklenmedi</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function testPrint(yaziciId) {
+            alert('Test yazdırma özelliği yakında aktif olacak.');
+        }
+
+        function editPrinter(yaziciId) {
+            alert('Düzenleme özelliği yakında aktif olacak.');
+        }
+
+        function toggleStatus(yaziciId) {
+            if (confirm('Yazıcı durumunu değiştirmek istediğinize emin misiniz?')) {
+                window.location.href = `/r/{{ tenant.slug }}/yazici_durum/${yaziciId}`;
+            }
+        }
+
+        function deletePrinter(yaziciId) {
+            if (confirm('Bu yazıcıyı silmek istediğinize emin misiniz?')) {
+                window.location.href = `/r/{{ tenant.slug }}/yazici_sil/${yaziciId}`;
+            }
+        }
+    </script>
+</body>
+</html>
