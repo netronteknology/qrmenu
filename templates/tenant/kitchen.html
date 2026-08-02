@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kitchen Panel | {{ tenant.restoran_adi }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js"></script>
     <style>
         :root {
             --bg: #0f1115;
@@ -201,6 +202,23 @@
     </div>
 
     <script>
+        // WebSocket bağlantısı
+        const socket = io();
+        
+        socket.on('connect', () => {
+            console.log('WebSocket bağlandı');
+            socket.emit('join_kitchen', { slug: '{{ tenant.slug }}' });
+        });
+        
+        socket.on('siparis_durum_degisti', (data) => {
+            console.log('Sipariş durumu değişti:', data);
+            location.reload();
+        });
+        
+        socket.on('disconnect', () => {
+            console.log('WebSocket bağlantısı kesildi');
+        });
+
         function updateStatus(siparisId, yeniDurum) {
             if (!confirm('Durumu değiştirmek istediğinize emin misiniz?')) return;
             
@@ -208,7 +226,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.ok) {
-                        location.reload();
+                        // WebSocket ile otomatik güncellenecek
                     } else {
                         alert('Hata: ' + (data.error || 'Durum güncellenemedi'));
                     }
@@ -219,10 +237,10 @@
                 });
         }
 
-        // Otomatik yenileme (30 saniyede bir)
-        setInterval(() => {
-            location.reload();
-        }, 30000);
+        // Otomatik yenileme (WebSocket olduğu için gerek yok, yedek olarak bırakıyorum)
+        // setInterval(() => {
+        //     location.reload();
+        // }, 30000);
     </script>
 </body>
 </html>

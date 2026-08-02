@@ -7,6 +7,7 @@ from functools import wraps
 from flask import (Flask, render_template, request, redirect,
                    url_for, session, flash, send_file, abort, jsonify)
 from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO, emit
 from sqlalchemy import text, inspect
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -22,6 +23,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = _db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER']                  = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH']             = 16 * 1024 * 1024
+
+# SocketIO başlat
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 ALLOWED_EXT = {'png', 'jpg', 'jpeg', 'webp', 'gif'}
 SUPPORTED_LANGS = {'tr', 'en', 'ar', 'de', 'fr', 'ru', 'zh', 'it'}
@@ -1078,10 +1082,36 @@ def t_siparis_durum(slug, tenant, me, siparis_id, yeni_durum):
     if yeni_durum not in gecerli_durumlar:
         return jsonify({'ok': False, 'error': 'Geçersiz durum'}), 400
     
+    eski_durum = siparis.durum
     siparis.durum = yeni_durum
     db.session.commit()
     
+    # WebSocket ile bildirim gönder
+    socketio.emit('siparis_durum_degisti', {
+        'siparis_id': siparis.id,
+        'eski_durum': eski_durum,
+        'yeni_durum': yeni_durum,
+        'tenant_slug': slug
+    }, room=f'kitchen_{slug}')
+    
     return jsonify({'ok': True, 'message': 'Durum güncellendi'})
+
+
+# WebSocket Event Handlers
+@socketio.on('join_kitchen')
+def on_join_kitchen(data):
+    slug = data.get('slug')
+    if slug:
+        join_room(f'kitchen_{slug}')
+        emit('joined_kitchen', {'slug': slug})
+
+
+@socketio.on('leave_kitchen')
+def on_leave_kitchen(data):
+    slug = data.get('slug')
+    if slug:
+        leave_room(f'kitchen_{slug}')
+        emit('left_kitchen', {'slug': slug})
 
 
 @app.route('/r/<slug>/urun_goruntule/<int:uid>', methods=['POST'])
