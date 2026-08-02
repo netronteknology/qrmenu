@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen Panel | {{ tenant.restoran_adi }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0f1115;
+            --card: #161920;
+            --border: rgba(255,255,255,.08);
+            --gold: #f39c12;
+            --green: #2ecc71;
+            --red: #e74c3c;
+            --blue: #3498db;
+            --orange: #e67e22;
+            --text: rgba(255,255,255,.9);
+            --muted: rgba(255,255,255,.5);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
+        body { background:var(--bg); color:var(--text); min-height:100vh; }
+        
+        .header { display:flex; justify-content:space-between; align-items:center; padding:20px 30px; background:var(--card); border-bottom:1px solid var(--border); }
+        .header h1 { font-size:1.5rem; font-weight:700; }
+        .header h1 span { color:var(--gold); }
+        .header .nav { display:flex; gap:12px; }
+        .header .nav a { padding:10px 20px; background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:10px; color:var(--text); text-decoration:none; transition:.2s; }
+        .header .nav a:hover { border-color:var(--gold); color:var(--gold); }
+        
+        .container { padding:30px; max-width:1400px; margin:0 auto; }
+        
+        .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-bottom:30px; }
+        .stat-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; }
+        .stat-label { font-size:.85rem; color:var(--muted); margin-bottom:8px; }
+        .stat-value { font-size:2rem; font-weight:700; }
+        .stat-value.green { color:var(--green); }
+        .stat-value.orange { color:var(--orange); }
+        .stat-value.blue { color:var(--blue); }
+        
+        .orders-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(350px,1fr)); gap:20px; }
+        .order-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; }
+        .order-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+        .order-id { font-size:.9rem; color:var(--muted); }
+        .order-time { font-size:.85rem; color:var(--muted); }
+        .order-status { padding:6px 12px; border-radius:20px; font-size:.75rem; font-weight:600; }
+        .order-status.bekliyor { background:rgba(231,76,60,.15); color:var(--red); }
+        .order-status.hazirlaniyor { background:rgba(241,196,15,.15); color:#f1c40f; }
+        .order-status.hazir { background:rgba(46,204,113,.15); color:var(--green); }
+        .order-status.teslim_edildi { background:rgba(52,152,219,.15); color:var(--blue); }
+        .order-status.iptal { background:rgba(149,165,166,.15); color:var(--muted); }
+        
+        .order-info { margin-bottom:16px; }
+        .order-info-row { display:flex; justify-content:space-between; margin-bottom:8px; font-size:.9rem; }
+        .order-info-label { color:var(--muted); }
+        
+        .order-items { margin-top:16px; padding-top:16px; border-top:1px solid var(--border); }
+        .order-item { display:flex; justify-content:space-between; align-items:center; padding:8px 0; font-size:.9rem; }
+        .order-item-name { flex:1; }
+        .order-item-qty { background:rgba(255,255,255,.05); padding:4px 10px; border-radius:6px; margin-right:12px; font-weight:600; }
+        .order-item-price { color:var(--gold); font-weight:600; }
+        
+        .order-options { font-size:.8rem; color:var(--muted); margin-top:4px; padding-left:48px; }
+        
+        .order-actions { display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; }
+        .btn { padding:8px 16px; border:none; border-radius:10px; font-size:.85rem; font-weight:600; cursor:pointer; transition:.2s; }
+        .btn-green { background:var(--green); color:#fff; }
+        .btn-green:hover { background:#27ae60; }
+        .btn-orange { background:var(--orange); color:#fff; }
+        .btn-orange:hover { background:#d35400; }
+        .btn-blue { background:var(--blue); color:#fff; }
+        .btn-blue:hover { background:#2980b9; }
+        .btn-red { background:var(--red); color:#fff; }
+        .btn-red:hover { background:#c0392b; }
+        .btn-soft { background:rgba(255,255,255,.05); border:1px solid var(--border); color:var(--text); }
+        .btn-soft:hover { background:rgba(255,255,255,.1); }
+        
+        .empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
+        .empty-state i { font-size:4rem; margin-bottom:20px; opacity:.3; }
+        .empty-state p { font-size:1rem; }
+        
+        @media (max-width:768px) {
+            .stats-grid { grid-template-columns:repeat(2,1fr); }
+            .orders-grid { grid-template-columns:1fr; }
+            .header { flex-direction:column; gap:12px; align-items:flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-utensils" style="color:var(--gold);margin-right:10px"></i>Kitchen Panel <span style="font-size:1rem;color:var(--muted);font-weight:400">| {{ tenant.restoran_adi }}</span></h1>
+        <div class="nav">
+            <a href="/r/{{ tenant.slug }}/admin"><i class="fas fa-cog"></i> Admin</a>
+            <a href="/r/{{ tenant.slug }}/logout"><i class="fas fa-sign-out-alt"></i> Çıkış</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Toplam Sipariş</div>
+                <div class="stat-value">{{ siparisler|length }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Bekleyen</div>
+                <div class="stat-value orange">{{ siparisler|selectattr('durum', 'equalto', 'bekliyor')|list|length }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Hazırlanıyor</div>
+                <div class="stat-value blue">{{ siparisler|selectattr('durum', 'equalto', 'hazirlaniyor')|list|length }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Hazır</div>
+                <div class="stat-value green">{{ siparisler|selectattr('durum', 'equalto', 'hazir')|list|length }}</div>
+            </div>
+        </div>
+
+        {% if siparisler %}
+        <div class="orders-grid">
+            {% for siparis in siparisler %}
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <div class="order-id">#{{ siparis.id }}</div>
+                        <div class="order-time">{{ siparis.created_at.strftime('%H:%M') }}</div>
+                    </div>
+                    <div class="order-status {{ siparis.durum }}">
+                        {{ {
+                            'bekliyor': 'Bekliyor',
+                            'hazirlaniyor': 'Hazırlanıyor',
+                            'hazir': 'Hazır',
+                            'teslim_edildi': 'Teslim Edildi',
+                            'iptal': 'İptal'
+                        }.get(siparis.durum, siparis.durum) }}
+                    </div>
+                </div>
+
+                <div class="order-info">
+                    <div class="order-info-row">
+                        <span class="order-info-label">Masa:</span>
+                        <span>{{ siparis.masa_no or '-' }}</span>
+                    </div>
+                    <div class="order-info-row">
+                        <span class="order-info-label">Müşteri:</span>
+                        <span>{{ siparis.musteri_adi or '-' }}</span>
+                    </div>
+                    <div class="order-info-row">
+                        <span class="order-info-label">Not:</span>
+                        <span>{{ siparis.siparis_notu or '-' }}</span>
+                    </div>
+                </div>
+
+                <div class="order-items">
+                    {% for detay in siparis.detaylar %}
+                    <div class="order-item">
+                        <span class="order-item-qty">{{ detay.miktar }}x</span>
+                        <span class="order-item-name">{{ detay.urun_adi }}</span>
+                        <span class="order-item-price">{{ '%.2f'|format(detay.detay_toplam) }} ₺</span>
+                    </div>
+                    {% if detay.secenekler %}
+                    <div class="order-options">
+                        {% for secenek in detay.secenekler %}
+                        + {{ secenek.grup_adi }}: {{ secenek.secenek_adi }}{% if secenek.fiyat > 0 %} (+{{ '%.2f'|format(secenek.fiyat) }} ₺){% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="order-actions">
+                    {% if siparis.durum == 'bekliyor' %}
+                    <button class="btn btn-orange" onclick="updateStatus({{ siparis.id }}, 'hazirlaniyor')">
+                        <i class="fas fa-fire"></i> Hazırla
+                    </button>
+                    {% endif %}
+                    {% if siparis.durum == 'hazirlaniyor' %}
+                    <button class="btn btn-green" onclick="updateStatus({{ siparis.id }}, 'hazir')">
+                        <i class="fas fa-check"></i> Hazır
+                    </button>
+                    {% endif %}
+                    {% if siparis.durum == 'hazir' %}
+                    <button class="btn btn-blue" onclick="updateStatus({{ siparis.id }}, 'teslim_edildi')">
+                        <i class="fas fa-truck"></i> Teslim Et
+                    </button>
+                    {% endif %}
+                    {% if siparis.durum not in ['teslim_edildi', 'iptal'] %}
+                    <button class="btn btn-red" onclick="updateStatus({{ siparis.id }}, 'iptal')">
+                        <i class="fas fa-times"></i> İptal
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-clipboard-list"></i>
+            <p>Henüz sipariş yok</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function updateStatus(siparisId, yeniDurum) {
+            if (!confirm('Durumu değiştirmek istediğinize emin misiniz?')) return;
+            
+            fetch(`/r/{{ tenant.slug }}/kitchen/siparis_durum/${siparisId}/${yeniDurum}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        location.reload();
+                    } else {
+                        alert('Hata: ' + (data.error || 'Durum güncellenemedi'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Bir hata oluştu.');
+                });
+        }
+
+        // Otomatik yenileme (30 saniyede bir)
+        setInterval(() => {
+            location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>

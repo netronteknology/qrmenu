@@ -1062,6 +1062,28 @@ def api_siparis_ekle(slug):
     return jsonify({'ok': True, 'message': 'Sipariş eklendi', 'toplam_fiyat': toplam_fiyat})
 
 
+@app.route('/r/<slug>/kitchen')
+@login_required
+def t_kitchen(slug, tenant, me):
+    siparisler = Siparis.query.filter_by(tenant_id=tenant.id).order_by(Siparis.created_at.desc()).all()
+    return render_template('tenant/kitchen.html', tenant=tenant, me=me, siparisler=siparisler)
+
+
+@app.route('/r/<slug>/kitchen/siparis_durum/<int:siparis_id>/<string:yeni_durum>')
+@login_required
+def t_siparis_durum(slug, tenant, me, siparis_id, yeni_durum):
+    siparis = Siparis.query.filter_by(id=siparis_id, tenant_id=tenant.id).first_or_404()
+    
+    gecerli_durumlar = ['bekliyor', 'hazirlaniyor', 'hazir', 'teslim_edildi', 'iptal']
+    if yeni_durum not in gecerli_durumlar:
+        return jsonify({'ok': False, 'error': 'Geçersiz durum'}), 400
+    
+    siparis.durum = yeni_durum
+    db.session.commit()
+    
+    return jsonify({'ok': True, 'message': 'Durum güncellendi'})
+
+
 @app.route('/r/<slug>/urun_goruntule/<int:uid>', methods=['POST'])
 def urun_goruntule(slug, uid):
     tenant = Tenant.query.filter_by(slug=slug, aktif=True).first_or_404()
