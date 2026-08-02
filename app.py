@@ -999,6 +999,8 @@ def t_ayarlar(slug, tenant, me):
     if tema in ('amber', 'zeytin', 'gece'):
         tenant.tema = tema
     tenant.white_mod    = bool(request.form.get('white_mod'))
+    menu_mod = request.form.get('menu_modu', 'klasik')
+    tenant.menu_modu = menu_mod if menu_mod in ('klasik', 'builder') else 'klasik'
     gorunum = request.form.get('menu_gorunum', 'liste')
     tenant.menu_gorunum = gorunum if gorunum in ('liste', 'grid') else 'liste'
     tenant.kdv_dahil = bool(request.form.get('kdv_dahil'))

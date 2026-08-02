@@ -1321,6 +1321,37 @@
                         </div>
                     </div>
 
+                    <!-- Menü Modu -->
+                    <div style="margin-bottom:18px">
+                        <div style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px"><i class="fas fa-utensils" style="margin-right:6px"></i>Menü Modu</div>
+                        <div style="display:flex;gap:10px">
+                            <label style="flex:1;cursor:pointer">
+                                <input type="radio" name="menu_modu" value="klasik" {{ 'checked' if not tenant.menu_modu or tenant.menu_modu=='klasik' }} style="display:none">
+                                <div onclick="this.closest('label').querySelector('input').checked=true;document.querySelectorAll('.menu-mod-opt').forEach(x=>x.classList.remove('menu-mod-active'));this.classList.add('menu-mod-active')"
+                                    class="menu-mod-opt {{ 'menu-mod-active' if not tenant.menu_modu or tenant.menu_modu=='klasik' }}"
+                                    style="border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;text-align:center;transition:.2s">
+                                    <i class="fas fa-book-open" style="font-size:1.3rem;color:rgba(255,255,255,.5);display:block;margin-bottom:6px"></i>
+                                    <div style="font-size:.8rem;font-weight:700">Klasik Menü</div>
+                                    <div style="font-size:.68rem;color:rgba(255,255,255,.35)">Standart QR menü</div>
+                                </div>
+                            </label>
+                            <label style="flex:1;cursor:pointer">
+                                <input type="radio" name="menu_modu" value="builder" {{ 'checked' if tenant.menu_modu=='builder' }} style="display:none">
+                                <div onclick="this.closest('label').querySelector('input').checked=true;document.querySelectorAll('.menu-mod-opt').forEach(x=>x.classList.remove('menu-mod-active'));this.classList.add('menu-mod-active')"
+                                    class="menu-mod-opt {{ 'menu-mod-active' if tenant.menu_modu=='builder' }}"
+                                    style="border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;text-align:center;transition:.2s">
+                                    <i class="fas fa-layer-group" style="font-size:1.3rem;color:rgba(255,255,255,.5);display:block;margin-bottom:6px"></i>
+                                    <div style="font-size:.8rem;font-weight:700">Builder Sipariş</div>
+                                    <div style="font-size:.68rem;color:rgba(255,255,255,.35)">Özelleştirilebilir ürünler</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <style>
+                        .menu-mod-active { border-color: var(--gold) !important; background: rgba(243,156,18,.07) !important; }
+                        .menu-mod-active i, .menu-mod-active div { color: var(--gold) !important; }
+                    </style>
+
                     <!-- Görünüm Modu -->
                     <div style="margin-bottom:18px">
                         <div style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px"><i class="fas fa-table-cells" style="margin-right:6px"></i>Ürün Görünüm Modu</div>
