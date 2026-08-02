@@ -56,8 +56,10 @@
     body.white-mod .lang button{background:#fff !important;color:#5a4a35 !important;border-color:rgba(0,0,0,.10) !important}
     body.white-mod .lang button.active{background:var(--gold) !important;color:#fff !important}
     body.white-mod .footer-signature{background:#f7f4ef !important;border-color:rgba(200,134,10,.15) !important}
-    body.white-mod .footer-kdv,body.white-mod .footer-update,body.white-mod .menu-foot{color:#1a0a00 !important}
-    body.white-mod .footer-kdv span,body.white-mod .footer-update span{color:#000000 !important}
+    body.white-mod .footer-kdv,body.white-mod .footer-update,body.white-mod .menu-foot{color:#3a2a15 !important}
+    body.white-mod .footer-kdv span,body.white-mod .footer-update span{color:#1a0e04 !important}
+    body.white-mod .footer-signature,body.white-mod .footer-signature *,body.white-mod .menu-end{color:#3a2a15 !important;opacity:1 !important}
+    body.white-mod .menu-end-line{opacity:1 !important}
     body.white-mod .allergen-tag{color:#8b3a3a !important;background:rgba(180,40,40,.07) !important;border-color:rgba(180,40,40,.2) !important}
     body.white-mod .price{color:var(--gold) !important}
     body.white-mod .cat-head{background:linear-gradient(135deg,rgba(200,134,10,.08),rgba(200,134,10,.02)) !important}
@@ -1269,11 +1271,12 @@
 
         h1 {
             margin: 0 0 6px;
-            font-size: clamp(1.7rem, 4.5vw, 2.6rem);
-            font-weight: 900;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+            font-size: clamp(1.1rem, 4.5vw, 2rem);
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            text-transform: none;
             font-family: 'Playfair Display', Georgia, serif;
+            line-height: 1.15;
         }
 
         .hero-title {
@@ -5417,37 +5420,27 @@
             }
         }
 
-        function applyFilters() {
-            const q = document.getElementById('menuSearch').value.trim();
-            let visibleCount = 0;
-            const isSearching = q.length > 0;
+        // Türkçe karakter normalize
+        function normTR(str) {
+            return (str || '').toLowerCase()
+                .replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s')
+                .replace(/ı/g,'i').replace(/ö/g,'o').replace(/ç/g,'c')
+                .replace(/İ/g,'i').replace(/Ğ/g,'g').replace(/Ü/g,'u')
+                .replace(/Ş/g,'s').replace(/Ö/g,'o').replace(/Ç/g,'c');
+        }
 
-            // TR karakter normalizasyonu için yardımcı fonksiyon
-            const normalizeTr = (str) => {
-                if (!str) return '';
-                return str
-                    .toLowerCase()
-                    .replace(/ı/g, 'i')
-                    .replace(/ğ/g, 'g')
-                    .replace(/ü/g, 'u')
-                    .replace(/ş/g, 's')
-                    .replace(/ö/g, 'o')
-                    .replace(/ç/g, 'c')
-                    .replace(/İ/g, 'i')
-                    .replace(/Ğ/g, 'g')
-                    .replace(/Ü/g, 'u')
-                    .replace(/Ş/g, 's')
-                    .replace(/Ö/g, 'o')
-                    .replace(/Ç/g, 'c');
-            };
-            const normalizedQuery = normalizeTr(q);
+        function applyFilters() {
+            const rawQ = document.getElementById('menuSearch').value.trim();
+            const q = normTR(rawQ);
+            const isSearching = q.length > 0;
+            let visibleCount = 0;
 
             document.querySelectorAll('.menu-item').forEach(item => {
-                // data-tr ve data-en attribute'larını kontrol et
-                const text = currentLang === 'tr' ? (item.dataset.tr || '') : (item.dataset.en || '');
-                const normalizedText = normalizeTr(text);
+                const trText = normTR(item.dataset.tr || '');
+                const enText = normTR(item.dataset.en || '');
+                const allText = trText + ' ' + enText;
                 const categoryOk = currentCategory === 'all' || item.dataset.kat === currentCategory;
-                const searchOk = !isSearching || normalizedText.includes(normalizedQuery);
+                const searchOk = !isSearching || allText.includes(q);
                 const show = categoryOk && searchOk;
                 item.classList.toggle('hidden', !show);
                 if (show) visibleCount++;
@@ -5456,48 +5449,37 @@
             document.querySelectorAll('.menu-category').forEach(cat => {
                 const categoryOk = currentCategory === 'all' || cat.dataset.kat === currentCategory;
                 const visibleItems = cat.querySelector('.menu-item:not(.hidden)');
-                // Arama yapınca kategori başlıklarını gizle, sadece ürün kartları göster
-                const showCategory = categoryOk && visibleItems && !isSearching;
+                const showCategory = categoryOk && !!visibleItems;
                 cat.classList.toggle('hidden', !showCategory);
                 if (!showCategory) {
                     cat.classList.remove('open');
-                    // Inline maxHeight'ı temizle, sonraki açılışta scrollHeight doğru olsun
                     const content = cat.querySelector('.cat-content');
                     if (content) content.style.maxHeight = '';
+                } else if (isSearching) {
+                    cat.classList.add('open');
+                    const cnt = cat.querySelector('.cat-content');
+                    if (cnt) cnt.style.maxHeight = 'none';
                 }
             });
 
             const featured = document.getElementById('featuredGrid');
             const featTitle = document.getElementById('featuredTitle');
-            let featuredVisible = 0;
-
-            document.querySelectorAll('#featuredGrid .feature-card').forEach(card => {
-                const text = currentLang === 'tr' ? (card.dataset.tr || '') : (card.dataset.en || '');
-                const normalizedText = normalizeTr(text);
-                const searchOk = !isSearching || normalizedText.includes(normalizedQuery);
-                card.classList.toggle('hidden', !searchOk);
-                if (searchOk) featuredVisible++;
-            });
+            const hideFeatured = isSearching || currentCategory !== 'all';
+            if (featTitle) { featTitle.classList.toggle('featured-collapsed', hideFeatured); featTitle.style.display = ''; }
+            if (featured)  { featured.classList.toggle('featured-collapsed', hideFeatured); featured.style.display = ''; }
 
             const spotlight = document.getElementById('categorySpotlight');
-            document.querySelectorAll('#categorySpotlight .category-focus-card').forEach(card => {
-                const show = currentCategory === 'all' || card.dataset.kat === currentCategory;
-                card.classList.toggle('hidden', !show);
-            });
-
-            // ── Öne Çıkan Ürünler: arama yapınca her zaman gizlensin ──
-            // Sadece "Tümü" seçiliyken VE arama yoksa görünsün
-            const showFeaturedSection = (currentCategory === 'all') && (!isSearching) && (featuredVisible > 0);
-            featTitle.classList.toggle('featured-collapsed', !showFeaturedSection);
-            featured.classList.toggle('featured-collapsed', !showFeaturedSection);
-            featTitle.style.display = '';
-            featured.style.display = '';
-
             if (spotlight) {
-                const visibleSpotlights = spotlight.querySelector('.category-focus-card:not(.hidden)');
-                document.getElementById('categorySpotlightTitle').style.display = visibleSpotlights ? 'block' : 'none';
-                spotlight.style.display = visibleSpotlights ? 'flex' : 'none';
+                document.querySelectorAll('#categorySpotlight .category-focus-card').forEach(card => {
+                    const show = currentCategory === 'all' || card.dataset.kat === currentCategory;
+                    card.classList.toggle('hidden', !show);
+                });
+                const vs = spotlight.querySelector('.category-focus-card:not(.hidden)');
+                const stTitle = document.getElementById('categorySpotlightTitle');
+                if (stTitle) stTitle.style.display = vs ? 'block' : 'none';
+                spotlight.style.display = vs ? 'flex' : 'none';
             }
+
             document.getElementById('emptyState').style.display = visibleCount === 0 ? 'block' : 'none';
         }
 
@@ -5846,6 +5828,18 @@
         }
 
         document.getElementById('menuSearch').addEventListener('input', applyFilters);
+
+        // Klavye açılınca search görünür kalsın
+        document.getElementById('menuSearch').addEventListener('focus', function() {
+            setTimeout(() => { this.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 320);
+        });
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', function() {
+                const diff = window.innerHeight - window.visualViewport.height;
+                document.documentElement.style.setProperty('--kb-offset', diff > 100 ? diff + 'px' : '0px');
+            });
+        }
+
 
         window.addEventListener('load', function() {
             window.scrollTo(0, 0);
