@@ -2682,12 +2682,47 @@
             color: var(--gold);
             margin-bottom: 16px;
             animation: giftBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
         }
 
         @keyframes giftBounce {
             0% { transform: scale(0) rotate(-180deg); opacity: 0; }
             50% { transform: scale(1.2) rotate(10deg); }
             100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        /* Confetti Effect */
+        .confetti-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+
+        .confetti.animate {
+            animation: confettiExplode 1s ease-out forwards;
+        }
+
+        @keyframes confettiExplode {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty)) rotate(var(--rot));
+            }
         }
 
         .wifi-modal-title {
@@ -4461,7 +4496,6 @@
 
             <div class="social-bar">
                 {% if tenant.whatsapp %}
-                <button class="waiter-premium-btn" onclick="callWaiterWithTable()" data-i18n="ui_call_waiter"><i class="fas fa-bell"></i> Garson Çağır</button>
                 <a class="social-btn" href="https://wa.me/{{ tenant.whatsapp }}" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
                 {% endif %}
                 {% if tenant.instagram %}
@@ -4691,6 +4725,7 @@
             <div class="wifi-modal-content">
                 <div class="wifi-gift-icon">
                     <i class="fas fa-gift"></i>
+                    <div class="confetti-container" id="confettiContainer"></div>
                 </div>
                 <h2 class="wifi-modal-title" data-i18n="ui_wifi_title">WiFi Şifresi</h2>
                 <div class="wifi-password-box">
@@ -5443,6 +5478,56 @@
         // WiFi Modal Functions
         function openWifiModal() {
             document.getElementById('wifiModal').classList.add('show');
+            triggerConfetti();
+        }
+
+        function triggerConfetti() {
+            const container = document.getElementById('confettiContainer');
+            if (!container) return;
+            
+            // Clear previous confetti
+            container.innerHTML = '';
+            
+            const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'];
+            const confettiCount = 30;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                
+                // Random color
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Random position
+                confetti.style.left = '50%';
+                confetti.style.top = '50%';
+                
+                // Random explosion direction
+                const angle = (Math.random() * 360) * (Math.PI / 180);
+                const distance = 50 + Math.random() * 100;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                const rot = Math.random() * 720 - 360;
+                
+                confetti.style.setProperty('--tx', `${tx}px`);
+                confetti.style.setProperty('--ty', `${ty}px`);
+                confetti.style.setProperty('--rot', `${rot}deg`);
+                
+                // Random size
+                const size = 5 + Math.random() * 10;
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                
+                // Random shape (circle or square)
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                
+                container.appendChild(confetti);
+                
+                // Trigger animation with slight delay
+                setTimeout(() => {
+                    confetti.classList.add('animate');
+                }, i * 20);
+            }
         }
 
         function closeWifiModal(e) {
