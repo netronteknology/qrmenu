@@ -2677,6 +2677,33 @@
             padding: 30px 24px;
         }
 
+        .wifi-modal-title,
+        .wifi-password-box,
+        .wifi-hint {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .wifi-modal-content.show-password .wifi-modal-title,
+        .wifi-modal-content.show-password .wifi-password-box,
+        .wifi-modal-content.show-password .wifi-hint {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .wifi-modal-content.show-password .wifi-modal-title {
+            transition-delay: 0.1s;
+        }
+
+        .wifi-modal-content.show-password .wifi-password-box {
+            transition-delay: 0.2s;
+        }
+
+        .wifi-modal-content.show-password .wifi-hint {
+            transition-delay: 0.3s;
+        }
+
         .wifi-gift-icon {
             font-size: 4rem;
             color: var(--gold);
@@ -5477,8 +5504,22 @@
 
         // WiFi Modal Functions
         function openWifiModal() {
-            document.getElementById('wifiModal').classList.add('show');
+            const modal = document.getElementById('wifiModal');
+            const content = modal.querySelector('.wifi-modal-content');
+            
+            // Reset content state
+            content.classList.remove('show-password');
+            
+            // Show modal
+            modal.classList.add('show');
+            
+            // Trigger confetti
             triggerConfetti();
+            
+            // Show password after confetti animation (1s)
+            setTimeout(() => {
+                content.classList.add('show-password');
+            }, 1000);
         }
 
         function triggerConfetti() {
