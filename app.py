@@ -1149,6 +1149,7 @@ def t_urun_ekle(slug, tenant, me):
         err('Geçersiz kategori.')
         return redirect(url_for('t_admin', slug=slug) + '#urunler')
     resim = save_img(request.files.get('resim'), slug, 'urunler')
+    urun_tip = request.form.get('urun_tipi', 'standart')
     urun = Urun(
         tenant_id=tenant.id, kategori_id=kat.id,
         isim=isim,
@@ -1170,6 +1171,7 @@ def t_urun_ekle(slug, tenant, me):
         badge_populer=bool(request.form.get('badge_populer')),
         badge_acili=bool(request.form.get('badge_acili')),
         aci_seviyesi=int(request.form.get('aci_seviyesi') or 2),
+        urun_tipi=urun_tip if urun_tip in ('standart', 'builder') else 'standart',
     )
     apply_legal_product_fields(urun)
     db.session.add(urun)
@@ -1197,6 +1199,8 @@ def t_urun_duzenle(slug, tenant, me, uid):
     u.aciklama_it = clean(request.form.get('aciklama_it'))
     u.aciklama_de = clean(request.form.get('aciklama_de'))
     u.aciklama_fr = clean(request.form.get('aciklama_fr'))
+    urun_tip = request.form.get('urun_tipi', 'standart')
+    u.urun_tipi = urun_tip if urun_tip in ('standart', 'builder') else 'standart'
     u.one_cikan   = bool(request.form.get('one_cikan'))
     u.badge_yeni  = bool(request.form.get('badge_yeni'))
     u.badge_populer = bool(request.form.get('badge_populer'))

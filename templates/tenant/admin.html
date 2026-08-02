@@ -1637,6 +1637,37 @@
                         </select>
                         <label class="field-label">Kategori *</label>
                         <small class="field-hint" style="margin-bottom:6px;display:block"><i class="fas fa-folder"></i> Ürünün hangi kategoride görüneceğini seçin.</small>
+
+                        <div style="margin-bottom:18px">
+                            <label class="field-label">Ürün Tipi</label>
+                            <small class="field-hint" style="margin-bottom:8px;display:block"><i class="fas fa-info-circle"></i> Builder ürünleri müşterinin özelleştirebileceği ürünlerdir (pilav, burger, pizza vb.).</small>
+                            <div style="display:flex;gap:10px">
+                                <label style="flex:1;cursor:pointer">
+                                    <input type="radio" name="urun_tipi" value="standart" checked style="display:none">
+                                    <div onclick="this.closest('label').querySelector('input').checked=true;document.querySelectorAll('.urun-tip-opt').forEach(x=>x.classList.remove('urun-tip-active'));this.classList.add('urun-tip-active')"
+                                        class="urun-tip-opt urun-tip-active"
+                                        style="border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;text-align:center;transition:.2s">
+                                        <i class="fas fa-utensils" style="font-size:1.3rem;color:rgba(255,255,255,.5);display:block;margin-bottom:6px"></i>
+                                        <div style="font-size:.8rem;font-weight:700">Standart</div>
+                                        <div style="font-size:.68rem;color:rgba(255,255,255,.35)">Normal ürün</div>
+                                    </div>
+                                </label>
+                                <label style="flex:1;cursor:pointer">
+                                    <input type="radio" name="urun_tipi" value="builder" style="display:none">
+                                    <div onclick="this.closest('label').querySelector('input').checked=true;document.querySelectorAll('.urun-tip-opt').forEach(x=>x.classList.remove('urun-tip-active'));this.classList.add('urun-tip-active')"
+                                        class="urun-tip-opt"
+                                        style="border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;text-align:center;transition:.2s">
+                                        <i class="fas fa-layer-group" style="font-size:1.3rem;color:rgba(255,255,255,.5);display:block;margin-bottom:6px"></i>
+                                        <div style="font-size:.8rem;font-weight:700">Builder</div>
+                                        <div style="font-size:.68rem;color:rgba(255,255,255,.35)">Özelleştirilebilir</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <style>
+                            .urun-tip-active { border-color: var(--gold) !important; background: rgba(243,156,18,.07) !important; }
+                            .urun-tip-active i, .urun-tip-active div { color: var(--gold) !important; }
+                        </style>
                         <div class="form-grid-2">
                             <div>
                                 <label class="field-label">Ürün Adı (Türkçe) *</label>
@@ -1842,6 +1873,33 @@
                                         <option value="{{ kat.id }}" {% if kat.id == urun.kategori_id %}selected{% endif %}>{{ kat.isim }}</option>
                                         {% endfor %}
                                     </select>
+
+                                    <div style="margin-bottom:18px">
+                                        <label class="field-label">Ürün Tipi</label>
+                                        <small class="field-hint" style="margin-bottom:8px;display:block"><i class="fas fa-info-circle"></i> Builder ürünleri müşterinin özelleştirebileceği ürünlerdir (pilav, burger, pizza vb.).</small>
+                                        <div style="display:flex;gap:10px">
+                                            <label style="flex:1;cursor:pointer">
+                                                <input type="radio" name="urun_tipi" value="standart" {% if not urun.urun_tipi or urun.urun_tipi=='standart' %}checked{% endif %} style="display:none">
+                                                <div onclick="this.closest('label').querySelector('input').checked=true;this.closest('.edit').querySelectorAll('.urun-tip-opt').forEach(x=>x.classList.remove('urun-tip-active'));this.classList.add('urun-tip-active')"
+                                                    class="urun-tip-opt {{ 'urun-tip-active' if not urun.urun_tipi or urun.urun_tipi=='standart' }}"
+                                                    style="border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;text-align:center;transition:.2s">
+                                                    <i class="fas fa-utensils" style="font-size:1.3rem;color:rgba(255,255,255,.5);display:block;margin-bottom:6px"></i>
+                                                    <div style="font-size:.8rem;font-weight:700">Standart</div>
+                                                    <div style="font-size:.68rem;color:rgba(255,255,255,.35)">Normal ürün</div>
+                                                </div>
+                                            </label>
+                                            <label style="flex:1;cursor:pointer">
+                                                <input type="radio" name="urun_tipi" value="builder" {% if urun.urun_tipi=='builder' %}checked{% endif %} style="display:none">
+                                                <div onclick="this.closest('label').querySelector('input').checked=true;this.closest('.edit').querySelectorAll('.urun-tip-opt').forEach(x=>x.classList.remove('urun-tip-active'));this.classList.add('urun-tip-active')"
+                                                    class="urun-tip-opt {{ 'urun-tip-active' if urun.urun_tipi=='builder' }}"
+                                                    style="border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;text-align:center;transition:.2s">
+                                                    <i class="fas fa-layer-group" style="font-size:1.3rem;color:rgba(255,255,255,.5);display:block;margin-bottom:6px"></i>
+                                                    <div style="font-size:.8rem;font-weight:700">Builder</div>
+                                                    <div style="font-size:.68rem;color:rgba(255,255,255,.35)">Özelleştirilebilir</div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
                                     <div class="form-grid-2">
                                         <div>
                                             <label class="field-label">Ürün Adı (Türkçe) *</label>
