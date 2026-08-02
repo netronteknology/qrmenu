@@ -83,10 +83,12 @@ def get_menu_data(tenant_slug):
             'acilis_saati': tenant.acilis_saati,
             'kapanis_saati': tenant.kapanis_saati,
             'tema': tenant.tema,
-            'son_fiyat_guncelleme': tenant.son_fiyat_guncelleme
+            'son_fiyat_guncelleme': tenant.son_fiyat_guncelleme,
+            'menu_modu': tenant.menu_modu or 'klasik'
         },
         'categories': [],
-        'products': []
+        'products': [],
+        'builder_groups': []
     }
     
     # Kategorileri ekle
@@ -126,12 +128,49 @@ def get_menu_data(tenant_slug):
                 'allergens': normalize_allergens(urun.allergens or urun.alerjen_notu),
                 'contains_alcohol': urun.contains_alcohol,
                 'goruntuleme': urun.goruntuleme,
-                'sira': urun.sira
+                'sira': urun.sira,
+                'urun_tipi': urun.urun_tipi or 'standart'
             }
             category_data['products'].append(product_data)
         
         menu_data['categories'].append(category_data)
         menu_data['products'].extend(category_data['products'])
+    
+    # Builder gruplarını ekle
+    builder_gruplar = BuilderGrup.query.filter_by(tenant_id=tenant.id, durum=True).order_by(BuilderGrup.sira).all()
+    for grup in builder_gruplar:
+        secenekler = BuilderSecenek.query.filter_by(grup_id=grup.id, durum=True).order_by(BuilderSecenek.sira).all()
+        
+        grup_data = {
+            'id': grup.id,
+            'isim': grup.isim,
+            'isim_en': grup.isim_en or grup.isim,
+            'aciklama': grup.aciklama,
+            'ikon': grup.ikon,
+            'sira': grup.sira,
+            'zorunlu': grup.zorunlu,
+            'min_secim': grup.min_secim,
+            'max_secim': grup.max_secim,
+            'secim_tipi': grup.secim_tipi,
+            'Gorsel_goster': grup.Gorsel_goster,
+            'fiyat_goster': grup.fiyat_goster,
+            'urun_id': grup.urun_id,
+            'secenekler': []
+        }
+        
+        for secenek in secenekler:
+            secenek_data = {
+                'id': secenek.id,
+                'ad': secenek.ad,
+                'ad_en': secenek.ad_en or secenek.ad,
+                'fiyat_farki': secenek.fiyat_farki,
+                'resim': secenek.resim,
+                'varsayilan': secenek.varsayilan,
+                'sira': secenek.sira
+            }
+            grup_data['secenekler'].append(secenek_data)
+        
+        menu_data['builder_groups'].append(grup_data)
     
     return menu_data
 
