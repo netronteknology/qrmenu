@@ -968,6 +968,32 @@ def set_language(slug):
     return resp
 
 
+@app.route('/r/<slug>/builder/<int:urun_id>')
+def builder_product(slug, urun_id):
+    tenant = Tenant.query.filter_by(slug=slug, aktif=True).first_or_404()
+    urun = Urun.query.filter_by(id=urun_id, tenant_id=tenant.id, durum=True).first_or_404()
+    
+    session_key = f'lang_{slug}'
+    selected_lang = session.get(session_key) or request.cookies.get(f'menu_lang_{slug}') or 'tr'
+    if selected_lang not in SUPPORTED_LANGS:
+        selected_lang = 'tr'
+    
+    menu_data = get_menu_data(slug)
+    
+    # Ürün için uygun builder gruplarını filtrele
+    builder_gruplar = []
+    for grup in menu_data['builder_groups']:
+        # Grup ya tüm builder ürünleri için ya da bu ürün için özel
+        if grup['urun_id'] is None or grup['urun_id'] == urun.id:
+            builder_gruplar.append(grup)
+    
+    return render_template('menu/builder.html',
+                         tenant=tenant,
+                         urun=urun,
+                         builder_gruplar=builder_gruplar,
+                         selected_lang=selected_lang)
+
+
 @app.route('/r/<slug>/urun_goruntule/<int:uid>', methods=['POST'])
 def urun_goruntule(slug, uid):
     tenant = Tenant.query.filter_by(slug=slug, aktif=True).first_or_404()
