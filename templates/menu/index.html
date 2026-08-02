@@ -56,8 +56,8 @@
     body.white-mod .lang button{background:#fff !important;color:#5a4a35 !important;border-color:rgba(0,0,0,.10) !important}
     body.white-mod .lang button.active{background:var(--gold) !important;color:#fff !important}
     body.white-mod .footer-signature{background:#f7f4ef !important;border-color:rgba(200,134,10,.15) !important}
-    body.white-mod .footer-kdv,body.white-mod .footer-update,body.white-mod .menu-foot{color:#4a3a25 !important}
-    body.white-mod .footer-kdv span,body.white-mod .footer-update span{color:#2a1a05 !important}
+    body.white-mod .footer-kdv,body.white-mod .footer-update,body.white-mod .menu-foot{color:#1a0a00 !important}
+    body.white-mod .footer-kdv span,body.white-mod .footer-update span{color:#000000 !important}
     body.white-mod .allergen-tag{color:#8b3a3a !important;background:rgba(180,40,40,.07) !important;border-color:rgba(180,40,40,.2) !important}
     body.white-mod .price{color:var(--gold) !important}
     body.white-mod .cat-head{background:linear-gradient(135deg,rgba(200,134,10,.08),rgba(200,134,10,.02)) !important}
@@ -4471,7 +4471,7 @@
                 <a class="social-btn" href="{{ tenant.konum_url }}" target="_blank"><i class="fas fa-location-dot"></i> Konum</a>
                 {% endif %}
                 {% if tenant.wifi_sifresi %}
-                <button class="social-btn wifi-btn" onclick="openWifiModal()" data-i18n="ui_wifi"><i class="fas fa-gift"></i> WiFi</button>
+                <button class="social-btn wifi-btn" onclick="openWifiModal()" data-i18n="ui_wifi"><i class="fas fa-gift"></i> WiFi Şifresi</button>
                 {% endif %}
             </div>
 
@@ -5274,12 +5274,13 @@
         }
 
         function applyFilters() {
-            const q = document.getElementById('menuSearch').value.toLowerCase().trim();
+            const q = document.getElementById('menuSearch').value.trim();
             let visibleCount = 0;
             const isSearching = q.length > 0;
 
             // TR karakter normalizasyonu için yardımcı fonksiyon
             const normalizeTr = (str) => {
+                if (!str) return '';
                 return str
                     .toLowerCase()
                     .replace(/ı/g, 'i')
@@ -5287,7 +5288,13 @@
                     .replace(/ü/g, 'u')
                     .replace(/ş/g, 's')
                     .replace(/ö/g, 'o')
-                    .replace(/ç/g, 'c');
+                    .replace(/ç/g, 'c')
+                    .replace(/İ/g, 'i')
+                    .replace(/Ğ/g, 'g')
+                    .replace(/Ü/g, 'u')
+                    .replace(/Ş/g, 's')
+                    .replace(/Ö/g, 'o')
+                    .replace(/Ç/g, 'c');
             };
             const normalizedQuery = normalizeTr(q);
 
@@ -5295,7 +5302,7 @@
                 const text = currentLang === 'tr' ? item.dataset.tr : item.dataset.en;
                 const normalizedText = normalizeTr(text);
                 const categoryOk = currentCategory === 'all' || item.dataset.kat === currentCategory;
-                const searchOk = normalizedText.includes(normalizedQuery);
+                const searchOk = !isSearching || normalizedText.includes(normalizedQuery);
                 const show = categoryOk && searchOk;
                 item.classList.toggle('hidden', !show);
                 if (show) visibleCount++;
@@ -5322,7 +5329,7 @@
             document.querySelectorAll('#featuredGrid .feature-card').forEach(card => {
                 const text = currentLang === 'tr' ? card.dataset.tr : card.dataset.en;
                 const normalizedText = normalizeTr(text);
-                const searchOk = normalizedText.includes(normalizedQuery);
+                const searchOk = !isSearching || normalizedText.includes(normalizedQuery);
                 card.classList.toggle('hidden', !searchOk);
                 if (searchOk) featuredVisible++;
             });
