@@ -279,8 +279,51 @@
         }
         
         function addToCart() {
-            // TODO: Sepete ekleme işlemi
-            alert('Sepete eklendi! (Bu özellik yakında aktif olacak)');
+            const btn = document.getElementById('add-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ekleniyor...';
+            
+            // Seçilen seçenekleri topla
+            const selectedOptionsData = {};
+            Object.keys(selectedOptions).forEach(groupId => {
+                const group = selectedOptions[groupId];
+                if (Array.isArray(group)) {
+                    selectedOptionsData[groupId] = group.map(o => ({ optionId: o.optionId, price: o.price }));
+                } else {
+                    selectedOptionsData[groupId] = { optionId: group.optionId, price: group.price };
+                }
+            });
+            
+            const orderData = {
+                urun_id: {{ urun.id }},
+                miktar: quantity,
+                secenekler: selectedOptionsData
+            };
+            
+            fetch('/r/{{ tenant.slug }}/api/siparis_ekle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    alert('Sipariş sepete eklendi!');
+                    window.location.href = '/r/{{ tenant.slug }}';
+                } else {
+                    alert('Hata: ' + (data.error || 'Sipariş eklenemedi'));
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-shopping-cart"></i> Sepete Ekle';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Bir hata oluştu.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-shopping-cart"></i> Sepete Ekle';
+            });
         }
         
         // Varsayılan seçimleri işaretle

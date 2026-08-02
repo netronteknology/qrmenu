@@ -994,6 +994,74 @@ def builder_product(slug, urun_id):
                          selected_lang=selected_lang)
 
 
+@app.route('/r/<slug>/api/siparis_ekle', methods=['POST'])
+def api_siparis_ekle(slug):
+    tenant = Tenant.query.filter_by(slug=slug, aktif=True).first_or_404()
+    payload = request.get_json(silent=True) or {}
+    
+    urun_id = payload.get('urun_id')
+    miktar = payload.get('miktar', 1)
+    secenekler = payload.get('secenekler', {})
+    
+    if not urun_id:
+        return jsonify({'ok': False, 'error': 'Ürün ID gerekli'}), 400
+    
+    urun = Urun.query.filter_by(id=urun_id, tenant_id=tenant.id, durum=True).first()
+    if not urun:
+        return jsonify({'ok': False, 'error': 'Ürün bulunamadı'}), 404
+    
+    # Seçenekleri işle
+    secenek_detaylari = []
+    toplam_fiyat = urun.fiyat
+    
+    for grup_id, secenek_data in secenekler.items():
+        grup = BuilderGrup.query.filter_by(id=int(grup_id), tenant_id=tenant.id).first()
+        if not grup:
+            continue
+        
+        if isinstance(secenek_data, list):
+            # Checkbox - çoklu seçim
+            for sec in secenek_data:
+                secenek = BuilderSecenek.query.filter_by(id=sec['optionId'], grup_id=grup.id).first()
+                if secenek and secenek.durum:
+                    secenek_detaylari.append({
+                        'secenek_adi': secenek.ad,
+                        'grup_adi': grup.isim,
+                        'fiyat': secenek.fiyat_farki
+                    })
+                    toplam_fiyat += secenek.fiyat_farki
+        else:
+            # Radio - tek seçim
+            secenek = BuilderSecenek.query.filter_by(id=secenek_data['optionId'], grup_id=grup.id).first()
+            if secenek and secenek.durum:
+                secenek_detaylari.append({
+                    'secenek_adi': secenek.ad,
+                    'grup_adi': grup.isim,
+                    'fiyat': secenek.fiyat_farki
+                })
+                toplam_fiyat += secenek.fiyat_farki
+    
+    toplam_fiyat *= miktar
+    
+    # Session'a siparişi ekle (basit sepet implementasyonu)
+    sepet_key = f'sepet_{slug}'
+    sepet = session.get(sepet_key, [])
+    
+    sepet_item = {
+        'urun_id': urun.id,
+        'urun_adi': urun.isim,
+        'urun_fiyati': urun.fiyat,
+        'miktar': miktar,
+        'secenekler': secenek_detaylari,
+        'detay_toplam': toplam_fiyat
+    }
+    
+    sepet.append(sepet_item)
+    session[sepet_key] = sepet
+    
+    return jsonify({'ok': True, 'message': 'Sipariş eklendi', 'toplam_fiyat': toplam_fiyat})
+
+
 @app.route('/r/<slug>/urun_goruntule/<int:uid>', methods=['POST'])
 def urun_goruntule(slug, uid):
     tenant = Tenant.query.filter_by(slug=slug, aktif=True).first_or_404()
