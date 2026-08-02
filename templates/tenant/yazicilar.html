@@ -170,7 +170,7 @@
 
     <script>
         function testPrint(yaziciId) {
-            alert('Test yazdırma özelliği yakında aktif olacak.');
+            window.location.href = `/r/{{ tenant.slug }}/test_yazdir/${yaziciId}`;
         }
 
         function editPrinter(yaziciId) {

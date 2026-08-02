@@ -1154,6 +1154,88 @@ def t_yazici_sil(slug, tenant, me, yazici_id):
     return redirect(url_for('t_yazicilar', slug=slug))
 
 
+def generate_escpos_receipt(siparis, tenant):
+    """ESC/POS formatında fiş oluştur"""
+    lines = []
+    
+    # Başlık
+    lines.append('\x1b\x40')  # Initialize
+    lines.append('\x1b\x61\x01')  # Center align
+    lines.append(f'{tenant.restoran_adi}\n')
+    lines.append('\x1b\x61\x00')  # Left align
+    lines.append(f'Sipariş #{siparis.id}\n')
+    lines.append(f'{siparis.created_at.strftime("%d.%m.%Y %H:%M")}\n')
+    lines.append('-' * 32 + '\n')
+    
+    # Müşteri bilgisi
+    if siparis.masa_no:
+        lines.append(f'Masa: {siparis.masa_no}\n')
+    if siparis.musteri_adi:
+        lines.append(f'Müşteri: {siparis.musteri_adi}\n')
+    lines.append('-' * 32 + '\n')
+    
+    # Ürünler
+    lines.append('ÜRÜNLER\n')
+    lines.append('-' * 32 + '\n')
+    
+    for detay in siparis.detaylar:
+        lines.append(f'{detay.miktar}x {detay.urun_adi}\n')
+        if detay.secenekler:
+            for secenek in detay.secenekler:
+                lines.append(f'  + {secenek.grup_adi}: {secenek.secenek_adi}\n')
+        lines.append(f'  {detay.detay_toplam:.2f} TL\n')
+        lines.append('\n')
+    
+    # Toplam
+    lines.append('-' * 32 + '\n')
+    lines.append(f'TOPLAM: {siparis.toplam_tutar:.2f} TL\n')
+    lines.append('-' * 32 + '\n')
+    
+    # Not
+    if siparis.siparis_notu:
+        lines.append(f'NOT: {siparis.siparis_notu}\n')
+        lines.append('-' * 32 + '\n')
+    
+    # Footer
+    lines.append('\x1b\x61\x01')  # Center align
+    lines.append('Afiyet Olsun!\n')
+    lines.append('\n' * 3)
+    lines.append('\x1d\x56\x00')  # Cut paper
+    
+    return ''.join(lines)
+
+
+@app.route('/r/<slug>/test_yazdir/<int:yazici_id>')
+@login_required
+def t_test_yazdir(slug, tenant, me, yazici_id):
+    yazici = Yazici.query.filter_by(id=yazici_id, tenant_id=tenant.id).first_or_404()
+    
+    try:
+        # Test fişi oluştur
+        test_receipt = f"""{tenant.restoran_adi}
+TEST YAZDIRMA
+{'-' * 32}
+Bu bir test yazdırmasıdır.
+Yazıcı: {yazici.adi}
+IP: {yazici.ip_adresi}
+Port: {yazici.port}
+{'-' * 32}
+"""
+        # Yazıcıya gönder (basit socket bağlantısı)
+        import socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(5)
+        sock.connect((yazici.ip_adresi, yazici.port))
+        sock.send(test_receipt.encode('utf-8'))
+        sock.close()
+        
+        ok('Test yazdırıldı.')
+    except Exception as e:
+        err(f'Yazdırma hatası: {str(e)}')
+    
+    return redirect(url_for('t_yazicilar', slug=slug))
+
+
 @app.route('/r/<slug>/kitchen/siparis_durum/<int:siparis_id>/<string:yeni_durum>')
 @login_required
 def t_siparis_durum(slug, tenant, me, siparis_id, yeni_durum):
