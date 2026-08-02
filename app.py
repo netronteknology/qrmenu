@@ -186,6 +186,7 @@ class Tenant(db.Model):
     referrer_id     = db.Column(db.Integer, nullable=True)
     tema            = db.Column(db.String(20), default='amber')
     menu_gorunum    = db.Column(db.String(10), default='liste')  # liste / grid
+    menu_modu       = db.Column(db.String(10), default='klasik')  # klasik / builder
     white_mod       = db.Column(db.Boolean, default=False)  # True = beyaz tema
     aktif_diller    = db.Column(db.String(60), default='tr,en')  # virgülle ayrılmış: tr,en,it,ru vs.
     kdv_dahil       = db.Column(db.Boolean, default=True)  # "Fiyatlara KDV dahildir" notu
@@ -278,6 +279,7 @@ class Urun(db.Model):
     contains_alcohol = db.Column(db.Boolean, default=False)
     goruntuleme     = db.Column(db.Integer, default=0)
     sira            = db.Column(db.Integer, default=0)
+    urun_tipi       = db.Column(db.String(10), default='standart')  # standart / builder
 
 
 class QRCodeItem(db.Model):
@@ -308,6 +310,82 @@ class Musteri(db.Model):
     created_at    = db.Column(db.DateTime,    default=db.func.now())
     # Restoranlar bu müşteriye backref ile baÄŸlı
     restoranlar   = db.relationship('Tenant', backref='musteri', lazy=True)
+
+
+# ═══════════════════════════════════════════════════════════════
+#  BUILDER SİPARİS MODÜLÜ MODELLERİ
+# ═══════════════════════════════════════════════════════════════
+
+class BuilderGrup(db.Model):
+    """Builder ürünleri için seçenek grupları (Boy, Protein, Garnitür vb.)"""
+    id            = db.Column(db.Integer, primary_key=True)
+    tenant_id     = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=False)
+    urun_id       = db.Column(db.Integer, db.ForeignKey('urun.id'), nullable=True)  # null = tüm ürünler için
+    isim          = db.Column(db.String(80), nullable=False)
+    isim_en       = db.Column(db.String(80), default='')
+    aciklama      = db.Column(db.String(255), default='')
+    ikon          = db.Column(db.String(50), default='')
+    sira          = db.Column(db.Integer, default=0)
+    zorunlu       = db.Column(db.Boolean, default=False)
+    min_secim     = db.Column(db.Integer, default=0)
+    max_secim     = db.Column(db.Integer, default=1)
+    secim_tipi    = db.Column(db.String(10), default='radio')  # radio / checkbox / dropdown
+    Gorsel_goster = db.Column(db.Boolean, default=False)
+    fiyat_goster  = db.Column(db.Boolean, default=True)
+    durum         = db.Column(db.Boolean, default=True)
+    secenekler    = db.relationship('BuilderSecenek', backref='grup', lazy=True, cascade='all, delete-orphan')
+
+
+class BuilderSecenek(db.Model):
+    """Builder grupları için seçenekler (Kajun Tavuk, Domates vb.)"""
+    id            = db.Column(db.Integer, primary_key=True)
+    grup_id       = db.Column(db.Integer, db.ForeignKey('builder_grup.id'), nullable=False)
+    ad            = db.Column(db.String(80), nullable=False)
+    ad_en         = db.Column(db.String(80), default='')
+    fiyat_farki   = db.Column(db.Float, default=0)
+    resim         = db.Column(db.String(255), default='')
+    varsayilan    = db.Column(db.Boolean, default=False)
+    sira          = db.Column(db.Integer, default=0)
+    durum         = db.Column(db.Boolean, default=True)
+
+
+class Siparis(db.Model):
+    """Müşteri siparişleri"""
+    id            = db.Column(db.Integer, primary_key=True)
+    tenant_id     = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=False)
+    masa_no       = db.Column(db.String(20), default='')
+    musteri_adi   = db.Column(db.String(120), default='')
+    siparis_notu  = db.Column(db.Text, default='')
+    toplam_fiyat  = db.Column(db.Float, default=0)
+    durum         = db.Column(db.String(20), default='bekliyor')  # bekliyor / hazirlaniyor / hazir / teslim_edildi / iptal
+    created_at    = db.Column(db.DateTime, default=db.func.now())
+    updated_at    = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+    detaylar      = db.relationship('SiparisDetay', backref='siparis', lazy=True, cascade='all, delete-orphan')
+
+
+class SiparisDetay(db.Model):
+    """Sipariş detayları (seçilen ürünler ve seçenekler)"""
+    id            = db.Column(db.Integer, primary_key=True)
+    siparis_id    = db.Column(db.Integer, db.ForeignKey('siparis.id'), nullable=False)
+    urun_id       = db.Column(db.Integer, db.ForeignKey('urun.id'), nullable=False)
+    urun_adi      = db.Column(db.String(120), nullable=False)
+    urun_fiyati   = db.Column(db.Float, default=0)
+    miktar        = db.Column(db.Integer, default=1)
+    secenekler    = db.Column(db.JSON, default=list)  # [{"secenek_adi": "Kajun", "grup_adi": "Protein", "fiyat": 15}]
+    detay_toplam  = db.Column(db.Float, default=0)
+
+
+class Yazici(db.Model):
+    """ESC/POS yazıcıları için yönetim"""
+    id            = db.Column(db.Integer, primary_key=True)
+    tenant_id     = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=False)
+    yazici_adi    = db.Column(db.String(80), nullable=False)
+    ip_adresi     = db.Column(db.String(50), default='')
+    port          = db.Column(db.Integer, default=9100)
+    kagit_genisligi = db.Column(db.Integer, default=58)  # 58 / 80
+    otomatik_yazdir = db.Column(db.Boolean, default=True)
+    durum         = db.Column(db.Boolean, default=True)
+    created_at    = db.Column(db.DateTime, default=db.func.now())
 
 
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
@@ -458,6 +536,7 @@ def ensure_schema():
             'son_fiyat_guncelleme': 'son_fiyat_guncelleme DATETIME',
             'service_fee_percentage': 'service_fee_percentage FLOAT DEFAULT 0',
             'menu_gorunum': "menu_gorunum VARCHAR(10) DEFAULT 'liste'",
+            'menu_modu': "menu_modu VARCHAR(10) DEFAULT 'klasik'",
             'white_mod': 'white_mod BOOLEAN DEFAULT 0',
             'wifi_sifresi': "wifi_sifresi VARCHAR(100) DEFAULT ''",
         },
@@ -476,6 +555,7 @@ def ensure_schema():
             'meat_origin': 'meat_origin VARCHAR(255)',
             'allergens': "allergens TEXT DEFAULT '[]'",
             'contains_alcohol': 'contains_alcohol BOOLEAN DEFAULT 0',
+            'urun_tipi': "urun_tipi VARCHAR(10) DEFAULT 'standart'",
         },
         'kategori': {
             'aciklama': "aciklama VARCHAR(255) DEFAULT ''",
@@ -494,6 +574,9 @@ def ensure_schema():
 
     db.session.execute(text("UPDATE tenant SET acilis_saati = '10:00' WHERE acilis_saati IS NULL OR acilis_saati = ''"))
     db.session.execute(text("UPDATE tenant SET kapanis_saati = '23:30' WHERE kapanis_saati IS NULL OR kapanis_saati = ''"))
+    
+    # Yeni tabloları oluştur (varsa hata vermez)
+    db.create_all()
     db.session.execute(text("UPDATE tenant SET service_fee_percentage = 0 WHERE service_fee_percentage IS NULL"))
     db.session.execute(text("UPDATE urun SET contains_alcohol = FALSE WHERE contains_alcohol IS NULL"))
     db.session.execute(text("UPDATE urun SET calorie = kalori WHERE calorie IS NULL AND kalori > 0"))
