@@ -8,7 +8,7 @@ from flask import (Flask, render_template, request, redirect,
                    url_for, session, flash, send_file, abort, jsonify)
 from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO, emit
-from sqlalchemy import text, inspect
+from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
@@ -580,7 +580,7 @@ def ensure_schema():
             'service_fee_percentage': 'service_fee_percentage FLOAT DEFAULT 0',
             'menu_gorunum': "menu_gorunum VARCHAR(10) DEFAULT 'liste'",
             'menu_modu': "menu_modu VARCHAR(10) DEFAULT 'klasik'",
-            'white_mod': 'white_mod BOOLEAN DEFAULT 0',
+            'white_mod': 'white_mod BOOLEAN DEFAULT FALSE',
             'wifi_sifresi': "wifi_sifresi VARCHAR(100) DEFAULT ''",
         },
         'musteri': {
@@ -597,7 +597,7 @@ def ensure_schema():
             'portion_weight': 'portion_weight VARCHAR(80)',
             'meat_origin': 'meat_origin VARCHAR(255)',
             'allergens': "allergens TEXT DEFAULT '[]'",
-            'contains_alcohol': 'contains_alcohol BOOLEAN DEFAULT 0',
+            'contains_alcohol': 'contains_alcohol BOOLEAN DEFAULT FALSE',
             'urun_tipi': "urun_tipi VARCHAR(10) DEFAULT 'standart'",
         },
         'kategori': {
@@ -607,37 +607,62 @@ def ensure_schema():
         },
     }
 
-    inspector = inspect(db.engine)
+    is_sqlite = 'sqlite' in str(db.engine.url)
 
-    for table_name, columns in column_sql.items():
-        mevcut = {row["name"] for row in inspector.get_columns(table_name)}
-        for column_name, ddl in columns.items():
-            if column_name not in mevcut:
-                db.session.execute(text(f'ALTER TABLE {table_name} ADD COLUMN {ddl}'))
+    with db.engine.connect() as conn:
+        for table_name, columns in column_sql.items():
+            if is_sqlite:
+                rows = conn.execute(text(f"PRAGMA table_info('{table_name}')")).fetchall()
+                mevcut = {row[1] for row in rows}
+                for col_name, ddl in columns.items():
+                    if col_name not in mevcut:
+                        conn.execute(text(f'ALTER TABLE {table_name} ADD COLUMN {ddl}'))
+            else:
+                # PostgreSQL: bilgi şemasından kolon listesini al (prepared statement yok)
+                rows = conn.execute(text(
+                    "SELECT column_name FROM information_schema.columns "
+                    "WHERE table_name = :t AND table_schema = 'public'"
+                ), {'t': table_name}).fetchall()
+                mevcut = {row[0] for row in rows}
+                for col_name, ddl in columns.items():
+                    if col_name not in mevcut:
+                        try:
+                            conn.execute(text(f'ALTER TABLE {table_name} ADD COLUMN {ddl}'))
+                            conn.commit()
+                        except Exception:
+                            conn.rollback()
 
-    db.session.execute(text("UPDATE tenant SET acilis_saati = '10:00' WHERE acilis_saati IS NULL OR acilis_saati = ''"))
-    db.session.execute(text("UPDATE tenant SET kapanis_saati = '23:30' WHERE kapanis_saati IS NULL OR kapanis_saati = ''"))
-    
-    # Yeni tabloları oluştur (varsa hata vermez)
+        # Güvenli UPDATE'ler
+        try:
+            conn.execute(text("UPDATE tenant SET acilis_saati = '10:00' WHERE acilis_saati IS NULL OR acilis_saati = ''"))
+            conn.execute(text("UPDATE tenant SET kapanis_saati = '23:30' WHERE kapanis_saati IS NULL OR kapanis_saati = ''"))
+            conn.execute(text("UPDATE tenant SET service_fee_percentage = 0 WHERE service_fee_percentage IS NULL"))
+            conn.execute(text("UPDATE urun SET contains_alcohol = FALSE WHERE contains_alcohol IS NULL"))
+            conn.execute(text("UPDATE urun SET calorie = kalori WHERE calorie IS NULL AND kalori > 0"))
+            conn.commit()
+        except Exception:
+            conn.rollback()
+
+    # Yeni tabloları oluştur
     db.create_all()
-    db.session.execute(text("UPDATE tenant SET service_fee_percentage = 0 WHERE service_fee_percentage IS NULL"))
-    db.session.execute(text("UPDATE urun SET contains_alcohol = FALSE WHERE contains_alcohol IS NULL"))
-    db.session.execute(text("UPDATE urun SET calorie = kalori WHERE calorie IS NULL AND kalori > 0"))
-    db.session.commit()
 
-    for urun in Urun.query.all():
-        changed = False
-        if urun.allergens is None:
-            urun.allergens = []
-            changed = True
-        if not urun.allergens and urun.alerjen_notu:
-            parsed = [a.strip() for a in urun.alerjen_notu.split(',') if a.strip()]
-            if parsed:
-                urun.allergens = parsed
+    # allergens alanı normalize
+    try:
+        for urun in Urun.query.all():
+            changed = False
+            if urun.allergens is None:
+                urun.allergens = []
                 changed = True
-        if changed:
-            db.session.add(urun)
-    db.session.commit()
+            if not urun.allergens and urun.alerjen_notu:
+                parsed = [a.strip() for a in urun.alerjen_notu.split(',') if a.strip()]
+                if parsed:
+                    urun.allergens = parsed
+                    changed = True
+            if changed:
+                db.session.add(urun)
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
 
 
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
