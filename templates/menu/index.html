@@ -42,7 +42,9 @@
         background:#f7f4ef !important;
     }
     body.white-mod .splash,body.white-mod .hero,body.white-mod .toolbar,body.white-mod .menu-wrap{background:#f7f4ef !important}
-    body.white-mod .splash-title,body.white-mod .hero-title{color:#1a0a00 !important;text-shadow:0 1px 2px rgba(0,0,0,.05)!important;background:none!important;-webkit-text-fill-color:#1a0a00!important}
+    body.white-mod .splash-title,body.white-mod .hero-title{color:#2a1a08 !important;text-shadow:none!important;background:none!important;-webkit-text-fill-color:#2a1a08!important}
+    body.white-mod .wifi-btn{background:linear-gradient(135deg,#c8860a,#b5760a) !important;color:#fff !important;box-shadow:0 4px 16px rgba(180,110,0,.3) !important}
+    body.white-mod .wifi-btn i{color:#fff !important}
     body.white-mod .splash-sub,body.white-mod .hero-sub,body.white-mod .product-desc,body.white-mod .cat-meta{color:#7a6a55 !important}
     body.white-mod .product-name,body.white-mod .cat-name{color:#1a1208 !important;font-weight:800 !important}
     body.white-mod .cat-card,body.white-mod .feature-card{background:#fff !important;border-color:rgba(200,134,10,.15) !important;box-shadow:0 2px 12px rgba(0,0,0,.06) !important}
@@ -1280,20 +1282,21 @@
         }
 
         .hero-title {
-            max-width: min(100%, 36ch);
+            max-width: min(100%, 28ch);
             margin-inline: auto;
             text-wrap: balance;
-            line-height: 1.15;
+            line-height: 1.2;
             word-break: break-word;
-            font-size: clamp(1.15rem, 4vw, 1.6rem);
+            font-size: clamp(.95rem, 3.5vw, 1.35rem);
             font-family: 'Playfair Display', Georgia, serif;
             font-weight: 600;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.04em;
             text-transform: none;
-            background: linear-gradient(135deg, #fff 0%, #f5cb8c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: rgba(255,255,255,0.92);
+            background: none;
+            -webkit-background-clip: unset;
+            -webkit-text-fill-color: unset;
+            background-clip: unset;
         }
 
         .sub {
@@ -2887,17 +2890,19 @@
         }
 
         .wifi-btn {
-            background: linear-gradient(135deg, rgba(243,156,18,0.15), rgba(243,156,18,0.05));
-            border-color: rgba(243,156,18,0.3);
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            font-weight: 600;
+            background: linear-gradient(135deg, #f39c12, #e8870a);
+            border-color: transparent;
+            color: #000 !important;
+            font-weight: 700;
+            box-shadow: 0 4px 18px rgba(243,156,18,0.35);
+            gap: 7px;
         }
-
+        .wifi-btn i { color: #000 !important; }
         .wifi-btn:hover {
-            background: linear-gradient(135deg, rgba(243,156,18,0.25), rgba(243,156,18,0.1));
-            border-color: rgba(243,156,18,0.5);
-            transform: scale(1.05);
+            background: linear-gradient(135deg, #ffb030, #f39c12);
+            box-shadow: 0 6px 24px rgba(243,156,18,0.5);
+            transform: translateY(-1px);
+            border-color: transparent;
         }
 
         .lightbox img {
