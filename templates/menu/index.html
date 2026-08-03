@@ -5458,7 +5458,10 @@
                 } else if (isSearching) {
                     cat.classList.add('open');
                     const cnt = cat.querySelector('.cat-content');
-                    if (cnt) cnt.style.maxHeight = 'none';
+                    if (cnt) {
+                        cnt.style.maxHeight = cnt.scrollHeight + 5000 + 'px';
+                        cnt.style.opacity = '1';
+                    }
                 }
             });
 
