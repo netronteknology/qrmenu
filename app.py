@@ -453,7 +453,7 @@ def save_img(file, slug, sub):
     ext  = secure_filename(file.filename).rsplit('.', 1)[1].lower()
     name = f'{uuid.uuid4().hex}.{ext}'
 
-    # Canlı ortam: Cloudflare R2'ye yükle
+    # Cloudflare R2'ye yükle
     if R2_ACCESS_KEY and R2_SECRET_KEY and R2_ENDPOINT:
         try:
             s3 = boto3.client('s3',
@@ -461,15 +461,18 @@ def save_img(file, slug, sub):
                 aws_secret_access_key=R2_SECRET_KEY,
                 endpoint_url=R2_ENDPOINT)
             key = f'{slug}/{sub}/{name}'.strip('/')
+            print(f'R2 upload başlıyor: {key}')
             s3.upload_fileobj(file, R2_BUCKET, key,
                 ExtraArgs={'ContentType': file.content_type or 'image/jpeg'})
-            return f'{R2_PUBLIC_URL.rstrip("/")}/{key}'
+            url = f'{R2_PUBLIC_URL.rstrip("/")}/{key}'
+            print(f'R2 upload başarılı: {url}')
+            return url
         except Exception as e:
             print(f'R2 upload hatası: {e}')
-            flash(f'Dosya yükleme hatası: {str(e)}', 'error')
+            flash(f'R2 upload hatası: {str(e)}', 'error')
             return None
 
-    # Local geliştirme: static/uploads klasörüne kaydet
+    # R2 ayarları yoksa local'e kaydet
     try:
         file.save(os.path.join(upload_dir(slug, sub), name))
         return name
