@@ -1696,6 +1696,11 @@
                                     <div>
                                         <small class="field-hint" style="margin-bottom:6px;display:block"><i class="fas fa-image"></i> Kategori resmi</small>
                                         <div class="img-upload-wrap">
+                                            {% if kat.resim %}
+                                            <div class="current-img">
+                                                <img src="{% if kat.resim.startswith('http') %}{{ kat.resim }}{% else %}/static/uploads/{{ tenant.slug }}/kategoriler/{{ kat.resim }}{% endif %}" alt="Mevcut Resim">
+                                            </div>
+                                            {% endif %}
                                             <div class="img-upload-area">
                                                 <input type="file" name="resim" accept="image/*" id="kat-resim-input" onchange="previewImage(this, 'kat-resim-prev-{{ kat.id }}')">
                                                 <div class="upload-placeholder">
@@ -1709,6 +1714,11 @@
                                     <div>
                                         <small class="field-hint" style="margin-bottom:6px;display:block"><i class="fas fa-panorama"></i> Banner resmi</small>
                                         <div class="img-upload-wrap">
+                                            {% if kat.banner %}
+                                            <div class="current-img">
+                                                <img src="{% if kat.banner.startswith('http') %}{{ kat.banner }}{% else %}/static/uploads/{{ tenant.slug }}/kategoriler/{{ kat.banner }}{% endif %}" alt="Mevcut Banner">
+                                            </div>
+                                            {% endif %}
                                             <div class="img-upload-area">
                                                 <input type="file" name="banner" accept="image/*" id="kat-banner-input" onchange="previewImage(this, 'kat-banner-prev-{{ kat.id }}')">
                                                 <div class="upload-placeholder">
@@ -2105,9 +2115,20 @@
 
                                     <!-- YASAL ETİKET BİLGİLERİ (tüm ürünlerde sabit) -->
                                     {% include 'tenant/_legal_product_fields.html' %}
-                                    <div class="img-preview-wrap">
-                                        <input type="file" name="resim" accept="image/*" onchange="previewImage(this, 'urun-edit-prev-{{ urun.id }}')">
-                                        <img id="urun-edit-prev-{{ urun.id }}" class="img-preview" alt="Önizleme">
+                                    <div class="img-upload-wrap">
+                                        {% if urun.resim %}
+                                        <div class="current-img">
+                                            <img src="{% if urun.resim.startswith('http') %}{{ urun.resim }}{% else %}/static/uploads/{{ tenant.slug }}/urunler/{{ urun.resim }}{% endif %}" alt="Mevcut Resim">
+                                        </div>
+                                        {% endif %}
+                                        <div class="img-upload-area">
+                                            <input type="file" name="resim" accept="image/*" id="urun-resim-input" onchange="previewImage(this, 'urun-edit-prev-{{ urun.id }}')">
+                                            <div class="upload-placeholder">
+                                                <i class="fas fa-cloud-upload-alt"></i>
+                                                <span>Ürün Resmi Yükle</span>
+                                            </div>
+                                            <img id="urun-edit-prev-{{ urun.id }}" class="img-preview" alt="Önizleme">
+                                        </div>
                                     </div>
                                     <button class="save-btn" type="submit" onclick="return handleSubmitButton(this)"><i class="fas fa-check"></i> Ürün Güncelle</button>
                                 </form>

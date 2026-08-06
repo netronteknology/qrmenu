@@ -445,13 +445,40 @@ def allowed(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXT
 
 
-def save_img(file, slug, sub):
+def process_image(file, max_size=(1200, 1200), quality=85):
+    """Görseli işler: resize ve optimize eder"""
+    try:
+        img = Image.open(file)
+        img = img.convert('RGB')
+        
+        # Aspect ratio koruyarak resize
+        img.thumbnail(max_size, Image.Resampling.LANCZOS)
+        
+        # Optimize et ve kaydet
+        output = BytesIO()
+        img.save(output, format='JPEG', quality=quality, optimize=True)
+        output.seek(0)
+        return output
+    except Exception as e:
+        print(f'Görsel işleme hatası: {e}')
+        return None
+
+
+def save_img(file, slug, sub, process=True):
     if not file or not file.filename:
         return None
     if not allowed(file.filename):
         return None
     ext  = secure_filename(file.filename).rsplit('.', 1)[1].lower()
     name = f'{uuid.uuid4().hex}.{ext}'
+
+    # Görseli işle (resize/optimize)
+    if process:
+        processed = process_image(file)
+        if processed:
+            file = processed
+            ext = 'jpg'  # İşlenmiş görseller JPEG formatında
+            name = f'{uuid.uuid4().hex}.{ext}'
 
     # Cloudflare R2'ye yükle
     if R2_ACCESS_KEY and R2_SECRET_KEY and R2_ENDPOINT:
@@ -463,7 +490,7 @@ def save_img(file, slug, sub):
             key = f'{slug}/{sub}/{name}'.strip('/')
             print(f'R2 upload başlıyor: {key}')
             s3.upload_fileobj(file, R2_BUCKET, key,
-                ExtraArgs={'ContentType': file.content_type or 'image/jpeg'})
+                ExtraArgs={'ContentType': 'image/jpeg'})
             url = f'{R2_PUBLIC_URL.rstrip("/")}/{key}'
             print(f'R2 upload başarılı: {url}')
             return url
