@@ -4528,7 +4528,7 @@
                     <circle class="splash-progress-fill"  cx="74" cy="74" r="72" />
                 </svg>
                 <div class="splash-logo-inner">
-                    <img src="/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo }}" alt="{{ tenant.restoran_adi }}">
+                    <img src="{% if tenant.logo.startswith('http') %}{{ tenant.logo }}{% else %}/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo }}{% endif %}" alt="{{ tenant.restoran_adi }}">
                 </div>
             </div>
             {% endif %}
@@ -4542,7 +4542,7 @@
         <div class="lw-header">
             {% if tenant.logo %}
             <div class="lw-logo-wrap">
-                <img src="/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo }}" alt="{{ tenant.restoran_adi }}">
+                <img src="{% if tenant.logo.startswith('http') %}{{ tenant.logo }}{% else %}/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo }}{% endif %}" alt="{{ tenant.restoran_adi }}">
             </div>
             {% endif %}
             <div class="lw-rest-name">{{ tenant.restoran_adi }}</div>
