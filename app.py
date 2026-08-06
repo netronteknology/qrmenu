@@ -1451,17 +1451,10 @@ def t_gorsel_kaldir(slug, tenant, me):
 
 
 @app.route('/r/<slug>/admin/add_builder_examples', methods=['POST'])
-def add_builder_examples(slug):
+@login_required
+def add_builder_examples(slug, tenant, me):
     """Builder grupları için örnek veriler ekle (demo için)"""
-    from flask import jsonify, session
-
-    # Login kontrolü
-    if 'user_id' not in session:
-        return jsonify({'ok': False, 'error': 'Oturum süresi doldu, lütfen tekrar giriş yapın'}), 401
-
-    tenant = Tenant.query.filter_by(slug=slug).first()
-    if not tenant:
-        return jsonify({'ok': False, 'error': 'Tenant bulunamadı'}), 404
+    from flask import jsonify
 
     try:
         # Mevcut builder gruplarını temizle
