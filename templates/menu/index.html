@@ -4677,7 +4677,7 @@
                data-product-id="{{ urun.id }}">
                 <div class="feature-img">
                     {% if urun.resim %}
-                    <img src="/static/uploads/{{ tenant.slug }}/urunler/{{ urun.resim }}" alt="{{ urun.isim }}" loading="lazy">
+                    <img src="{% if urun.resim.startswith('http') %}{{ urun.resim }}{% else %}/static/uploads/{{ tenant.slug }}/urunler/{{ urun.resim }}{% endif %}" alt="{{ urun.isim }}" loading="lazy">
                     {% else %}
                     <div class="placeholder-img">
                         <i class="fas fa-utensils"></i>
@@ -4706,7 +4706,7 @@
             <div class="cat-card menu-category" data-kat="{{ kat.id }}">
                 <div class="cat-head" onclick="event.preventDefault();toggleCategory('{{ kat.id }}')">
                     {% if kat.banner or kat.resim %}
-                    <img class="cat-cover" src="/static/uploads/{{ tenant.slug }}/kategoriler/{{ kat.banner or kat.resim }}" alt="{{ kat.isim }}" onerror="this.style.display='none'">
+                    <img class="cat-cover" src="{% if (kat.banner or kat.resim).startswith('http') %}{{ kat.banner or kat.resim }}{% else %}/static/uploads/{{ tenant.slug }}/kategoriler/{{ kat.banner or kat.resim }}{% endif %}" alt="{{ kat.isim }}" onerror="this.style.display='none'">
                     {% else %}
                     <div class="cat-cover-placeholder"></div>
                     {% endif %}
@@ -4730,7 +4730,7 @@
                              data-urun-id="{{ urun.id }}"
                              onclick="handleProductClick(this, event)"
                              style="{% if urun.urun_tipi == 'builder' %}cursor: pointer;{% endif %}">
-                            <img src="/static/uploads/{{ tenant.slug }}/urunler/{{ urun.resim }}" alt="{{ urun.isim }}" onclick="handleProductClick(this, event)" style="cursor: pointer;">
+                            <img src="{% if urun.resim.startswith('http') %}{{ urun.resim }}{% else %}/static/uploads/{{ tenant.slug }}/urunler/{{ urun.resim }}{% endif %}" alt="{{ urun.isim }}" onclick="handleProductClick(this, event)" style="cursor: pointer;">
                             <div class="product-body">
                                 <div class="product-top">
                                     <div>
@@ -5446,10 +5446,8 @@
             document.querySelectorAll('.menu-item').forEach(item => {
                 // Sadece ürün adını ara (açıklama değil)
                 const trText = normTR(item.dataset.name || item.dataset.tr || '');
-                const enText = normTR((item.dataset.en || '').split(' ').slice(0,3).join(' '));
-                const allText = trText + ' ' + enText;
                 const categoryOk = currentCategory === 'all' || item.dataset.kat === currentCategory;
-                const searchOk = !isSearching || allText.includes(q);
+                const searchOk = !isSearching || trText.includes(q);
                 const show = categoryOk && searchOk;
                 item.classList.toggle('hidden', !show);
                 if (show) visibleCount++;
