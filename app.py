@@ -466,11 +466,17 @@ def save_img(file, slug, sub):
             return f'{R2_PUBLIC_URL.rstrip("/")}/{key}'
         except Exception as e:
             print(f'R2 upload hatası: {e}')
+            flash(f'Dosya yükleme hatası: {str(e)}', 'error')
             return None
 
     # Local geliştirme: static/uploads klasörüne kaydet
-    file.save(os.path.join(upload_dir(slug, sub), name))
-    return name
+    try:
+        file.save(os.path.join(upload_dir(slug, sub), name))
+        return name
+    except Exception as e:
+        print(f'Local upload hatası: {e}')
+        flash(f'Dosya yükleme hatası: {str(e)}', 'error')
+        return None
 
 
 def musteri_kodu_uret():
