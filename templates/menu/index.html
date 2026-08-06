@@ -58,9 +58,11 @@
     body.white-mod .lang button{background:#fff !important;color:#5a4a35 !important;border-color:rgba(0,0,0,.10) !important}
     body.white-mod .lang button.active{background:var(--gold) !important;color:#fff !important}
     body.white-mod .footer-signature{background:#f7f4ef !important;border-color:rgba(200,134,10,.15) !important}
-    body.white-mod .footer-kdv,body.white-mod .footer-update,body.white-mod .menu-foot{color:#3a2a15 !important}
-    body.white-mod .footer-kdv span,body.white-mod .footer-update span{color:#1a0e04 !important}
-    body.white-mod .footer-signature,body.white-mod .footer-signature *,body.white-mod .menu-end{color:#3a2a15 !important;opacity:1 !important}
+    body.white-mod .footer-kdv,body.white-mod .footer-update,body.white-mod .menu-foot{color:#2a1a08 !important;opacity:1 !important}
+    body.white-mod .footer-kdv i,body.white-mod .footer-update i{opacity:1 !important;color:#c8860a !important}
+    body.white-mod .footer-kdv span,body.white-mod .footer-update span,body.white-mod .footer-brand{color:#2a1a08 !important;opacity:1 !important}
+    body.white-mod .footer-signature,body.white-mod .footer-signature *{color:#2a1a08 !important;opacity:1 !important}
+    body.white-mod .menu-end{color:#c8860a !important;opacity:1 !important}
     body.white-mod .menu-end-line{opacity:1 !important}
     body.white-mod .allergen-tag{color:#8b3a3a !important;background:rgba(180,40,40,.07) !important;border-color:rgba(180,40,40,.2) !important}
     body.white-mod .price{color:var(--gold) !important}
@@ -2929,7 +2931,7 @@
             align-items: center;
             gap: 6px;
             font-size: .78rem;
-            color: rgba(255,255,255,.38);
+            color: rgba(255,255,255,.65);
         }
         .footer-kdv i { color: var(--green); font-size: .72rem; }
 
@@ -2938,9 +2940,9 @@
             align-items: center;
             gap: 6px;
             font-size: .75rem;
-            color: rgba(255,255,255,.25);
+            color: rgba(255,255,255,.5);
         }
-        .footer-update i { font-size: .7rem; opacity: .6; }
+        .footer-update i { font-size: .7rem; opacity: .8; }
 
         .footer-brand {
             margin-top: 6px;
@@ -2950,7 +2952,7 @@
             font-size: .72rem;
             font-weight: 700;
             letter-spacing: .8px;
-            color: rgba(255,255,255,.18);
+            color: rgba(255,255,255,.35);
             text-transform: uppercase;
         }
 
@@ -4721,6 +4723,7 @@
                         <div class="product menu-item"
                              id="product-{{ urun.id }}"
                              data-kat="{{ kat.id }}"
+                             data-name="{{ urun.isim|lower }}"
                              data-tr="{{ urun.isim ~ ' ' ~ (urun.aciklama or '') }}"
                              data-en="{{ (urun.isim_en or urun.isim) ~ ' ' ~ (urun.aciklama_en or urun.aciklama or '') }}"
                              data-urun-tipi="{{ urun.urun_tipi or 'standart' }}"
@@ -5441,8 +5444,9 @@
             let visibleCount = 0;
 
             document.querySelectorAll('.menu-item').forEach(item => {
-                const trText = normTR(item.dataset.tr || '');
-                const enText = normTR(item.dataset.en || '');
+                // Sadece ürün adını ara (açıklama değil)
+                const trText = normTR(item.dataset.name || item.dataset.tr || '');
+                const enText = normTR((item.dataset.en || '').split(' ').slice(0,3).join(' '));
                 const allText = trText + ' ' + enText;
                 const categoryOk = currentCategory === 'all' || item.dataset.kat === currentCategory;
                 const searchOk = !isSearching || allText.includes(q);
