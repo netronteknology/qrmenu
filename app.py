@@ -1404,6 +1404,25 @@ def t_ayarlar(slug, tenant, me):
     return redirect(url_for('t_admin', slug=slug) + '#ayarlar')
 
 
+@app.route('/r/<slug>/admin/gorsel_kaldir', methods=['POST'])
+@login_required
+def t_gorsel_kaldir(slug, tenant, me):
+    from flask import jsonify
+    data = request.get_json(silent=True) or {}
+    gorsel_tipi = data.get('type', '')
+
+    if gorsel_tipi == 'logo':
+        tenant.logo = ''
+        db.session.commit()
+        return jsonify({'ok': True})
+    elif gorsel_tipi == 'banner':
+        tenant.banner = ''
+        db.session.commit()
+        return jsonify({'ok': True})
+    else:
+        return jsonify({'ok': False, 'error': 'Geçersiz görsel tipi'}), 400
+
+
 # â”€â”€ Kategoriler â”€â”€
 @app.route('/r/<slug>/admin/kat_ekle', methods=['POST'])
 @login_required
