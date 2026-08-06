@@ -2150,6 +2150,9 @@
                     <h2 class="page-title">Builder Gruplar</h2>
                     <div class="page-sub">Özelleştirilebilir ürünler için seçenek grupları oluştur (Boy, Protein, Garnitür vb.).</div>
                 </div>
+                <button class="btn btn-green" onclick="addBuilderExamples()">
+                    <i class="fas fa-magic"></i> Örnek Veriler Ekle
+                </button>
             </div>
 
             <div class="card">
@@ -3099,6 +3102,29 @@ function removeImage(type) {
     .then(data => {
         if (data.ok) {
             showPopup('success', 'fa-check', 'Görsel kaldırıldı');
+        } else {
+            showPopup('error', 'fa-circle-exclamation', data.error || 'Hata oluştu');
+        }
+    })
+    .catch(error => {
+        showPopup('error', 'fa-circle-exclamation', 'Hata: ' + error.message);
+    });
+}
+
+function addBuilderExamples() {
+    if (!confirm('Mevcut builder grupları silinip örnek veriler eklenecek. Devam etmek istiyor musunuz?')) return;
+
+    fetch(`/r/{{ tenant.slug }}/admin/add_builder_examples`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.ok) {
+            showPopup('success', 'fa-check', data.message);
+            setTimeout(() => location.reload(), 1500);
         } else {
             showPopup('error', 'fa-circle-exclamation', data.error || 'Hata oluştu');
         }
