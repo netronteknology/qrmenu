@@ -1451,104 +1451,131 @@ def t_gorsel_kaldir(slug, tenant, me):
 
 
 @app.route('/r/<slug>/admin/add_builder_examples', methods=['POST'])
-@login_required
-def add_builder_examples(slug, tenant, me):
+def add_builder_examples(slug):
     """Builder grupları için örnek veriler ekle (demo için)"""
-    from flask import jsonify
+    from flask import jsonify, session
+    from functools import wraps
 
-    try:
-        # Mevcut builder gruplarını temizle
-        BuilderSecenek.query.filter(BuilderSecenek.grup_id.in_(
-            db.session.query(BuilderGrup.id).filter_by(tenant_id=tenant.id)
-        )).delete(synchronize_session=False)
-        BuilderGrup.query.filter_by(tenant_id=tenant.id).delete(synchronize_session=False)
-        db.session.commit()
+    # Custom login check that returns JSON instead of redirect
+    def login_required_json(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if 'user_id' not in session:
+                return jsonify({'ok': False, 'error': 'Oturum süresi doldu, lütfen tekrar giriş yapın'}), 401
+            return f(*args, **kwargs)
+        return decorated_function
 
-        # Örnek Builder Grupları
-        builder_gruplar = [
-            {
-                'ad': 'Boy',
-                'ad_en': 'Size',
-                'secenekler': [
-                    {'ad': 'Küçük', 'ad_en': 'Small', 'fiyat_farki': 0, 'varsayilan': True},
-                    {'ad': 'Orta', 'ad_en': 'Medium', 'fiyat_farki': 15, 'varsayilan': False},
-                    {'ad': 'Büyük', 'ad_en': 'Large', 'fiyat_farki': 25, 'varsayilan': False},
-                ]
-            },
-            {
-                'ad': 'Protein',
-                'ad_en': 'Protein',
-                'secenekler': [
-                    {'ad': 'Tavuk', 'ad_en': 'Chicken', 'fiyat_farki': 0, 'varsayilan': True},
-                    {'ad': 'Kırmızı Et', 'ad_en': 'Beef', 'fiyat_farki': 20, 'varsayilan': False},
-                    {'ad': 'Kajun Tavuk', 'ad_en': 'Cajun Chicken', 'fiyat_farki': 15, 'varsayilan': False},
-                    {'ad': 'Izgara Somon', 'ad_en': 'Grilled Salmon', 'fiyat_farki': 35, 'varsayilan': False},
-                ]
-            },
-            {
-                'ad': 'Garnitür',
-                'ad_en': 'Garnish',
-                'secenekler': [
-                    {'ad': 'Pirinç', 'ad_en': 'Rice', 'fiyat_farki': 0, 'varsayilan': True},
-                    {'ad': 'Bulgur', 'ad_en': 'Bulgur', 'fiyat_farki': 5, 'varsayilan': False},
-                    {'ad': 'Makarna', 'ad_en': 'Pasta', 'fiyat_farki': 5, 'varsayilan': False},
-                    {'ad': 'Patates Kızartması', 'ad_en': 'French Fries', 'fiyat_farki': 10, 'varsayilan': False},
-                ]
-            },
-            {
-                'ad': 'Ekstra Malzeme',
-                'ad_en': 'Extra Toppings',
-                'secenekler': [
-                    {'ad': 'Ekstra Peynir', 'ad_en': 'Extra Cheese', 'fiyat_farki': 10, 'varsayilan': False},
-                    {'ad': 'Ekstra Sos', 'ad_en': 'Extra Sauce', 'fiyat_farki': 5, 'varsayilan': False},
-                    {'ad': 'Avokado', 'ad_en': 'Avocado', 'fiyat_farki': 15, 'varsayilan': False},
-                    {'ad': 'Yumurta', 'ad_en': 'Egg', 'fiyat_farki': 8, 'varsayilan': False},
-                ]
-            },
-            {
-                'ad': 'Sos',
-                'ad_en': 'Sauce',
-                'secenekler': [
-                    {'ad': 'Barbekü', 'ad_en': 'BBQ', 'fiyat_farki': 0, 'varsayilan': True},
-                    {'ad': 'Acı Sos', 'ad_en': 'Hot Sauce', 'fiyat_farki': 0, 'varsayilan': False},
-                    {'ad': 'Ranch', 'ad_en': 'Ranch', 'fiyat_farki': 0, 'varsayilan': False},
-                    {'ad': 'Sarımsaklı Yoğurt', 'ad_en': 'Garlic Yogurt', 'fiyat_farki': 5, 'varsayilan': False},
-                ]
-            }
-        ]
+    @login_required_json
+    def _add_builder_examples(slug, tenant, me):
+        try:
+            # Mevcut builder gruplarını temizle
+            BuilderSecenek.query.filter(BuilderSecenek.grup_id.in_(
+                db.session.query(BuilderGrup.id).filter_by(tenant_id=tenant.id)
+            )).delete(synchronize_session=False)
+            BuilderGrup.query.filter_by(tenant_id=tenant.id).delete(synchronize_session=False)
+            db.session.commit()
 
-        # Yeni builder grupları ekle
-        for grup_data in builder_gruplar:
-            grup = BuilderGrup(
-                tenant_id=tenant.id,
-                ad=grup_data['ad'],
-                ad_en=grup_data['ad_en'],
-                zorunlu=False,
-                coklu_secim=False,
-                sira=0,
-                durum=True
-            )
-            db.session.add(grup)
-            db.session.flush()
+            # Örnek Builder Grupları
+            builder_gruplar = [
+                {
+                    'ad': 'Boy',
+                    'ad_en': 'Size',
+                    'secenekler': [
+                        {'ad': 'Küçük', 'ad_en': 'Small', 'fiyat_farki': 0, 'varsayilan': True},
+                        {'ad': 'Orta', 'ad_en': 'Medium', 'fiyat_farki': 15, 'varsayilan': False},
+                        {'ad': 'Büyük', 'ad_en': 'Large', 'fiyat_farki': 25, 'varsayilan': False},
+                    ]
+                },
+                {
+                    'ad': 'Protein',
+                    'ad_en': 'Protein',
+                    'secenekler': [
+                        {'ad': 'Tavuk', 'ad_en': 'Chicken', 'fiyat_farki': 0, 'varsayilan': True},
+                        {'ad': 'Kırmızı Et', 'ad_en': 'Beef', 'fiyat_farki': 20, 'varsayilan': False},
+                        {'ad': 'Kajun Tavuk', 'ad_en': 'Cajun Chicken', 'fiyat_farki': 15, 'varsayilan': False},
+                        {'ad': 'Izgara Somon', 'ad_en': 'Grilled Salmon', 'fiyat_farki': 35, 'varsayilan': False},
+                    ]
+                },
+                {
+                    'ad': 'Garnitür',
+                    'ad_en': 'Garnish',
+                    'secenekler': [
+                        {'ad': 'Pirinç', 'ad_en': 'Rice', 'fiyat_farki': 0, 'varsayilan': True},
+                        {'ad': 'Bulgur', 'ad_en': 'Bulgur', 'fiyat_farki': 5, 'varsayilan': False},
+                        {'ad': 'Makarna', 'ad_en': 'Pasta', 'fiyat_farki': 5, 'varsayilan': False},
+                        {'ad': 'Patates Kızartması', 'ad_en': 'French Fries', 'fiyat_farki': 10, 'varsayilan': False},
+                    ]
+                },
+                {
+                    'ad': 'Ekstra Malzeme',
+                    'ad_en': 'Extra Toppings',
+                    'secenekler': [
+                        {'ad': 'Ekstra Peynir', 'ad_en': 'Extra Cheese', 'fiyat_farki': 10, 'varsayilan': False},
+                        {'ad': 'Ekstra Sos', 'ad_en': 'Extra Sauce', 'fiyat_farki': 5, 'varsayilan': False},
+                        {'ad': 'Avokado', 'ad_en': 'Avocado', 'fiyat_farki': 15, 'varsayilan': False},
+                        {'ad': 'Yumurta', 'ad_en': 'Egg', 'fiyat_farki': 8, 'varsayilan': False},
+                    ]
+                },
+                {
+                    'ad': 'Sos',
+                    'ad_en': 'Sauce',
+                    'secenekler': [
+                        {'ad': 'Barbekü', 'ad_en': 'BBQ', 'fiyat_farki': 0, 'varsayilan': True},
+                        {'ad': 'Acı Sos', 'ad_en': 'Hot Sauce', 'fiyat_farki': 0, 'varsayilan': False},
+                        {'ad': 'Ranch', 'ad_en': 'Ranch', 'fiyat_farki': 0, 'varsayilan': False},
+                        {'ad': 'Sarımsaklı Yoğurt', 'ad_en': 'Garlic Yogurt', 'fiyat_farki': 5, 'varsayilan': False},
+                    ]
+                }
+            ]
 
-            for sec_data in grup_data['secenekler']:
-                secenek = BuilderSecenek(
-                    grup_id=grup.id,
-                    ad=sec_data['ad'],
-                    ad_en=sec_data['ad_en'],
-                    fiyat_farki=sec_data['fiyat_farki'],
-                    resim='',
-                    varsayilan=sec_data['varsayilan'],
+            # Yeni builder grupları ekle
+            for grup_data in builder_gruplar:
+                grup = BuilderGrup(
+                    tenant_id=tenant.id,
+                    ad=grup_data['ad'],
+                    ad_en=grup_data['ad_en'],
+                    zorunlu=False,
+                    coklu_secim=False,
                     sira=0,
                     durum=True
                 )
-                db.session.add(secenek)
+                db.session.add(grup)
+                db.session.flush()
 
-        db.session.commit()
-        return jsonify({'ok': True, 'message': f'{len(builder_gruplar)} builder grubu eklendi'})
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'ok': False, 'error': str(e)}), 500
+                for sec_data in grup_data['secenekler']:
+                    secenek = BuilderSecenek(
+                        grup_id=grup.id,
+                        ad=sec_data['ad'],
+                        ad_en=sec_data['ad_en'],
+                        fiyat_farki=sec_data['fiyat_farki'],
+                        resim='',
+                        varsayilan=sec_data['varsayilan'],
+                        sira=0,
+                        durum=True
+                    )
+                    db.session.add(secenek)
+
+            db.session.commit()
+            return jsonify({'ok': True, 'message': f'{len(builder_gruplar)} builder grubu eklendi'})
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'ok': False, 'error': str(e)}), 500
+
+    # Get tenant and user
+    tenant = Tenant.query.filter_by(slug=slug).first()
+    if not tenant:
+        return jsonify({'ok': False, 'error': 'Tenant bulunamadı'}), 404
+
+    # Flask-Login uses '_user_id' key
+    user_id = session.get('_user_id') or session.get('user_id')
+    if not user_id:
+        return jsonify({'ok': False, 'error': 'Oturum süresi doldu, lütfen tekrar giriş yapın'}), 401
+
+    me = Kullanici.query.filter_by(id=user_id, tenant_id=tenant.id).first()
+    if not me:
+        return jsonify({'ok': False, 'error': 'Kullanıcı bulunamadı'}), 404
+
+    return _add_builder_examples(slug, tenant, me)
 
 
 # â”€â”€ Kategoriler â”€â”€
