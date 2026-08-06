@@ -66,7 +66,7 @@ body{min-height:100vh;font-family:"Segoe UI",sans-serif;color:#fff;display:flex;
 <div class="card">
   <div class="card-top">
     {% if tenant.logo %}
-    <div class="logo-ring"><img src="/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo }}" alt="{{ tenant.restoran_adi }}"></div>
+    <div class="logo-ring"><img src="{% if tenant.logo.startswith('http') %}{{ tenant.logo }}{% else %}/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo }}{% endif %}" alt="{{ tenant.restoran_adi }}"></div>
     {% else %}
     <div class="logo-ring"><div class="logo-ring-icon"><i class="fas fa-utensils"></i></div></div>
     {% endif %}
