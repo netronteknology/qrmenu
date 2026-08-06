@@ -1644,10 +1644,29 @@
                             <input type="text" name="isim_en" placeholder="Category name (EN)">
                         </div>
                         <div>
+                            <small class="field-hint" style="margin-bottom:8px;display:block"><i class="fas fa-image"></i> Kategori resmi (kart görseli)</small>
+                            <div class="img-upload-wrap">
+                                <div class="img-upload-area">
+                                    <input type="file" name="resim" accept="image/*" required id="kat-resim-input" onchange="previewImage(this, 'kat-resim-preview')">
+                                    <div class="upload-placeholder">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span>Resim Yükle</span>
+                                    </div>
+                                    <img id="kat-resim-preview" class="img-preview" alt="Resim önizleme">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
                             <small class="field-hint" style="margin-bottom:8px;display:block"><i class="fas fa-panorama"></i> Banner resmi (iştah açan görsel)</small>
-                            <div class="img-preview-wrap">
-                                <input type="file" name="banner" accept="image/*" onchange="previewImage(this, 'kat-banner-preview')">
-                                <img id="kat-banner-preview" class="img-preview" alt="Banner önizleme">
+                            <div class="img-upload-wrap">
+                                <div class="img-upload-area">
+                                    <input type="file" name="banner" accept="image/*" id="kat-banner-input" onchange="previewImage(this, 'kat-banner-preview')">
+                                    <div class="upload-placeholder">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span>Banner Yükle</span>
+                                    </div>
+                                    <img id="kat-banner-preview" class="img-preview" alt="Banner önizleme">
+                                </div>
                             </div>
                         </div>
                         <button class="save-btn" type="submit" onclick="return handleSubmitButton(this)"><i class="fas fa-plus"></i> Kategori Ekle</button>
