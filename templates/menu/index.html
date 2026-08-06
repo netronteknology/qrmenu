@@ -4593,7 +4593,7 @@
         <div class="hero-box">
             {% if tenant.logo %}
             <div class="logo-wrap">
-                <img class="logo" src="/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo }}" alt="{{ tenant.restoran_adi }}">
+                <img class="logo" src="{% if tenant.logo.startswith('http') %}{{ tenant.logo }}{% else %}/static/uploads/{{ tenant.slug }}/ayarlar/{{ tenant.logo }}{% endif %}" alt="{{ tenant.restoran_adi }}">
             </div>
             {% endif %}
             
