@@ -5465,12 +5465,21 @@
                     const content = cat.querySelector('.cat-content');
                     if (content) content.style.maxHeight = '';
                 } else if (isSearching) {
+                    // Arama modunda sadece eşleşen ürünleri göster, diğerlerini gizle
+                    cat.querySelectorAll('.menu-item.hidden').forEach(hiddenItem => {
+                        hiddenItem.style.display = 'none';
+                    });
                     cat.classList.add('open');
                     const cnt = cat.querySelector('.cat-content');
                     if (cnt) {
                         cnt.style.maxHeight = cnt.scrollHeight + 5000 + 'px';
                         cnt.style.opacity = '1';
                     }
+                } else {
+                    // Normal modda tüm ürünleri göster
+                    cat.querySelectorAll('.menu-item').forEach(item => {
+                        item.style.display = '';
+                    });
                 }
             });
 
