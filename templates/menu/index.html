@@ -58,10 +58,10 @@
     body.white-mod .lang button{background:#fff !important;color:#5a4a35 !important;border-color:rgba(0,0,0,.10) !important}
     body.white-mod .lang button.active{background:var(--gold) !important;color:#fff !important}
     body.white-mod .footer-signature{background:#f7f4ef !important;border-color:rgba(200,134,10,.15) !important}
-    body.white-mod .footer-kdv,body.white-mod .footer-update,body.white-mod .menu-foot{color:#2a1a08 !important;opacity:1 !important}
+    body.white-mod .footer-kdv,body.white-mod .footer-update,body.white-mod .menu-foot{color:#1a0f05 !important;opacity:1 !important}
     body.white-mod .footer-kdv i,body.white-mod .footer-update i{opacity:1 !important;color:#c8860a !important}
-    body.white-mod .footer-kdv span,body.white-mod .footer-update span,body.white-mod .footer-brand{color:#2a1a08 !important;opacity:1 !important}
-    body.white-mod .footer-signature,body.white-mod .footer-signature *{color:#2a1a08 !important;opacity:1 !important}
+    body.white-mod .footer-kdv span,body.white-mod .footer-update span,body.white-mod .footer-brand{color:#1a0f05 !important;opacity:1 !important}
+    body.white-mod .footer-signature,body.white-mod .footer-signature *{color:#1a0f05 !important;opacity:1 !important}
     body.white-mod .menu-end{color:#c8860a !important;opacity:1 !important}
     body.white-mod .menu-end-line{opacity:1 !important}
     body.white-mod .allergen-tag{color:#8b3a3a !important;background:rgba(180,40,40,.07) !important;border-color:rgba(180,40,40,.2) !important}
@@ -4187,9 +4187,9 @@
            ★ WHITE MODE — KATEGORİ KARTLARI DAHA CANLI ★
            ════════════════════════════════════════════════════ */
 
-        /* Kategori görsellerini daha canlı, daha doygun göster */
+        /* Kategori görsellerini daha pastel, yumuşak göster */
         body.light-mode .cat-cover {
-            filter: brightness(1.0) saturate(1.28) contrast(1.08) !important;
+            filter: brightness(0.92) saturate(1.05) contrast(0.95) !important;
         }
 
         /* Beyaz overlay'i sadece sol tarafa (yazı arkasına) odakla,
@@ -5467,6 +5467,7 @@
                     const content = cat.querySelector('.cat-content');
                     if (content) content.style.maxHeight = '';
                 } else if (isSearching) {
+                    // Arama modunda: sadece eşleşen ürünleri göster, kategoriyi aç
                     cat.classList.add('open');
                     const cnt = cat.querySelector('.cat-content');
                     if (cnt) {
