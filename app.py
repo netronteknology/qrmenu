@@ -704,23 +704,25 @@ def ensure_schema():
 
 
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-#  VERÄ°TABANI BAÅLATMA
+#  VERÄ°TABANI BAÅLATMA (Sadece local SQLite için)
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-with app.app_context():
-    db.create_all()
-    ensure_schema()
-    if not SuperAdmin.query.first():
-        sa = SuperAdmin(username='superadmin')
-        sa.set_password('superadmin123')
-        db.session.add(sa)
-        db.session.commit()
-    changed = False
-    for musteri in Musteri.query.order_by(Musteri.id).all():
-        if not musteri.referans_kodu:
-            musteri.referans_kodu = referans_kodu_uret(musteri.id)
-            changed = True
-    if changed:
-        db.session.commit()
+# Vercel/PostgreSQL production'da database zaten var, initialization gerekmiyor
+if 'sqlite' in str(db.engine.url):
+    with app.app_context():
+        db.create_all()
+        ensure_schema()
+        if not SuperAdmin.query.first():
+            sa = SuperAdmin(username='superadmin')
+            sa.set_password('superadmin123')
+            db.session.add(sa)
+            db.session.commit()
+        changed = False
+        for musteri in Musteri.query.order_by(Musteri.id).all():
+            if not musteri.referans_kodu:
+                musteri.referans_kodu = referans_kodu_uret(musteri.id)
+                changed = True
+        if changed:
+            db.session.commit()
 
 
 # â”€â”€ Dekoratörler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
