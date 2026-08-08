@@ -379,14 +379,23 @@
         .current-img {
             position: relative;
             width: 100%;
-            height: 200px;
-            background: #000;
+            min-height: 80px;
+            max-height: 180px;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .current-img img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            max-height: 180px;
+        }
+
+        .current-img:empty {
+            display: none;
         }
 
         .remove-img-btn {

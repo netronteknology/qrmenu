@@ -5443,11 +5443,15 @@
             const isSearching = q.length > 0;
             let visibleCount = 0;
 
+            // Önce tüm ürünleri display'ini sıfırla
             document.querySelectorAll('.menu-item').forEach(item => {
-                // Sadece ürün adını ara (açıklama değil)
-                const trText = normTR(item.dataset.name || item.dataset.tr || '');
+                item.style.display = '';
+            });
+
+            document.querySelectorAll('.menu-item').forEach(item => {
+                const nameText = normTR(item.dataset.name || '');
                 const categoryOk = currentCategory === 'all' || item.dataset.kat === currentCategory;
-                const searchOk = !isSearching || trText.includes(q);
+                const searchOk = !isSearching || nameText.includes(q);
                 const show = categoryOk && searchOk;
                 item.classList.toggle('hidden', !show);
                 if (show) visibleCount++;
@@ -5463,10 +5467,6 @@
                     const content = cat.querySelector('.cat-content');
                     if (content) content.style.maxHeight = '';
                 } else if (isSearching) {
-                    // Arama modunda sadece eşleşen ürünleri göster, diğerlerini gizle
-                    cat.querySelectorAll('.menu-item.hidden').forEach(hiddenItem => {
-                        hiddenItem.style.display = 'none';
-                    });
                     cat.classList.add('open');
                     const cnt = cat.querySelector('.cat-content');
                     if (cnt) {
@@ -5474,7 +5474,7 @@
                         cnt.style.opacity = '1';
                     }
                 } else {
-                    // Normal modda tüm ürünleri göster
+                    // Normal modda display sıfırla
                     cat.querySelectorAll('.menu-item').forEach(item => {
                         item.style.display = '';
                     });
