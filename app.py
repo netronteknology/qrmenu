@@ -707,7 +707,9 @@ def ensure_schema():
 #  VERÄ°TABANI BAÅLATMA (Sadece local SQLite için)
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # Vercel/PostgreSQL production'da database zaten var, initialization gerekmiyor
-if 'sqlite' in str(db.engine.url):
+# DATABASE_URL kontrolü ile SQLite tespiti (application context gerektirmez)
+_db_url = os.environ.get('DATABASE_URL', 'sqlite:///saas.db')
+if 'sqlite' in _db_url:
     with app.app_context():
         db.create_all()
         ensure_schema()
