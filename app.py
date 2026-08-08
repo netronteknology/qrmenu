@@ -2787,3 +2787,6 @@ def api_featured(slug):
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=5000)
+
+# Vercel için WSGI uygulamasını dışa aktar
+app = app
