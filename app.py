@@ -679,8 +679,10 @@ def ensure_schema():
         except Exception:
             conn.rollback()
 
-    # Yeni tabloları oluştur
-    db.create_all()
+    # Yeni tabloları oluştur (sadece local SQLite için)
+    # Vercel/PostgreSQL production'da database zaten var
+    if 'sqlite' in str(db.engine.url):
+        db.create_all()
 
     # allergens alanı normalize
     try:
