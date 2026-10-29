@@ -264,9 +264,12 @@ class Kullanici(db.Model):
 
 
 class SuperAdmin(db.Model):
-    id            = db.Column(db.Integer, primary_key=True)
-    username      = db.Column(db.String(60), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
+    id               = db.Column(db.Integer, primary_key=True)
+    username         = db.Column(db.String(60), unique=True, nullable=False)
+    password_hash    = db.Column(db.String(255), nullable=False)
+    email            = db.Column(db.String(120), default='')
+    security_question = db.Column(db.String(255), default='')
+    security_answer   = db.Column(db.String(255), default='')
 
     def set_password(self, pw):  self.password_hash = generate_password_hash(pw)
     def check_password(self, pw): return check_password_hash(self.password_hash, pw)
@@ -353,6 +356,20 @@ class Musteri(db.Model):
     created_at    = db.Column(db.DateTime,    default=db.func.now())
     # Restoranlar bu müşteriye backref ile baÄŸlı
     restoranlar   = db.relationship('Tenant', backref='musteri', lazy=True)
+    tahsilatlar   = db.relationship('Tahsilat', backref='musteri', lazy=True)
+
+
+class Tahsilat(db.Model):
+    """Müşteri tahsilat kayıtları"""
+    id            = db.Column(db.Integer, primary_key=True)
+    musteri_id    = db.Column(db.Integer, db.ForeignKey('musteri.id'), nullable=False)
+    tenant_id     = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=True)  # İsteğe bağlı: hangi restoran için
+    tutar         = db.Column(db.Float, nullable=False)
+    odeme_tipi    = db.Column(db.String(20), default='nakit')  # nakit / havale / kredi_karti / iban
+    aciklama      = db.Column(db.String(255), default='')
+    odeme_tarihi  = db.Column(db.DateTime, default=db.func.now())
+    created_at    = db.Column(db.DateTime, default=db.func.now())
+    created_by    = db.Column(db.String(60), default='superadmin')  # Kim girdi
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -608,6 +625,11 @@ def apply_legal_product_fields(urun):
 
 def ensure_schema():
     column_sql = {
+        'super_admin': {
+            'email': "email VARCHAR(120) DEFAULT ''",
+            'security_question': "security_question VARCHAR(255) DEFAULT ''",
+            'security_answer': "security_answer VARCHAR(255) DEFAULT ''",
+        },
         'tenant': {
             'referrer_id': 'referrer_id INTEGER',
             'acilis_saati': "acilis_saati VARCHAR(5) DEFAULT '10:00'",
@@ -814,6 +836,56 @@ def sa_login():
     return render_template('superadmin/login.html')
 
 
+@app.route('/superadmin/sifremi-unuttum', methods=['GET','POST'])
+def sa_forgot_password():
+    if request.method == 'POST':
+        username = clean(request.form.get('username', ''))
+        sa = SuperAdmin.query.filter_by(username=username).first()
+
+        if not sa:
+            err('Bu kullanıcı adına sahip bir hesap bulunamadı.')
+        elif not sa.security_question or not sa.security_answer:
+            err('Bu hesap için güvenlik sorusu tanımlanmamış. Lütfen sistem yöneticisi ile iletişime geçin.')
+        else:
+            session['forgot_username'] = username
+            return redirect(url_for('sa_reset_password'))
+
+    return render_template('superadmin/forgot_password.html')
+
+
+@app.route('/superadmin/sifre-sifirla', methods=['GET','POST'])
+def sa_reset_password():
+    username = session.get('forgot_username')
+    if not username:
+        return redirect(url_for('sa_forgot_password'))
+
+    sa = SuperAdmin.query.filter_by(username=username).first()
+    if not sa:
+        session.pop('forgot_username', None)
+        err('Kullanıcı bulunamadı.')
+        return redirect(url_for('sa_forgot_password'))
+
+    if request.method == 'POST':
+        answer = clean(request.form.get('security_answer', ''))
+        new_password = request.form.get('new_password', '')
+        new_password2 = request.form.get('new_password2', '')
+
+        if answer.lower() != sa.security_answer.lower():
+            err('Güvenlik sorusunun cevabı yanlış.')
+        elif len(new_password) < 8:
+            err('Yeni şifre en az 8 karakter olmalı.')
+        elif new_password != new_password2:
+            err('Şifreler eşleşmiyor.')
+        else:
+            sa.set_password(new_password)
+            db.session.commit()
+            session.pop('forgot_username', None)
+            ok('Şifreniz başarıyla sıfırlandı. Yeni şifrenizle giriş yapabilirsiniz.')
+            return redirect(url_for('sa_login'))
+
+    return render_template('superadmin/reset_password.html', security_question=sa.security_question)
+
+
 @app.route('/superadmin/logout')
 def sa_logout():
     session.pop('sa_id', None)
@@ -837,6 +909,22 @@ def sa_sifre_degistir():
         sa.set_password(yeni)
         db.session.commit()
         flash('Şifre başarıyla değiştirildi.', 'success')
+    return redirect(url_for('sa_panel') + '#tab-ayarlar')
+
+
+@app.route('/superadmin/guvenlik-ayarlari', methods=['POST'])
+@sa_required
+def sa_guvenlik_ayarlari():
+    sa = SuperAdmin.query.get(session['sa_id'])
+    sa.email = clean(request.form.get('email', ''))
+    sa.security_question = clean(request.form.get('security_question', ''))
+    sa.security_answer = clean(request.form.get('security_answer', ''))
+
+    if not sa.security_question or not sa.security_answer:
+        flash('Güvenlik sorusu ve cevabı boş bırakılamaz.', 'error')
+    else:
+        db.session.commit()
+        flash('Güvenlik ayarları kaydedildi.', 'success')
     return redirect(url_for('sa_panel') + '#tab-ayarlar')
 
 

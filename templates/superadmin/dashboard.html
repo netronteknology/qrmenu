@@ -834,7 +834,7 @@ td{padding:13px 14px;vertical-align:middle}
     <div style="max-width:460px;margin:32px auto;padding:0 16px">
       <div style="background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px;margin-bottom:16px">
         <div style="font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pu2);margin-bottom:18px">
-          <i class="fas fa-lock"></i> Şifre Değiştir
+          <i class="fas fa-shield-halved"></i> Güvenlik Ayarları
         </div>
         {% with msgs = get_flashed_messages(with_categories=true) %}
           {% for cat, msg in msgs %}
@@ -846,6 +846,32 @@ td{padding:13px 14px;vertical-align:middle}
           </div>
           {% endfor %}
         {% endwith %}
+        <form method="POST" action="/superadmin/guvenlik-ayarlari">
+          <div style="margin-bottom:12px">
+            <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.38);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">E-posta Adresi</label>
+            <input type="email" name="email" placeholder="ornek@email.com" value="{{ sa.email or '' }}"
+              style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:.9rem;outline:none;font-family:inherit">
+          </div>
+          <div style="margin-bottom:12px">
+            <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.38);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">Güvenlik Sorusu</label>
+            <input type="text" name="security_question" placeholder="Örn: İlk evcil hayvanınızın adı neydi?" value="{{ sa.security_question or '' }}" required
+              style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:.9rem;outline:none;font-family:inherit">
+          </div>
+          <div style="margin-bottom:20px">
+            <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.38);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">Güvenlik Sorusunun Cevabı</label>
+            <input type="text" name="security_answer" placeholder="Sorunun cevabını girin" value="{{ sa.security_answer or '' }}" required
+              style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#fff;font-size:.9rem;outline:none;font-family:inherit">
+          </div>
+          <button type="submit"
+            style="width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#5a2fff,#8b65ff);color:#fff;font-weight:700;font-size:.92rem;cursor:pointer;transition:.2s">
+            <i class="fas fa-check"></i> Güvenlik Ayarlarını Kaydet
+          </button>
+        </form>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px;margin-bottom:16px">
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--pu2);margin-bottom:18px">
+          <i class="fas fa-lock"></i> Şifre Değiştir
+        </div>
         <form method="POST" action="/superadmin/sifre-degistir">
           <div style="margin-bottom:12px">
             <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.38);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px">Mevcut Şifre</label>
